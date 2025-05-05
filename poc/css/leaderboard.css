@@ -1,0 +1,329 @@
+/* Leaderboard specific styles */
+
+/* Leaderboard container */
+.leaderboard-container {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Leaderboard header */
+.leaderboard-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .leaderboard-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.leaderboard-title h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.leaderboard-title p {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(5, 150, 105, 0.2);
+    color: #34d399;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.rank-badge i {
+    margin-right: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Leaderboard controls */
+.leaderboard-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .leaderboard-controls {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .search-container {
+        flex: 1;
+    }
+}
+
+.search-container {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    width: 1rem;
+    height: 1rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem 0.5rem 0.5rem 2.5rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    border-radius: 0.375rem;
+    color: white;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: rgba(5, 150, 105, 0.6);
+}
+
+.filter-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-select {
+    padding: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    border-radius: 0.375rem;
+    color: white;
+    outline: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.293%203.293%206%207.586%201.707%203.293A1%201%200%20000%204.707l5%205a1%201%200%20001.414%200l5-5a1%201%200%2000-1.414-1.414z%22%20fill%3D%22white%22%20fill-opacity%3D%220.5%22%2F%3E%3C%2Fsvg%3E');
+    background-size: 0.7em;
+    background-position: right 0.7em top 50%;
+    background-repeat: no-repeat;
+    padding-right: 2rem;
+    width: 140px;
+}
+
+.btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 0.375rem;
+}
+
+.btn-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Leaderboard table */
+.leaderboard-table {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.leaderboard-header-row {
+    display: grid;
+    grid-template-columns: 1fr 5fr 2fr 2fr 2fr;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(5, 150, 105, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+.leaderboard-row {
+    display: grid;
+    grid-template-columns: 1fr 5fr 2fr 2fr 2fr;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(5, 150, 105, 0.3);
+    transition: background-color 0.2s;
+    align-items: center;
+}
+
+.leaderboard-row:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-row:hover {
+    background-color: rgba(5, 150, 105, 0.2);
+}
+
+.col-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rank-number {
+    display: flex;
+    align-items: center;
+}
+
+.rank-trophy {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rank-trophy.gold {
+    background-color: rgba(234, 179, 8, 0.2);
+    color: #f59e0b;
+}
+
+.rank-trophy.silver {
+    background-color: rgba(163, 163, 163, 0.2);
+    color: #d1d5db;
+}
+
+.rank-trophy.bronze {
+    background-color: rgba(180, 83, 9, 0.2);
+    color: #d97706;
+}
+
+.change-icon {
+    margin-left: 0.25rem;
+}
+
+.change-icon.up {
+    color: #34d399;
+}
+
+.change-icon.down {
+    color: #ef4444;
+}
+
+.col-player {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.player-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.player-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.player-name {
+    font-weight: 700;
+}
+
+.col-title {
+    color: #34d399;
+}
+
+.col-score {
+    text-align: right;
+    font-weight: 700;
+}
+
+.load-more {
+    display: flex;
+    justify-content: center;
+}
+
+/* Additional sections */
+.additional-sections {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .additional-sections {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.section-card {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    padding: 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.section-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: rgba(5, 150, 105, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.section-icon i {
+    color: #34d399;
+}
+
+.section-card h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.section-card p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+}
+
+.btn-full {
+    width: 100%;
+    text-align: center;
+}
+
+/* Utility classes for buttons with icons */
+.btn-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-with-icon i {
+    width: 1rem;
+    height: 1rem;
+}

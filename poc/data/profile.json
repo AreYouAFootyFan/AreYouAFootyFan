@@ -1,0 +1,83 @@
+{
+  "username": "FootballFanatic22",
+  "title": "Tactical Manager",
+  "level": 8,
+  "xp": 2450,
+  "maxXp": 3000,
+  "stats": {
+    "gamesPlayed": 42,
+    "winRate": 68
+  },
+  "nextBadge": {
+    "name": "Football Scholar",
+    "icon": "flame",
+    "description": "Complete 20 challenges with at least 80% accuracy",
+    "currentPoints": 1250,
+    "requiredPoints": 1500
+  },
+  "badges": [
+    {
+      "name": "Tactical Genius",
+      "icon": "zap",
+      "description": "Score over 500 points in a single challenge",
+      "acquired": true,
+      "date": "January 15, 2023"
+    },
+    {
+      "name": "History Buff",
+      "icon": "clock",
+      "description": "Answer 10 historic questions correctly",
+      "acquired": true,
+      "date": "February 3, 2023"
+    },
+    {
+      "name": "Quick Thinker",
+      "icon": "lightbulb",
+      "description": "Answer 5 questions in under 5 seconds each",
+      "acquired": true,
+      "date": "March 12, 2023"
+    },
+    {
+      "name": "Football Scholar",
+      "icon": "flame",
+      "description": "Complete 20 challenges with at least 80% accuracy",
+      "acquired": false,
+      "currentPoints": 1250,
+      "requiredPoints": 1500
+    },
+    {
+      "name": "Global Competitor",
+      "icon": "trophy",
+      "description": "Reach the top 100 on the global leaderboard",
+      "acquired": false,
+      "currentPoints": 1250,
+      "requiredPoints": 2000
+    }
+  ],
+  "recentGames": [
+    {
+      "name": "Football Knowledge Challenge",
+      "date": "2 hours ago",
+      "score": 780,
+      "rank": 12
+    },
+    {
+      "name": "Football Knowledge Challenge",
+      "date": "Yesterday",
+      "score": 620,
+      "rank": 24
+    },
+    {
+      "name": "Football Knowledge Challenge",
+      "date": "3 days ago",
+      "score": 450,
+      "rank": 56
+    },
+    {
+      "name": "Football Knowledge Challenge",
+      "date": "Last week",
+      "score": 840,
+      "rank": 8
+    }
+  ]
+}

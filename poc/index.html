@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Arena</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/leaderboard.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <header>
+                <div class="logo-container" id="nav-home">
+                    <div class="logo">
+                        <i data-lucide="trophy" class="icon-trophy"></i>
+                    </div>
+                    <h1>FOOTBALL ARENA</h1>
+                </div>
+                <div class="auth-buttons" id="auth-section">
+                    <a href="#/profile" class="btn btn-outline">Sign In</a>
+                    <a href="#/profile" class="btn btn-primary">Register</a>
+                </div>
+                <div class="nav-buttons" id="nav-section" style="display: none;">
+                    <a href="#/profile" class="btn btn-outline btn-with-icon">
+                        <i data-lucide="user"></i> Profile
+                    </a>
+                    <a href="#/game" class="btn btn-primary">Play Now</a>
+                </div>
+            </header>
+
+            <main id="app-content">
+                <!-- Dynamic content will be loaded here -->
+                <div id="loading-indicator" style="display: none;">
+                    <div class="loading-spinner">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Templates for page content -->
+    <template id="home-template">
+        <div class="hero-section">
+            <div class="hero-content">
+                <h2>Test Your Football Knowledge <span class="highlight">Like Never Before</span></h2>
+                <p>Rise from casual fan to legendary manager through immersive challenges, tactical puzzles, and football history tests.</p>
+                <div class="hero-buttons">
+                    <a href="#/game" class="btn btn-primary btn-lg">Start Your Journey</a>
+                    <button class="btn btn-outline btn-lg" id="how-it-works-btn">How It Works</button>
+                </div>
+            </div>
+            <div class="features-card">
+                <div class="features-grid">
+                    <a href="#/game" class="feature-item">
+                        <div class="feature-content">
+                            <div class="feature-icon">
+                                <i data-lucide="zap" class="feature-icon-svg"></i>
+                            </div>
+                            <h3>Football Knowledge</h3>
+                        </div>
+                        <p>Test your knowledge against the clock</p>
+                    </a>
+                    <a href="#/game" class="feature-item">
+                        <div class="feature-content">
+                            <div class="feature-icon">
+                                <i data-lucide="users" class="feature-icon-svg"></i>
+                            </div>
+                            <h3>Multiple Formats</h3>
+                        </div>
+                        <p>Multiple-choice and true/false questions</p>
+                    </a>
+                    <a href="#/profile" class="feature-item">
+                        <div class="feature-content">
+                            <div class="feature-icon">
+                                <i data-lucide="award" class="feature-icon-svg"></i>
+                            </div>
+                            <h3>Earn Badges</h3>
+                        </div>
+                        <p>Unlock achievements as you progress</p>
+                    </a>
+                    <a href="#/leaderboard" class="feature-item">
+                        <div class="feature-content">
+                            <div class="feature-icon">
+                                <i data-lucide="bar-chart-3" class="feature-icon-svg"></i>
+                            </div>
+                            <h3>Global Rankings</h3>
+                        </div>
+                        <p>Compete on the global leaderboard</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="progression-section">
+            <h2>Your Path to Football Greatness</h2>
+            <div class="progression-grid">
+                <div class="progression-item blue">
+                    <div class="progression-content">
+                        <div class="progression-number">1</div>
+                        <h3>Casual Fan</h3>
+                    </div>
+                    <p>Begin your journey with basic football knowledge</p>
+                </div>
+                <div class="progression-item purple">
+                    <div class="progression-content">
+                        <div class="progression-number">2</div>
+                        <h3>Club Scout</h3>
+                    </div>
+                    <p>Spot talent and recall key football moments</p>
+                </div>
+                <div class="progression-item orange">
+                    <div class="progression-content">
+                        <div class="progression-number">3</div>
+                        <h3>Tactical Manager</h3>
+                    </div>
+                    <p>Master formations and strategic decisions</p>
+                </div>
+                <div class="progression-item red">
+                    <div class="progression-content">
+                        <div class="progression-number">4</div>
+                        <h3>Football Legend</h3>
+                    </div>
+                    <p>Achieve legendary status with expert knowledge</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="leaderboard-section">
+            <div class="leaderboard-content">
+                <h2>Global Leaderboard</h2>
+                <p>Compete against football fans worldwide. Earn points, climb the ranks, and claim your place among the elite.</p>
+                <a href="#/leaderboard" class="btn btn-primary">View Full Leaderboard</a>
+            </div>
+            <div class="leaderboard-preview">
+                <!-- Leaderboard items will be dynamically inserted here from JSON data -->
+                <div class="loading-spinner">
+                    <p>Loading leaderboard data...</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Game Page Template -->
+    <template id="game-template">
+        <div id="game-container">
+            <!-- Game content will be dynamically inserted here by game.js -->
+        </div>
+    </template>
+    
+    <!-- Profile Page Template -->
+    <template id="profile-template">
+        <div class="profile-layout">
+            <!-- Sidebar -->
+            <div class="profile-sidebar">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <h2 class="username">FootballFanatic22</h2>
+                    <div class="user-title">Tactical Manager</div>
+
+                    <div class="level-progress">
+                        <div class="level-info">
+                            <span>Level 8</span>
+                            <span>2450/3000 XP</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 82%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value">42</div>
+                        <div class="stat-label">Games Played</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">68%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                </div>
+
+                <div class="sidebar-nav">
+                    <a href="#/leaderboard" class="sidebar-link">
+                        <i data-lucide="trophy"></i> Leaderboard
+                    </a>
+                    <button class="sidebar-link badges-tab-trigger">
+                        <i data-lucide="award"></i> Badges
+                    </button>
+                    <a href="#/game" class="sidebar-link">
+                        <i data-lucide="trophy"></i> Play Challenge
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="profile-content">
+                <div class="tabs">
+                    <div class="tabs-header">
+                        <button class="tab-trigger active" data-tab="overview">Overview</button>
+                        <button class="tab-trigger" data-tab="badges">Badges</button>
+                    </div>
+
+                    <div class="tab-content active" id="overview-tab">
+                        <div class="next-badge-card">
+                            <div class="card-header">
+                                <h3>Next Badge</h3>
+                                <p>Progress toward your next achievement</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="next-badge">
+                                    <!-- Will be filled dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="recent-games">
+                            <h2>Recent Games</h2>
+                            <div class="games-list">
+                                <!-- Will be filled dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="featured-badges">
+                            <h2>Featured Badges</h2>
+                            <div class="badges-grid">
+                                <!-- Will be filled dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="badges-tab">
+                        <div class="all-badges">
+                            <h2>Your Badges</h2>
+                            <div class="full-badges-list">
+                                <!-- Will be filled dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="badge-timeline">
+                            <h2>Badge Timeline</h2>
+                            <div class="timeline">
+                                <!-- Will be filled dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Leaderboard Page Template -->
+    <template id="leaderboard-template">
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">
+                <div class="leaderboard-title">
+                    <h1>Global Leaderboard</h1>
+                    <p>See how you stack up against the best football minds worldwide</p>
+                </div>
+                <div class="user-rank">
+                    <div class="rank-badge">
+                        <i data-lucide="trophy"></i> Your Rank: #42
+                    </div>
+                </div>
+            </div>
+
+            <div class="leaderboard-controls">
+                <div class="search-container">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Search players..." class="search-input">
+                </div>
+                <div class="filter-controls">
+                    <select id="time-filter" class="filter-select">
+                        <option value="all-time">All Time</option>
+                        <option value="this-week">This Week</option>
+                        <option value="this-month">This Month</option>
+                        <option value="this-year">This Year</option>
+                    </select>
+                    <select id="game-mode-filter" class="filter-select">
+                        <option value="all">All Modes</option>
+                        <option value="tactics">Tactics Time Attack</option>
+                        <option value="historic">Historic Legends</option>
+                        <option value="transfer">Transfer Detective</option>
+                        <option value="stats">Stats Challenge</option>
+                    </select>
+                    <button id="sort-button" class="btn btn-icon">
+                        <i data-lucide="arrow-up-down"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="leaderboard-table">
+                <div class="leaderboard-header-row">
+                    <div class="col-rank">#</div>
+                    <div class="col-player">Player</div>
+                    <div class="col-title">Title</div>
+                    <div class="col-country">Country</div>
+                    <div class="col-score">Score</div>
+                </div>
+                
+                <div id="leaderboard-rows">
+                    <!-- Will be filled dynamically -->
+                </div>
+            </div>
+
+            <div class="load-more">
+                <button class="btn btn-outline">Load More</button>
+            </div>
+        </div>
+
+        <div class="additional-sections">
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i data-lucide="trophy"></i>
+                    </div>
+                    <h2>Hall of Fame</h2>
+                </div>
+                <p>The all-time greatest players in Football Arena history.</p>
+                <a href="#/leaderboard" class="btn btn-outline btn-full">View Hall of Fame</a>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <h2>Your Stats</h2>
+                </div>
+                <p>View detailed statistics about your performance.</p>
+                <a href="#/profile" class="btn btn-outline btn-full">View Stats</a>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script src="js/dom-utils.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/game.js"></script> 
+    <script src="js/profile.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+[
+  {
+    "rank": 1,
+    "username": "AlexTheTactician",
+    "avatar": "images/placeholder.svg",
+    "score": 12450,
+    "title": "Football Legend",
+    "country": "Spain",
+    "change": "up"
+  },
+  {
+    "rank": 2,
+    "username": "FootballFanatic22",
+    "avatar": "images/placeholder.svg",
+    "score": 9876,
+    "title": "Tactical Manager",
+    "country": "England",
+    "change": "same"
+  },
+  {
+    "rank": 3,
+    "username": "HistoryBuff",
+    "avatar": "images/placeholder.svg",
+    "score": 8654,
+    "title": "Club Scout",
+    "country": "Germany",
+    "change": "up"
+  },
+  {
+    "rank": 4,
+    "username": "TacticalMaestro",
+    "avatar": "images/placeholder.svg",
+    "score": 8245,
+    "title": "Tactical Manager",
+    "country": "Italy",
+    "change": "down"
+  },
+  {
+    "rank": 5,
+    "username": "GoalMachine",
+    "avatar": "images/placeholder.svg",
+    "score": 7932,
+    "title": "Club Scout",
+    "country": "France",
+    "change": "up"
+  },
+  {
+    "rank": 6,
+    "username": "FootballWizard",
+    "avatar": "images/placeholder.svg",
+    "score": 7845,
+    "title": "Club Scout",
+    "country": "Brazil",
+    "change": "down"
+  },
+  {
+    "rank": 7,
+    "username": "StatisticsFan",
+    "avatar": "images/placeholder.svg",
+    "score": 7690,
+    "title": "Casual Fan",
+    "country": "Argentina",
+    "change": "up"
+  },
+  {
+    "rank": 8,
+    "username": "LegendaryCoach",
+    "avatar": "images/placeholder.svg",
+    "score": 7521,
+    "title": "Tactical Manager",
+    "country": "Netherlands",
+    "change": "same"
+  },
+  {
+    "rank": 9,
+    "username": "FootballExpert",
+    "avatar": "images/placeholder.svg",
+    "score": 7320,
+    "title": "Club Scout",
+    "country": "Portugal",
+    "change": "down"
+  },
+  {
+    "rank": 10,
+    "username": "TacticsKing",
+    "avatar": "images/placeholder.svg",
+    "score": 7105,
+    "title": "Casual Fan",
+    "country": "Belgium",
+    "change": "up"
+  }
+]

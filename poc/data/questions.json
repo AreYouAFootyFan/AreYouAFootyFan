@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "question": "Which team won the UEFA Champions League in 2023?",
+    "options": ["Real Madrid", "Manchester City", "Bayern Munich", "Inter Milan"],
+    "correctAnswer": 1,
+    "difficulty": "medium",
+    "category": "Recent History",
+    "explanation": "Manchester City won their first UEFA Champions League title in 2023, defeating Inter Milan in the final.",
+    "points": 100,
+    "type": "multiple-choice"
+  },
+  {
+    "id": 2,
+    "question": "Miroslav Klose holds the record for most goals in World Cup history with 16 goals.",
+    "options": ["True", "False"],
+    "correctAnswer": 0,
+    "difficulty": "medium",
+    "category": "Player Stats",
+    "explanation": "True. Miroslav Klose holds the record with 16 goals across four World Cup tournaments.",
+    "points": 150,
+    "type": "true-false"
+  },
+  {
+    "id": 3,
+    "question": "Which formation is commonly known as 'Tiki-Taka'?",
+    "options": ["4-4-2", "4-3-3", "3-5-2", "4-2-3-1"],
+    "correctAnswer": 1,
+    "difficulty": "hard",
+    "category": "Tactics",
+    "explanation": "The 4-3-3 formation was famously used by Barcelona and Spain during their 'Tiki-Taka' era, focusing on possession and short passing.",
+    "points": 200,
+    "type": "multiple-choice"
+  },
+  {
+    "id": 4,
+    "question": "Manchester United has won the most Premier League titles.",
+    "options": ["True", "False"],
+    "correctAnswer": 0,
+    "difficulty": "easy",
+    "category": "Club History",
+    "explanation": "True. Manchester United has won the Premier League 13 times since its formation in 1992.",
+    "points": 100,
+    "type": "true-false"
+  },
+  {
+    "id": 5,
+    "question": "Who was the top scorer in the 2018 FIFA World Cup?",
+    "options": ["Kylian Mbappé", "Harry Kane", "Cristiano Ronaldo", "Antoine Griezmann"],
+    "correctAnswer": 1,
+    "difficulty": "medium",
+    "category": "Player Stats",
+    "explanation": "Harry Kane won the Golden Boot with 6 goals at the 2018 World Cup in Russia.",
+    "points": 150,
+    "type": "multiple-choice"
+  }
+]

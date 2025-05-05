@@ -1,0 +1,519 @@
+/* Profile page specific styles */
+
+/* Layout */
+.profile-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .profile-layout {
+        grid-template-columns: 300px 1fr;
+    }
+}
+
+/* Sidebar */
+.profile-sidebar {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    padding: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .profile-sidebar {
+        position: sticky;
+        top: 2rem;
+    }
+}
+
+.user-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.user-avatar {
+    width: 6rem;
+    height: 6rem;
+    background-color: #065f46;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    border: 4px solid #059669;
+}
+
+.user-avatar i {
+    width: 3rem;
+    height: 3rem;
+    color: white;
+}
+
+.username {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.user-title {
+    color: #34d399;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.level-progress {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.level-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.progress-container {
+    width: 100%;
+    height: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #10b981;
+    border-radius: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-box {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: 500;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-link i {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Tabs */
+.tabs-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 2rem;
+}
+
+.tab-trigger {
+    padding: 0.75rem;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-trigger.active {
+    color: white;
+    border-bottom-color: #10b981;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Cards */
+.next-badge-card,
+.recent-games,
+.featured-badges,
+.all-badges,
+.badge-timeline {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    margin-bottom: 1rem;
+}
+
+.card-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.card-header p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+}
+
+.next-badge {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.badge-icon {
+    width: 4rem;
+    height: 4rem;
+    background-color: rgba(5, 150, 105, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.badge-icon i {
+    width: 2rem;
+    height: 2rem;
+    color: #34d399;
+}
+
+.badge-info {
+    flex: 1;
+}
+
+.badge-info h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.badge-info p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.badge-progress {
+    margin-top: 0.5rem;
+}
+
+.progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.25rem;
+}
+
+.progress-text {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #34d399;
+}
+
+/* Recent Games */
+h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.games-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.game-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.game-icon {
+    width: 3rem;
+    height: 3rem;
+    background-color: rgba(5, 150, 105, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.game-icon i {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #34d399;
+}
+
+.game-info {
+    flex: 1;
+}
+
+.game-name {
+    font-weight: 700;
+}
+
+.game-date {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.game-stats {
+    text-align: right;
+}
+
+.game-score {
+    font-weight: 700;
+}
+
+.game-rank {
+    font-size: 0.75rem;
+    color: #34d399;
+}
+
+/* Featured Badges */
+.badges-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .badges-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.badge-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.badge-name {
+    font-weight: 700;
+}
+
+.badge-description {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* All Badges */
+.full-badges-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.badge-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.badge-row.locked {
+    opacity: 0.6;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.badge-large-icon {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(5, 150, 105, 0.2);
+    flex-shrink: 0;
+}
+
+.badge-large-icon.acquired {
+    background-color: rgba(5, 150, 105, 0.5);
+}
+
+.badge-large-icon i {
+    width: 2rem;
+    height: 2rem;
+    color: rgba(52, 211, 153, 0.4);
+}
+
+.badge-large-icon.acquired i {
+    color: #34d399;
+}
+
+.badge-details {
+    flex: 1;
+}
+
+.badge-details h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.badge-details p {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.acquisition-date {
+    font-size: 0.75rem;
+    color: #34d399;
+}
+
+.badge-status {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Badge Timeline */
+.timeline {
+    position: relative;
+    border-left: 2px solid rgba(5, 150, 105, 0.5);
+    padding-left: 2rem;
+    margin-left: 1rem;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: -3rem;
+    width: 2rem;
+    height: 2rem;
+    background-color: #059669;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeline-icon i {
+    width: 1rem;
+    height: 1rem;
+    color: white;
+}
+
+.timeline-content {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: 1px solid rgba(5, 150, 105, 0.3);
+}
+
+.timeline-date {
+    font-size: 0.75rem;
+    color: #34d399;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-content h4 {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-content p {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Button styles */
+.btn-ghost {
+    background-color: transparent;
+    color: white;
+}
+
+.btn-ghost:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
