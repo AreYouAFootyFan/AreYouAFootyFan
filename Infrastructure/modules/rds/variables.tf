@@ -24,8 +24,18 @@ variable "enabled" {
   default     = true
 }
 
+variable "db_username" {
+  description = "Username for the PostgreSQL master user. Set via tfvars or TF_VAR_db_username environment variable."
+  type        = string
+}
+
 variable "db_password" {
   description = "Password for the PostgreSQL master user. Set via tfvars or TF_VAR_db_password environment variable."
   type        = string
   sensitive   = true
+}
+
+variable "db_name" {
+  description = "The name of the database"
+  type        = string
 }

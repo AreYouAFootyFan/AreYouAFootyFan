@@ -10,16 +10,17 @@ resource "aws_db_subnet_group" "this" {
 resource "aws_db_instance" "this" {
   count                     = var.enabled ? 1 : 0
   identifier                = "${var.project_name}-db"
+  db_name                   = var.db_name
   allocated_storage         = 20
   engine                    = "postgres"
   engine_version            = "17.2"
   instance_class            = "db.t3.micro"
-  username                  = "postgres"
+  username                  = var.db_username
   password                  = var.db_password
   db_subnet_group_name      = aws_db_subnet_group.this[0].name
   vpc_security_group_ids    = var.vpc_security_group_ids
   skip_final_snapshot       = true
-  publicly_accessible       = false
+  publicly_accessible       = true
   storage_encrypted         = false
   apply_immediately         = true
   tags = {

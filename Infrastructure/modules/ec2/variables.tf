@@ -24,3 +24,9 @@ variable "security_group_id" {
   type        = string
   default     = null
 }
+
+variable "iam_instance_profile" {
+  description = "The name of the IAM instance profile to associate with the EC2 instance."
+  type        = string
+  default     = null
+}
