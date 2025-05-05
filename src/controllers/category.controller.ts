@@ -5,7 +5,7 @@ import { ErrorUtils } from '../utils/error.utils';
 
 export class CategoryController {
   
-  static async getAllCategories(req: Request, response: Response, next: NextFunction): Promise<void> {
+  static async getAllCategories(_request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
       const categories = await CategoryService.getAllCategories();
       response.json(categories);

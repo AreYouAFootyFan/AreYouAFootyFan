@@ -5,7 +5,7 @@ import { ErrorUtils } from '../utils/error.utils';
 
 export class QuizAttemptController {
   
-  static async getUserAttempts(request: Request, response: Response, next: NextFunction): Promise<void> {
+  static async getUserAttempts(_request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
       // TODO: Get user_id from authentication middleware
       // For now, use a placeholder user ID

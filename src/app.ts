@@ -28,7 +28,7 @@ app.use('/api/answers', answerRoutes);
 app.use('/api/quiz-attempts', quizAttemptRoutes);
 app.use('/api/user-responses', userResponseRoutes);
 
-app.get('/', (request, response) => {
+app.get('/', (_request, response) => {
   response.sendFile(path.join(__dirname, '../public/index.html'));
 });
 

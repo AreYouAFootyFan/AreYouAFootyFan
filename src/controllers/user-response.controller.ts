@@ -21,7 +21,7 @@ export class UserResponseController {
   }
 
   
-  static async submitResponse(request: Request, response: Response, next: NextFunction): Promise<void> {
+  static async submitResponse(request: Request, _response: Response, next: NextFunction): Promise<void> {
     try {
       const { attempt_id, question_id, answer_id } = request.body;
       
@@ -67,7 +67,7 @@ export class UserResponseController {
   }
 
   
-  static async getResponseById(request: Request, response: Response, next: NextFunction): Promise<void> {
+  static async getResponseById(request: Request, _response: Response, next: NextFunction): Promise<void> {
     try {
       const id = parseInt(request.params.id);
       

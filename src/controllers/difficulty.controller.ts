@@ -5,7 +5,7 @@ import { ErrorUtils } from '../utils/error.utils';
 
 export class DifficultyController {
   
-  static async getAllDifficultyLevels(request: Request, response: Response, next: NextFunction): Promise<void> {
+  static async getAllDifficultyLevels(_request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
       const difficultyLevels = await DifficultyService.getAllDifficultyLevels();
       response.json(difficultyLevels);
