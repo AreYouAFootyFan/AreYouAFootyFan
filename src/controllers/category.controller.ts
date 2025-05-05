@@ -5,35 +5,35 @@ import { ErrorUtils } from '../utils/error.utils';
 
 export class CategoryController {
   
-  static async getAllCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getAllCategories(req: Request, response: Response, next: NextFunction): Promise<void> {
     try {
       const categories = await CategoryService.getAllCategories();
-      res.json(categories);
+      response.json(categories);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async getCategoryById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getCategoryById(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid category ID');
       }
       
       const category = await CategoryService.getCategoryById(id);
-      res.json(category);
+      response.json(category);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async createCategory(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const { category_name, category_description } = req.body as CreateCategoryDto;
+      const { category_name, category_description } = request.body as CreateCategoryDto;
       
       if (!category_name) {
         throw ErrorUtils.badRequest('Category name is required');
@@ -48,22 +48,22 @@ export class CategoryController {
       }
       
       const category = await CategoryService.createCategory({ category_name, category_description });
-      res.status(201).json(category);
+      response.status(201).json(category);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async updateCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async updateCategory(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid category ID');
       }
       
-      const { category_name, category_description } = req.body as UpdateCategoryDto;
+      const { category_name, category_description } = request.body as UpdateCategoryDto;
       
       if (category_name === undefined && category_description === undefined) {
         throw ErrorUtils.badRequest('At least one field to update is required');
@@ -78,23 +78,23 @@ export class CategoryController {
       }
       
       const category = await CategoryService.updateCategory(id, { category_name, category_description });
-      res.json(category);
+      response.json(category);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async deleteCategory(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid category ID');
       }
       
       await CategoryService.deleteCategory(id);
-      res.json({ message: 'Category deleted successfully' });
+      response.json({ message: 'Category deleted successfully' });
     } catch (error) {
       next(error);
     }

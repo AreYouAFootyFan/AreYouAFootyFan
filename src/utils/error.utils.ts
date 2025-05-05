@@ -1,7 +1,7 @@
 export interface AppError extends Error {
     status?: number;
     code?: string;
-  }
+}
   
 export function createError(message: string, status: number = 500): AppError {
     const error: AppError = new Error(message);

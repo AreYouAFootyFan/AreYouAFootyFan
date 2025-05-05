@@ -5,41 +5,41 @@ import { ErrorUtils } from '../utils/error.utils';
 
 export class AnswerController {
   
-  static async getAnswersByQuestionId(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getAnswersByQuestionId(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const questionId = parseInt(req.params.questionId);
+      const questionId = parseInt(request.params.questionId);
       
       if (isNaN(questionId)) {
         throw ErrorUtils.badRequest('Invalid question ID');
       }
       
       const answers = await AnswerService.getAnswersByQuestionId(questionId);
-      res.json(answers);
+      response.json(answers);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async getAnswerById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getAnswerById(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid answer ID');
       }
       
       const answer = await AnswerService.getAnswerById(id);
-      res.json(answer);
+      response.json(answer);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async createAnswer(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async createAnswer(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const { question_id, answer_text, is_correct } = req.body as CreateAnswerDto;
+      const { question_id, answer_text, is_correct } = request.body as CreateAnswerDto;
       
       if (!question_id) {
         throw ErrorUtils.badRequest('Question ID is required');
@@ -68,22 +68,22 @@ export class AnswerController {
       }
       
       const answer = await AnswerService.createAnswer(data);
-      res.status(201).json(answer);
+      response.status(201).json(answer);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async updateAnswer(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async updateAnswer(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid answer ID');
       }
       
-      const { answer_text, is_correct } = req.body as UpdateAnswerDto;
+      const { answer_text, is_correct } = request.body as UpdateAnswerDto;
       
       if (answer_text === undefined && is_correct === undefined) {
         throw ErrorUtils.badRequest('At least one field to update is required');
@@ -104,39 +104,39 @@ export class AnswerController {
       }
       
       const answer = await AnswerService.updateAnswer(id, data);
-      res.json(answer);
+      response.json(answer);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async deleteAnswer(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async deleteAnswer(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid answer ID');
       }
       
       await AnswerService.deleteAnswer(id);
-      res.json({ message: 'Answer deleted successfully' });
+      response.json({ message: 'Answer deleted successfully' });
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async markAsCorrect(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async markAsCorrect(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid answer ID');
       }
       
       const answer = await AnswerService.markAsCorrect(id);
-      res.json(answer);
+      response.json(answer);
     } catch (error) {
       next(error);
     }

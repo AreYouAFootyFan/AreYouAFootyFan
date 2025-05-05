@@ -5,35 +5,35 @@ import { ErrorUtils } from '../utils/error.utils';
 
 export class DifficultyController {
   
-  static async getAllDifficultyLevels(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getAllDifficultyLevels(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
       const difficultyLevels = await DifficultyService.getAllDifficultyLevels();
-      res.json(difficultyLevels);
+      response.json(difficultyLevels);
     } catch (error) {
       next(error);
     }
   }
 
 
-  static async getDifficultyLevelById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getDifficultyLevelById(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid difficulty level ID');
       }
       
       const difficultyLevel = await DifficultyService.getDifficultyLevelById(id);
-      res.json(difficultyLevel);
+      response.json(difficultyLevel);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async createDifficultyLevel(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async createDifficultyLevel(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const { difficulty_level, time_limit_seconds, points_on_correct, points_on_incorrect } = req.body as CreateDifficultyLevelDto;
+      const { difficulty_level, time_limit_seconds, points_on_correct, points_on_incorrect } = request.body as CreateDifficultyLevelDto;
       
       // Validate required fields
       if (!difficulty_level) {
@@ -76,22 +76,22 @@ export class DifficultyController {
       }
       
       const difficultyLevel = await DifficultyService.createDifficultyLevel(data);
-      res.status(201).json(difficultyLevel);
+      response.status(201).json(difficultyLevel);
     } catch (error) {
       next(error);
     }
   }
 
 
-  static async updateDifficultyLevel(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async updateDifficultyLevel(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid difficulty level ID');
       }
       
-      const { difficulty_level, time_limit_seconds, points_on_correct, points_on_incorrect } = req.body as UpdateDifficultyLevelDto;
+      const { difficulty_level, time_limit_seconds, points_on_correct, points_on_incorrect } = request.body as UpdateDifficultyLevelDto;
       
       if (difficulty_level === undefined && 
           time_limit_seconds === undefined && 
@@ -135,23 +135,23 @@ export class DifficultyController {
       }
       
       const difficultyLevel = await DifficultyService.updateDifficultyLevel(id, data);
-      res.json(difficultyLevel);
+      response.json(difficultyLevel);
     } catch (error) {
       next(error);
     }
   }
 
 
-  static async deleteDifficultyLevel(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async deleteDifficultyLevel(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid difficulty level ID');
       }
       
       await DifficultyService.deleteDifficultyLevel(id);
-      res.json({ message: 'Difficulty level deleted successfully' });
+      response.json({ message: 'Difficulty level deleted successfully' });
     } catch (error) {
       next(error);
     }

@@ -12,11 +12,11 @@ const pool = new Pool({
 });
 
 // Test database connection
-pool.query('SELECT NOW()', (err, res) => {
-  if (err) {
-    console.error('Database connection error', err.stack);
+pool.query('SELECT NOW()', (error, response) => {
+  if (error) {
+    console.error('Database connection error', error.stack);
   } else {
-    console.log('Database connected:', res.rows[0].now);
+    console.log('Database connected:', response.rows[0].now);
   }
 });
 

@@ -5,67 +5,67 @@ import { ErrorUtils } from '../utils/error.utils';
 
 export class QuizController {
   
-  static async getAllQuizzes(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getAllQuizzes(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const validOnly = req.query.valid === 'true';
+      const validOnly = request.query.valid === 'true';
       
       if (validOnly) {
         const validQuizzes = await QuizService.getValidQuizzes();
-        res.json(validQuizzes);
+        response.json(validQuizzes);
         return;
       }
       
-      if (req.query.category) {
-        const categoryId = parseInt(req.query.category as string);
+      if (request.query.category) {
+        const categoryId = parseInt(request.query.category as string);
         
         if (isNaN(categoryId)) {
           throw ErrorUtils.badRequest('Invalid category ID');
         }
         
         const quizzes = await QuizService.getQuizzesByCategory(categoryId);
-        res.json(quizzes);
+        response.json(quizzes);
         return;
       }
       
-      if (req.query.creator) {
-        const creatorId = parseInt(req.query.creator as string);
+      if (request.query.creator) {
+        const creatorId = parseInt(request.query.creator as string);
         
         if (isNaN(creatorId)) {
           throw ErrorUtils.badRequest('Invalid creator ID');
         }
         
         const quizzes = await QuizService.getQuizzesByCreator(creatorId);
-        res.json(quizzes);
+        response.json(quizzes);
         return;
       }
       
       const quizzes = await QuizService.getAllQuizzes();
-      res.json(quizzes);
+      response.json(quizzes);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async getQuizById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getQuizById(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid quiz ID');
       }
       
       const quiz = await QuizService.getQuizById(id);
-      res.json(quiz);
+      response.json(quiz);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async createQuiz(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async createQuiz(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const { quiz_title, quiz_description, category_id } = req.body as CreateQuizDto;
+      const { quiz_title, quiz_description, category_id } = request.body as CreateQuizDto;
       
       if (!quiz_title) {
         throw ErrorUtils.badRequest('Quiz title is required');
@@ -103,22 +103,22 @@ export class QuizController {
         created_by 
       });
       
-      res.status(201).json(quiz);
+      response.status(201).json(quiz);
     } catch (error) {
       next(error);
     }
   }
 
  
-  static async updateQuiz(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async updateQuiz(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid quiz ID');
       }
       
-      const { quiz_title, quiz_description, category_id } = req.body as UpdateQuizDto;
+      const { quiz_title, quiz_description, category_id } = request.body as UpdateQuizDto;
       
       if (quiz_title === undefined && quiz_description === undefined && category_id === undefined) {
         throw ErrorUtils.badRequest('At least one field to update is required');
@@ -150,32 +150,32 @@ export class QuizController {
         category_id: parsedCategoryId 
       });
       
-      res.json(quiz);
+      response.json(quiz);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async deleteQuiz(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async deleteQuiz(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid quiz ID');
       }
       
       await QuizService.deleteQuiz(id);
-      res.json({ message: 'Quiz deleted successfully' });
+      response.json({ message: 'Quiz deleted successfully' });
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async checkQuizStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async checkQuizStatus(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid quiz ID');
@@ -185,7 +185,7 @@ export class QuizController {
       
       const hasEnoughQuestions = await QuizService.checkQuizQuestionCount(id);
       
-      res.json({
+      response.json({
         quiz,
         has_enough_questions: hasEnoughQuestions,
         is_ready: hasEnoughQuestions

@@ -5,41 +5,41 @@ import { ErrorUtils } from '../utils/error.utils';
 
 export class QuestionController {
   
-  static async getQuestionsByQuizId(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getQuestionsByQuizId(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const quizId = parseInt(req.params.quizId);
+      const quizId = parseInt(request.params.quizId);
       
       if (isNaN(quizId)) {
         throw ErrorUtils.badRequest('Invalid quiz ID');
       }
       
       const questions = await QuestionService.getQuestionsByQuizId(quizId);
-      res.json(questions);
+      response.json(questions);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async getQuestionById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async getQuestionById(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid question ID');
       }
       
       const question = await QuestionService.getQuestionById(id);
-      res.json(question);
+      response.json(question);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async createQuestion(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async createQuestion(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const { quiz_id, question_text, difficulty_id } = req.body as CreateQuestionDto;
+      const { quiz_id, question_text, difficulty_id } = request.body as CreateQuestionDto;
       
       if (!quiz_id) {
         throw ErrorUtils.badRequest('Quiz ID is required');
@@ -72,22 +72,22 @@ export class QuestionController {
       }
       
       const question = await QuestionService.createQuestion(data);
-      res.status(201).json(question);
+      response.status(201).json(question);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async updateQuestion(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async updateQuestion(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid question ID');
       }
       
-      const { question_text, difficulty_id } = req.body as UpdateQuestionDto;
+      const { question_text, difficulty_id } = request.body as UpdateQuestionDto;
       
       if (question_text === undefined && difficulty_id === undefined) {
         throw ErrorUtils.badRequest('At least one field to update is required');
@@ -112,32 +112,32 @@ export class QuestionController {
       }
       
       const question = await QuestionService.updateQuestion(id, data);
-      res.json(question);
+      response.json(question);
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async deleteQuestion(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async deleteQuestion(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid question ID');
       }
       
       await QuestionService.deleteQuestion(id);
-      res.json({ message: 'Question deleted successfully' });
+      response.json({ message: 'Question deleted successfully' });
     } catch (error) {
       next(error);
     }
   }
 
   
-  static async validateQuestion(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async validateQuestion(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(request.params.id);
       
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid question ID');
@@ -147,7 +147,7 @@ export class QuestionController {
       
       const validation = await QuestionService.validateQuestionAnswers(id);
       
-      res.json({
+      response.json({
         question,
         validation
       });
