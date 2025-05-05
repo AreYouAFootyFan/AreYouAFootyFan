@@ -1,2 +1,6 @@
 flyway.conf
 .vscode
+*.config
+.env
+.terraform*
+*.tfvars
