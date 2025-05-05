@@ -37,7 +37,8 @@ CREATE TABLE quizzes (
   quiz_description VARCHAR(128) NOT NULL,
   category_id INT NOT NULL,
   created_by INT NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deactivated_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE difficulty_levels (
