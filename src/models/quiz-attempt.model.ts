@@ -89,7 +89,7 @@ export class QuizAttemptModel {
     const result = await db.query(
       `SELECT q.question_id, q.question_text, d.difficulty_level, 
         d.time_limit_seconds, d.points_on_correct, d.points_on_incorrect,
-        ur.response_id, ur.answer_id as selected_answer_id, ur.points_earned,
+        ur.response_id, ur.chosen_answer as selected_answer_id, ur.points_earned,
         (SELECT json_agg(a.*) FROM answers a WHERE a.question_id = q.question_id) as answers
        FROM quiz_attempts qa
        JOIN quizzes qz ON qa.quiz_id = qz.quiz_id

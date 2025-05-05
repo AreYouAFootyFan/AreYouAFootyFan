@@ -50,7 +50,7 @@ export class UserResponseModel {
     const question = questionResult.rows[0];
     
     const answerResult = await db.query(
-      'SELECT * FROM answers WHERE question_id = $1 AND answer_id = $2',
+      'SELECT * FROM answers WHERE question_id = $1 AND chosen_answer = $2',
       [data.question_id, data.answer_id]
     );
     
@@ -64,7 +64,7 @@ export class UserResponseModel {
     const pointsEarned = answer.is_correct ? question.points_on_correct : question.points_on_incorrect;
     
     const result = await db.query(
-      `INSERT INTO user_responses (attempt_id, question_id, answer_id, points_earned) 
+      `INSERT INTO user_responses (attempt_id, question_id, chosen_answer, points_earned) 
        VALUES ($1, $2, $3, $4) 
        RETURNING *`,
       [data.attempt_id, data.question_id, data.answer_id, pointsEarned]
@@ -137,7 +137,7 @@ export class UserResponseModel {
         d.difficulty_level, d.points_on_correct, d.points_on_incorrect
        FROM user_responses ur
        JOIN questions q ON ur.question_id = q.question_id
-       JOIN answers a ON ur.answer_id = a.answer_id
+       JOIN answers a ON ur.chosen_answer = a.answer_id
        JOIN difficulty_levels d ON q.difficulty_id = d.difficulty_id
        WHERE ur.response_id = $1`,
       [responseId]
