@@ -1,0 +1,84 @@
+name: "Footy Deployment Pipeline"
+
+on:
+    push: 
+        branches: 
+            - main
+            - development
+
+jobs:
+    terraform:
+        name: "Terraform AWS Setup"
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./Infrastructure
+        steps:
+        # Checkout the repository
+        - name: "Checkout Code"
+          uses: actions/checkout@v4
+
+        # Set up Terraform
+        - name: "Set up Terraform"
+          uses: hashicorp/setup-terraform@v3
+          with:
+            terraform_version: 1.5.0
+
+        # Initialise Terraform
+        - name: "Terraform Init"
+          run: terraform init -backend-config="backend.config"
+
+        - name: "Create terraform.tfvars"
+          run: |
+            echo 'db_password = "${{ secrets.DB_PASSWORD }}"' > terraform.tfvars
+            echo 'db_username = "${{ secrets.DB_USERNAME }}"' >> terraform.tfvars
+            echo 'backend_bucket = "${{ secrets.BUCKET_NAME }}"' >> terraform.tfvars
+            echo 'backend_key = "${{ secrets.BACKEND_KEY }}"' >> terraform.tfvars
+
+        # Validate Terraform configuration
+        - name: "Terraform Validate"
+          run: terraform validate
+
+        # Apply Terraform changes
+        - name: "Terraform Apply"
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          run: terraform apply -auto-approve
+
+    migrate:
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Checkout Code"
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+
+            - name: "Run Flyway migrations"
+              run: |
+                echo "Running Flyway migrations..."
+                # Print Flyway version
+                docker run --rm flyway/flyway:latest -v
+                
+                echo "Attempting database connection..."
+                docker run --rm \
+                -v $(pwd):/flyway/sql \
+                flyway/flyway:latest \
+                -url=jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }} \
+                -user=${{ secrets.DB_USERNAME }} \
+                -password=${{ secrets.DB_PASSWORD }} \
+                -connectRetries=3 \
+                -connectRetriesInterval=10 \
+                info
+
+                echo "Running migrations..."
+                docker run --rm \
+                -v $(pwd):/flyway/sql \
+                flyway/flyway:latest \
+                -url=jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }} \
+                -user=${{ secrets.DB_USERNAME }} \
+                -password=${{ secrets.DB_PASSWORD }} \
+                -connectRetries=3 \
+                -connectRetriesInterval=10 \
+                -locations=filesystem:/flyway/sql/Migrations \
+                migrate
