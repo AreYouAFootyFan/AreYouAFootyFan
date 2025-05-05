@@ -12,7 +12,7 @@ export class CategoryModel {
 
   static async findAll(): Promise<Category[]> {
     const result = await db.query(
-      'SELECT * FROM categories WHERE deactivated_at IS NULL ORDER BY category_name'
+      'SELECT * FROM active_categories'
     );
     return result.rows;
   }
@@ -20,7 +20,7 @@ export class CategoryModel {
 
   static async findById(id: number): Promise<Category | null> {
     const result = await db.query(
-      'SELECT * FROM categories WHERE category_id = $1 AND deactivated_at IS NULL',
+      'SELECT * FROM active_categories WHERE category_id = $1',
       [id]
     );
     
@@ -34,7 +34,7 @@ export class CategoryModel {
 
   static async findByName(name: string): Promise<Category | null> {
     const result = await db.query(
-      'SELECT * FROM categories WHERE category_name = $1 AND deactivated_at IS NULL',
+      'SELECT * FROM active_categories WHERE category_name = $1',
       [name]
     );
     
