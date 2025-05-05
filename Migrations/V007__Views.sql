@@ -120,3 +120,22 @@ WHERE
     deactivated_at IS NULL
 ORDER BY
     category_name ASC;
+
+/*
+    View: active_quizzes
+    Shows all active quizzes (not deactivated) ordered by creation date descending
+*/
+CREATE OR REPLACE VIEW active_quizzes AS
+SELECT
+    quiz_id,
+    quiz_title,
+    quiz_description,
+    category_id,
+    created_by,
+    created_at
+FROM
+    quizzes
+WHERE
+    deactivated_at IS NULL
+ORDER BY
+    created_at DESC;

@@ -15,7 +15,7 @@ export class QuizModel {
  
   static async findAll(): Promise<Quiz[]> {
     const result = await db.query(
-      'SELECT * FROM quizzes WHERE deactivated_at IS NULL ORDER BY created_at DESC'
+      'SELECT * FROM active_quizzes'
     );
     return result.rows;
   }
@@ -23,7 +23,7 @@ export class QuizModel {
   
   static async findByCreator(userId: number): Promise<Quiz[]> {
     const result = await db.query(
-      'SELECT * FROM quizzes WHERE created_by = $1 AND deactivated_at IS NULL ORDER BY created_at DESC',
+      'SELECT * FROM active_quizzes WHERE created_by = $1',
       [userId]
     );
     return result.rows;
@@ -31,7 +31,7 @@ export class QuizModel {
 
   static async findByCategory(categoryId: number): Promise<Quiz[]> {
     const result = await db.query(
-      'SELECT * FROM quizzes WHERE category_id = $1 AND deactivated_at IS NULL ORDER BY created_at DESC',
+      'SELECT * FROM active_quizzes WHERE category_id = $1',
       [categoryId]
     );
     return result.rows;
@@ -40,7 +40,7 @@ export class QuizModel {
   
   static async findById(id: number): Promise<Quiz | null> {
     const result = await db.query(
-      'SELECT * FROM quizzes WHERE quiz_id = $1 AND deactivated_at IS NULL',
+      'SELECT * FROM active_quizzes WHERE quiz_id = $1',
       [id]
     );
     
