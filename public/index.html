@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Quiz App</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <h1>Football Quiz App</h1>
+    <p>Backend API test interface</p>
+    
+    <div class="section">
+      <h2>Category Management</h2>
+      
+      <h3>Create New Category</h3>
+      <form id="category-form">
+        <div class="form-group">
+          <label for="category-name">Name:</label>
+          <input type="text" id="category-name" maxlength="32" required>
+        </div>
+        <div class="form-group">
+          <label for="category-description">Description:</label>
+          <input type="text" id="category-description" maxlength="64">
+        </div>
+        <button type="submit">Create Category</button>
+      </form>
+      
+      <h3>Existing Categories</h3>
+      <button id="get-categories">Refresh Categories</button>
+      <div id="categories-result">
+        <p>Click "Refresh Categories" to load categories.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Difficulty Level Management</h2>
+      
+      <h3>Create New Difficulty Level</h3>
+      <form id="difficulty-form">
+        <div class="form-group">
+          <label for="difficulty-level">Name:</label>
+          <input type="text" id="difficulty-level" maxlength="16" required>
+        </div>
+        <div class="form-group">
+          <label for="time-limit">Time Limit (seconds):</label>
+          <input type="number" id="time-limit" min="1" required>
+        </div>
+        <div class="form-group">
+          <label for="points-correct">Points for Correct Answer:</label>
+          <input type="number" id="points-correct" required>
+        </div>
+        <div class="form-group">
+          <label for="points-incorrect">Points for Incorrect Answer:</label>
+          <input type="number" id="points-incorrect" required>
+        </div>
+        <button type="submit">Create Difficulty Level</button>
+      </form>
+      
+      <h3>Existing Difficulty Levels</h3>
+      <button id="get-difficulties">Refresh Difficulty Levels</button>
+      <div id="difficulties-result">
+        <p>Click "Refresh Difficulty Levels" to load difficulty levels.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Quiz Management</h2>
+      
+      <h3>Create New Quiz</h3>
+      <form id="quiz-form">
+        <div class="form-group">
+          <label for="quiz-title">Title:</label>
+          <input type="text" id="quiz-title" maxlength="64" required>
+        </div>
+        <div class="form-group">
+          <label for="quiz-description">Description:</label>
+          <input type="text" id="quiz-description" maxlength="128">
+        </div>
+        <div class="form-group">
+          <label for="quiz-category">Category:</label>
+          <select id="quiz-category">
+            <option value="">-- Select a category --</option>
+          </select>
+        </div>
+        <button type="submit">Create Quiz</button>
+      </form>
+      
+      <h3>Existing Quizzes</h3>
+      <button id="get-quizzes">Refresh Quizzes</button>
+      <div id="quizzes-result">
+        <p>Click "Refresh Quizzes" to load quizzes.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Question Management</h2>
+      
+      <div id="question-form-container" style="display: none;">
+        <h3>Add Question to Quiz: <span id="selected-quiz-title"></span></h3>
+        <form id="question-form">
+          <input type="hidden" id="question-quiz-id">
+          <div class="form-group">
+            <label for="question-text">Question Text:</label>
+            <input type="text" id="question-text" maxlength="256" required>
+          </div>
+          <div class="form-group">
+            <label for="question-difficulty">Difficulty Level:</label>
+            <select id="question-difficulty" required>
+              <option value="">-- Select difficulty --</option>
+            </select>
+          </div>
+          <button type="submit">Add Question</button>
+          <button type="button" id="back-to-quizzes">Back to Quizzes</button>
+        </form>
+      </div>
+      
+      <div id="questions-list-container" style="display: none;">
+        <h3>Questions for Quiz: <span id="questions-quiz-title"></span></h3>
+        <div id="questions-result">
+          <p>Loading questions...</p>
+        </div>
+        <button type="button" id="add-new-question">Add New Question</button>
+        <button type="button" id="back-from-questions">Back to Quizzes</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Answer Management</h2>
+      
+      <div id="answer-form-container" style="display: none;">
+        <h3>Add Answer to Question: <span id="selected-question-text"></span></h3>
+        <form id="answer-form">
+          <input type="hidden" id="answer-question-id">
+          <div class="form-group">
+            <label for="answer-text">Answer Text:</label>
+            <input type="text" id="answer-text" maxlength="128" required>
+          </div>
+          <div class="form-group">
+            <label for="answer-correct">Is Correct:</label>
+            <input type="checkbox" id="answer-correct">
+          </div>
+          <button type="submit">Add Answer</button>
+          <button type="button" id="back-to-questions">Back to Questions</button>
+        </form>
+      </div>
+      
+      <div id="answers-list-container" style="display: none;">
+        <h3>Answers for Question: <span id="answers-question-text"></span></h3>
+        <div id="answers-result">
+          <p>Loading answers...</p>
+        </div>
+        <div id="answer-status"></div>
+        <button type="button" id="add-new-answer">Add New Answer</button>
+        <button type="button" id="back-from-answers">Back to Questions</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Quiz Taking</h2>
+      
+      <div id="quiz-list-container">
+        <h3>Available Quizzes</h3>
+        <button id="refresh-quizzes">Refresh Available Quizzes</button>
+        <div id="available-quizzes-result">
+          <p>Loading available quizzes...</p>
+        </div>
+      </div>
+      
+      <div id="quiz-taking-container" style="display: none;">
+        <div id="quiz-info">
+          <h3 id="current-quiz-title"></h3>
+          <p id="current-quiz-description"></p>
+          <p id="quiz-progress">Question <span id="current-question-number">0</span> of <span id="total-questions">0</span></p>
+          <div id="quiz-timer" class="timer">
+            Time remaining: <span id="timer-value">00:00</span>
+          </div>
+        </div>
+        
+        <div id="question-container">
+          <h4 id="question-text"></h4>
+          <p id="question-difficulty"></p>
+          <div id="answers-container"></div>
+          <button id="submit-answer" disabled>Submit Answer</button>
+          <button id="next-question" style="display: none;">Next Question</button>
+          <button id="finish-quiz" style="display: none;">Finish Quiz</button>
+        </div>
+        
+        <button id="back-to-quiz-list">Back to Quiz List</button>
+      </div>
+      
+      <div id="quiz-summary-container" style="display: none;">
+        <h3>Quiz Results</h3>
+        <div id="quiz-summary-content"></div>
+        <button id="back-to-quiz-list-from-summary">Back to Quiz List</button>
+      </div>
+    </div>
+  
+    <script src="/js/modules/utils.js" type="module"></script>
+    <script src="/js/modules/categories.js" type="module"></script>
+    <script src="/js/modules/difficulties.js" type="module"></script>
+    <script src="/js/modules/quizzes.js" type="module"></script>
+    <script src="/js/modules/questions.js" type="module"></script>
+    <script src="/js/modules/answers.js" type="module"></script>
+    <script src="/js/modules/quiz-taking.js" type="module"></script>
+    <script src="/js/app.js" type="module"></script>
+</body>
+</html>
