@@ -1,7 +1,8 @@
-import { QuestionModel, Question, CreateQuestionDto, UpdateQuestionDto } from '../models/question.model';
+import { QuestionModel, Question } from '../models/question.model';
 import { QuizModel } from '../models/quiz.model';
 import { DifficultyLevelModel } from '../models/difficulty.model';
 import { ErrorUtils } from '../utils/error.utils';
+import { CreateQuestionDto, UpdateQuestionDto } from '../DTOs/question.dto';
 
 export class QuestionService {
 

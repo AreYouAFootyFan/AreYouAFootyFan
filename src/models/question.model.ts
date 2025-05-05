@@ -1,21 +1,11 @@
 import db from '../config/db';
+import { CreateQuestionDto, UpdateQuestionDto } from '../DTOs/question.dto';
 
 export interface Question {
   question_id: number;
   quiz_id: number;
   question_text: string;
   difficulty_id: number;
-}
-
-export interface CreateQuestionDto {
-  quiz_id: number;
-  question_text: string;
-  difficulty_id: number;
-}
-
-export interface UpdateQuestionDto {
-  question_text?: string;
-  difficulty_id?: number;
 }
 
 export class QuestionModel {

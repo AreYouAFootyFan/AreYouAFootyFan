@@ -1,21 +1,11 @@
 import db from '../config/db';
+import { CreateAnswerDto, UpdateAnswerDto } from '../DTOs/answer.dto';
 
 export interface Answer {
   answer_id: number;
   question_id: number;
   answer_text: string;
   is_correct: boolean;
-}
-
-export interface CreateAnswerDto {
-  question_id: number;
-  answer_text: string;
-  is_correct: boolean;
-}
-
-export interface UpdateAnswerDto {
-  answer_text?: string;
-  is_correct?: boolean;
 }
 
 export class AnswerModel {

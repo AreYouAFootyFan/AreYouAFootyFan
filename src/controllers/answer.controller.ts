@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AnswerService } from '../services/answer.service';
-import { CreateAnswerDto, UpdateAnswerDto } from '../models/answer.model';
+import { CreateAnswerDto, UpdateAnswerDto } from '../DTOs/answer.dto';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class AnswerController {

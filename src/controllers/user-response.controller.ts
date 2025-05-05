@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserResponseService } from '../services/user-response.service';
-import { CreateUserResponseDto } from '../models/user-response.model';
+import { CreateUserResponseDto } from '../DTOs/user-response.dto';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class UserResponseController {

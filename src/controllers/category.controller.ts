@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CategoryService } from '../services/category.service';
-import { CreateCategoryDto, UpdateCategoryDto } from '../models/category.model';
+import { CreateCategoryDto, UpdateCategoryDto } from '../DTOs/category.dto';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class CategoryController {

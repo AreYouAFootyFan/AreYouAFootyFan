@@ -1,4 +1,5 @@
 import db from '../config/db';
+import { CreateQuizDto, UpdateQuizDto } from '../DTOs/quiz.dto';
 
 export interface Quiz {
   quiz_id: number;
@@ -9,20 +10,6 @@ export interface Quiz {
   created_at: Date;
   deactivated_at: Date | null;
 }
-
-
-export interface CreateQuizDto {
-    quiz_title: string;
-    quiz_description?: string;
-    category_id?: number | null | undefined;
-    created_by: number;
-  }
-  
-  export interface UpdateQuizDto {
-    quiz_title?: string;
-    quiz_description?: string;
-    category_id?: number | null | undefined;
-  }
 
 export class QuizModel {
  

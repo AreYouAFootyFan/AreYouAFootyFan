@@ -1,4 +1,5 @@
 import db from '../config/db';
+import { CreateUserResponseDto } from '../DTOs/user-response.dto';
 
 export interface UserResponse {
   response_id: number;
@@ -6,12 +7,6 @@ export interface UserResponse {
   question_id: number;
   answer_id: number;
   points_earned: number;
-}
-
-export interface CreateUserResponseDto {
-  attempt_id: number;
-  question_id: number;
-  answer_id: number;
 }
 
 export class UserResponseModel {

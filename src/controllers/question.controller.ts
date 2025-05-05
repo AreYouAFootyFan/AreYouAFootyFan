@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { QuestionService } from '../services/question.service';
-import { CreateQuestionDto, UpdateQuestionDto } from '../models/question.model';
+import { CreateQuestionDto, UpdateQuestionDto } from '../DTOs/question.dto';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class QuestionController {

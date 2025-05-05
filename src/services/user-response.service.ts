@@ -1,8 +1,9 @@
-import { UserResponseModel, CreateUserResponseDto } from '../models/user-response.model';
+import { UserResponseModel } from '../models/user-response.model';
 import { QuizAttemptModel } from '../models/quiz-attempt.model';
 import { QuestionModel } from '../models/question.model';
 import { AnswerModel } from '../models/answer.model';
 import { ErrorUtils } from '../utils/error.utils';
+import { CreateUserResponseDto } from '../DTOs/user-response.dto';
 
 export class UserResponseService {
   

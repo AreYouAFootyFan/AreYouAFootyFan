@@ -1,4 +1,5 @@
-import { CategoryModel, Category, CreateCategoryDto, UpdateCategoryDto } from '../models/category.model';
+import { CategoryModel, Category } from '../models/category.model';
+import { CreateCategoryDto, UpdateCategoryDto } from '../DTOs/category.dto';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class CategoryService {

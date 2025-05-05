@@ -1,4 +1,5 @@
-import { AnswerModel, Answer, CreateAnswerDto, UpdateAnswerDto } from '../models/answer.model';
+import { AnswerModel, Answer } from '../models/answer.model';
+import { CreateAnswerDto, UpdateAnswerDto } from '../DTOs/answer.dto';
 import { QuestionModel } from '../models/question.model';
 import { ErrorUtils } from '../utils/error.utils';
 

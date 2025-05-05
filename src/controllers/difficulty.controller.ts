@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { DifficultyService } from '../services/difficulty.service';
-import { CreateDifficultyLevelDto, UpdateDifficultyLevelDto } from '../models/difficulty.model';
+import { CreateDifficultyLevelDto, UpdateDifficultyLevelDto } from '../DTOs/difficulty.dto';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class DifficultyController {

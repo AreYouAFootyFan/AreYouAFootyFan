@@ -1,4 +1,5 @@
 import db from '../config/db';
+import { CreateQuizAttemptDto, CompleteQuizAttemptDto } from '../DTOs/quiz-attempt.dto';
 
 export interface QuizAttempt {
   attempt_id: number;
@@ -6,15 +7,6 @@ export interface QuizAttempt {
   quiz_id: number;
   start_time: Date;
   end_time: Date | null;
-}
-
-export interface CreateQuizAttemptDto {
-  user_id: number;
-  quiz_id: number;
-}
-
-export interface CompleteQuizAttemptDto {
-  end_time: Date;
 }
 
 export class QuizAttemptModel {

@@ -1,20 +1,11 @@
 import db from '../config/db';
+import { CreateCategoryDto, UpdateCategoryDto } from '../DTOs/category.dto';
 
 export interface Category {
   category_id: number;
   category_name: string;
   category_description: string | null;
   deactivated_at: Date | null;
-}
-
-export interface CreateCategoryDto {
-  category_name: string;
-  category_description?: string;
-}
-
-export interface UpdateCategoryDto {
-  category_name?: string;
-  category_description?: string;
 }
 
 export class CategoryModel {

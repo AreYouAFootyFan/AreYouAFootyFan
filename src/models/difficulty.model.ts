@@ -1,4 +1,5 @@
 import db from '../config/db';
+import { CreateDifficultyLevelDto, UpdateDifficultyLevelDto } from '../DTOs/difficulty.dto';
 
 export interface DifficultyLevel {
   difficulty_id: number;
@@ -6,20 +7,6 @@ export interface DifficultyLevel {
   time_limit_seconds: number;
   points_on_correct: number;
   points_on_incorrect: number;
-}
-
-export interface CreateDifficultyLevelDto {
-  difficulty_level: string;
-  time_limit_seconds: number;
-  points_on_correct: number;
-  points_on_incorrect: number;
-}
-
-export interface UpdateDifficultyLevelDto {
-  difficulty_level?: string;
-  time_limit_seconds?: number;
-  points_on_correct?: number;
-  points_on_incorrect?: number;
 }
 
 export class DifficultyLevelModel {

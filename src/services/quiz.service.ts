@@ -1,7 +1,8 @@
-import { QuizModel, Quiz, CreateQuizDto, UpdateQuizDto } from '../models/quiz.model';
+import { QuizModel, Quiz } from '../models/quiz.model';
 import { QuestionModel } from '../models/question.model';
 import { CategoryModel } from '../models/category.model';
 import { ErrorUtils } from '../utils/error.utils';
+import { CreateQuizDto, UpdateQuizDto } from '../DTOs/quiz.dto';
 
 export class QuizService {
   

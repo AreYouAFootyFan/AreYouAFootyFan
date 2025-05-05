@@ -1,9 +1,9 @@
-import { QuizAttemptModel, CreateQuizAttemptDto } from '../models/quiz-attempt.model';
+import { QuizAttemptModel } from '../models/quiz-attempt.model';
 import { UserResponseModel } from '../models/user-response.model';
 import { QuizModel } from '../models/quiz.model';
 import { QuestionModel } from '../models/question.model';
 import { ErrorUtils } from '../utils/error.utils';
-
+import { CreateQuizAttemptDto } from '../DTOs/quiz-attempt.dto';
 
 interface DifficultyScore {
   total: number;
