@@ -50,7 +50,7 @@ export class UserResponseModel {
     const question = questionResult.rows[0];
     
     const answerResult = await db.query(
-      'SELECT * FROM answers WHERE question_id = $1 AND chosen_answer = $2',
+      'SELECT * FROM answers WHERE question_id = $1 AND answer_id = $2',
       [data.question_id, data.answer_id]
     );
     
@@ -75,7 +75,11 @@ export class UserResponseModel {
   
   
   static async update(responseId: number, data: { answer_id: number }): Promise<UserResponse | null> {
+    console.log('Poes 1');
+
     const client = await db.connect();
+    
+    console.log('Poes 2');
     
     try {
       await client.query('BEGIN');
@@ -115,7 +119,7 @@ export class UserResponseModel {
       const pointsEarned = answer.is_correct ? question.points_on_correct : question.points_on_incorrect;
       
       const result = await client.query(
-        'UPDATE user_responses SET answer_id = $1, points_earned = $2 WHERE response_id = $3 RETURNING *',
+        'UPDATE user_responses SET chosen_answer = $1, points_earned = $2 WHERE response_id = $3 RETURNING *',
         [data.answer_id, pointsEarned, responseId]
       );
       

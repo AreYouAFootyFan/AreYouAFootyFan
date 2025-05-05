@@ -21,7 +21,7 @@ export class UserResponseController {
   }
 
   
-  static async submitResponse(request: Request, _response: Response, next: NextFunction): Promise<void> {
+  static async submitResponse(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
       const { attempt_id, question_id, answer_id } = request.body;
       
@@ -59,8 +59,9 @@ export class UserResponseController {
         answer_id: parsedAnswerId
       };
       
-      const response = await UserResponseService.submitResponse(data);
-      response.json(response);
+      const userResponse = await UserResponseService.submitResponse(data);
+      
+      response.json(userResponse);
     } catch (error) {
       next(error);
     }

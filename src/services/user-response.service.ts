@@ -62,13 +62,14 @@ export class UserResponseService {
       data.question_id, 
       data.attempt_id
     );
+
     
     if (existingResponse) {
       const updatedResponse = await UserResponseModel.update(
         existingResponse.response_id, 
         { answer_id: data.answer_id }
       );
-      
+
       if (!updatedResponse) {
         throw ErrorUtils.internal('Failed to update response');
       }
