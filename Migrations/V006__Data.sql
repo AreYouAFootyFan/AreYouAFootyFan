@@ -1,10 +1,13 @@
 WITH role_id_query AS (
-  SELECT role_id FROM roles WHERE role_name = 'quiz_maker'
+  SELECT role_id FROM roles WHERE role_name = 'Quiz Master'
 )
 
 INSERT INTO users (google_id, username, role_id)
 VALUES ('temp_google_id_123', 'temp_admin', (SELECT role_id FROM role_id_query))
 RETURNING user_id, username, role_id;
+
+INSERT INTO users (google_id, username, role_id) VALUES
+    ('google-uid-002', 'FootyFan1', 1);
 
 INSERT INTO quizzes (quiz_title, quiz_description, category_id, created_by)
 VALUES ('2010 FIFA World Cup Quiz', 'Test your knowledge about the 2010 FIFA World Cup tournament in South Africa', 6, 1)
