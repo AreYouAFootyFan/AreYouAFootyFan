@@ -104,3 +104,38 @@ FROM quizzes q
 LEFT JOIN quiz_attempts qa ON q.quiz_id = qa.quiz_id
 LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
 GROUP BY q.quiz_id, q.quiz_title;
+
+/*
+    View: active_categories
+    Shows all active categories (not deactivated) ordered alphabetically by name
+*/
+CREATE OR REPLACE VIEW active_categories AS
+SELECT
+    category_id,
+    category_name,
+    category_description
+FROM
+    categories
+WHERE
+    deactivated_at IS NULL
+ORDER BY
+    category_name ASC;
+
+/*
+    View: active_quizzes
+    Shows all active quizzes (not deactivated) ordered by creation date descending
+*/
+CREATE OR REPLACE VIEW active_quizzes AS
+SELECT
+    quiz_id,
+    quiz_title,
+    quiz_description,
+    category_id,
+    created_by,
+    created_at
+FROM
+    quizzes
+WHERE
+    deactivated_at IS NULL
+ORDER BY
+    created_at DESC;
