@@ -9,7 +9,6 @@ const appState = {
       id: 1,
       title: "World Cup History",
       category: "world-cup",
-      difficulty: "easy",
       description: "Test your knowledge about World Cup history with these beginner-friendly questions.",
       questions: 10,
       timeEstimate: "5 min",
@@ -18,7 +17,6 @@ const appState = {
       id: 2,
       title: "Premier League Legends",
       category: "premier-league",
-      difficulty: "medium",
       description: "How well do you know the greatest players in Premier League history?",
       questions: 15,
       timeEstimate: "10 min",
@@ -27,7 +25,6 @@ const appState = {
       id: 3,
       title: "Champions League Trivia",
       category: "champions-league",
-      difficulty: "hard",
       description: "Only true football experts will ace this challenging Champions League quiz.",
       questions: 20,
       timeEstimate: "15 min",
@@ -36,7 +33,6 @@ const appState = {
       id: 4,
       title: "Football Stars",
       category: "players",
-      difficulty: "medium",
       description: "Test your knowledge about the biggest football stars of all time.",
       questions: 15,
       timeEstimate: "8 min",
@@ -45,7 +41,6 @@ const appState = {
       id: 5,
       title: "Premier League Basics",
       category: "premier-league",
-      difficulty: "easy",
       description: "New to football? Start with these basic Premier League questions.",
       questions: 10,
       timeEstimate: "5 min",
@@ -54,11 +49,58 @@ const appState = {
       id: 6,
       title: "World Cup Deep Dive",
       category: "world-cup",
-      difficulty: "hard",
       description: "Only the most dedicated football historians will know these World Cup facts.",
       questions: 20,
       timeEstimate: "15 min",
     },
+  ],
+  categories: [
+    { id: "world-cup", name: "World Cup" },
+    { id: "premier-league", name: "Premier League" },
+    { id: "champions-league", name: "Champions League" },
+    { id: "players", name: "Players" },
+    { id: "teams", name: "Teams" },
+    { id: "history", name: "History" },
+    { id: "tactics", name: "Tactics" },
+    { id: "referees", name: "Referees" },
+    { id: "stadiums", name: "Stadiums" },
+  ],
+  leaderboardData: [
+    {
+      rank: 1,
+      name: "FootballMaster",
+      elo: 1845,
+      quizzes: 42,
+      accuracy: 94
+    },
+    {
+      rank: 2,
+      name: "SoccerQueen",
+      elo: 1788,
+      quizzes: 38,
+      accuracy: 91
+    },
+    {
+      rank: 3,
+      name: "GoalMachine",
+      elo: 1756,
+      quizzes: 45,
+      accuracy: 89
+    },
+    {
+      rank: 4,
+      name: "FootballFan22",
+      elo: 1702,
+      quizzes: 36,
+      accuracy: 87
+    },
+    {
+      rank: 5,
+      name: "KickingKing",
+      elo: 1689,
+      quizzes: 31,
+      accuracy: 85
+    }
   ],
   currentQuiz: null,
   currentQuestion: 0,
@@ -83,9 +125,6 @@ const elements = {
   tabs: document.querySelectorAll(".tab"),
   loginForm: document.getElementById("login-form"),
   signupForm: document.getElementById("signup-form"),
-  avatarModal: document.getElementById("avatar-modal"),
-  avatarOptions: document.querySelectorAll(".avatar-option"),
-  saveAvatarButton: document.getElementById("save-avatar"),
   resultModal: document.getElementById("result-modal"),
   nextQuestionButton: document.getElementById("next-question"),
   quizCompleteModal: document.getElementById("quiz-complete-modal"),
@@ -113,6 +152,171 @@ function init() {
 
   // Update UI based on login state
   updateUIForLoginState()
+
+  renderLeaderboard()
+
+  renderQuizCards();
+
+  populateCategoryFilter();
+}
+
+function populateCategoryFilter() {
+  const categoryFilter = document.getElementById('category-filter');
+  
+  // Clear any existing options
+  while (categoryFilter.firstChild) {
+    categoryFilter.removeChild(categoryFilter.firstChild);
+  }
+  
+  // Add the "All Categories" option first
+  const allOption = document.createElement('option');
+  allOption.value = 'all';
+  allOption.textContent = 'All Categories';
+  categoryFilter.appendChild(allOption);
+  
+  // Add each category from the categories array
+  appState.categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category.id;
+    option.textContent = category.name;
+    categoryFilter.appendChild(option);
+  });
+}
+function createQuizCard(quiz) {
+  // Create the main card element
+  const quizCard = document.createElement('article');
+  quizCard.className = 'quiz-card';
+  quizCard.setAttribute('data-category', quiz.category);
+  
+  // Create card header
+  const cardHeader = document.createElement('div');
+  cardHeader.className = 'quiz-card-header';
+  
+  const categorySpan = document.createElement('span');
+  categorySpan.className = 'category';
+  categorySpan.textContent = quiz.categoryDisplay;
+  
+  cardHeader.appendChild(categorySpan);
+  
+  // Create card body
+  const cardBody = document.createElement('div');
+  cardBody.className = 'quiz-card-body';
+  
+  const title = document.createElement('h3');
+  title.textContent = quiz.title;
+  
+  const description = document.createElement('p');
+  description.textContent = quiz.description;
+  
+  const quizMeta = document.createElement('div');
+  quizMeta.className = 'quiz-meta';
+  
+  const questionCount = document.createElement('span');
+  questionCount.textContent = `${quiz.questions} questions`;
+  
+  const duration = document.createElement('span');
+  duration.textContent = quiz.timeEstimate;
+  
+  quizMeta.appendChild(questionCount);
+  quizMeta.appendChild(duration);
+  
+  cardBody.appendChild(title);
+  cardBody.appendChild(description);
+  cardBody.appendChild(quizMeta);
+  
+  // Create card footer
+  const cardFooter = document.createElement('div');
+  cardFooter.className = 'quiz-card-footer';
+  
+  const startButton = document.createElement('a');
+  startButton.className = 'btn btn-primary';
+  startButton.href = `#/quiz/${quiz.id}`;
+  startButton.setAttribute('data-quiz-id', quiz.id);
+  startButton.textContent = 'Start Quiz';
+  
+  cardFooter.appendChild(startButton);
+  
+  // Assemble the card
+  quizCard.appendChild(cardHeader);
+  quizCard.appendChild(cardBody);
+  quizCard.appendChild(cardFooter);
+  
+  return quizCard;
+}
+
+// Function to render all quiz cards
+function renderQuizCards() {
+  const quizGrid = document.getElementById('quiz-grid');
+  
+  // Clear existing content
+  while (quizGrid.firstChild) {
+    quizGrid.removeChild(quizGrid.firstChild);
+  }
+  
+  // Get the selected category
+  const categoryFilter = document.getElementById('category-filter');
+  const selectedCategory = categoryFilter.value;
+  console.log(selectedCategory)
+  
+  // Filter and display quizzes
+  appState.quizzes.forEach(quiz => {
+    console.log(quiz.category)
+
+    if (selectedCategory === '' || quiz.category === selectedCategory) {
+      quizGrid.appendChild(createQuizCard(quiz));
+    }
+  });
+}
+
+
+function renderLeaderboard() {
+  const tableBody = document.getElementById('leaderboard-body');
+  
+  // Clear any existing content
+  tableBody.innerHTML = '';
+  
+  // Populate table with data from the JSON array
+  appState.leaderboardData.forEach(player => {
+    const row = document.createElement('tr');
+    
+    // Create rank cell
+    const rankCell = document.createElement('td');
+    const rankSpan = document.createElement('span');
+    rankSpan.className = `rank ${player.rank <= 3 ? 'rank-' + player.rank : ''}`;
+    rankSpan.textContent = player.rank;
+    rankCell.appendChild(rankSpan);
+    
+    // Create player name cell
+    const nameCell = document.createElement('td');
+    const playerInfo = document.createElement('div');
+    playerInfo.className = 'player-info';
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = player.name;
+    playerInfo.appendChild(nameSpan);
+    nameCell.appendChild(playerInfo);
+    
+    // Create ELO cell
+    const eloCell = document.createElement('td');
+    eloCell.textContent = player.elo;
+    
+    // Create quizzes cell
+    const quizzesCell = document.createElement('td');
+    quizzesCell.textContent = player.quizzes;
+    
+    // Create accuracy cell
+    const accuracyCell = document.createElement('td');
+    accuracyCell.textContent = player.accuracy + '%';
+    
+    // Append all cells to the row
+    row.appendChild(rankCell);
+    row.appendChild(nameCell);
+    row.appendChild(eloCell);
+    row.appendChild(quizzesCell);
+    row.appendChild(accuracyCell);
+    
+    // Append the row to the table body
+    tableBody.appendChild(row);
+  });
 }
 
 // Load user data from localStorage
@@ -199,28 +403,7 @@ function setupEventListeners() {
   // Logout button
   elements.logoutButton.addEventListener("click", logout)
 
-  // Avatar options
-  elements.avatarOptions.forEach((option) => {
-    option.addEventListener("click", () => {
-      elements.avatarOptions.forEach((opt) => opt.classList.remove("selected"))
-      option.classList.add("selected")
-    })
-  })
-
-  // Save avatar button
-  elements.saveAvatarButton.addEventListener("click", () => {
-    const selectedAvatar = document.querySelector(".avatar-option.selected")
-    if (selectedAvatar) {
-      const avatar = selectedAvatar.dataset.avatar
-      if (appState.currentUser) {
-        appState.currentUser.avatar = avatar
-        saveUserData()
-        updateUIForLoginState()
-      }
-      elements.avatarModal.classList.add("hidden")
-    }
-  })
-
+  
   // Next question button
   elements.nextQuestionButton.addEventListener("click", () => {
     elements.resultModal.classList.add("hidden")
@@ -388,23 +571,19 @@ function loadAdminPage(adminPage) {
 // Setup events for the home page
 function setupHomePageEvents() {
   // Filter functionality
-  const difficultyFilter = document.getElementById("difficulty-filter")
   const categoryFilter = document.getElementById("category-filter")
 
-  if (difficultyFilter && categoryFilter) {
+  if (categoryFilter) {
     const filterQuizzes = () => {
-      const difficulty = difficultyFilter.value
       const category = categoryFilter.value
 
       const quizCards = document.querySelectorAll(".quiz-card")
       quizCards.forEach((card) => {
-        const cardDifficulty = card.dataset.difficulty
         const cardCategory = card.dataset.category
 
-        const difficultyMatch = difficulty === "all" || cardDifficulty === difficulty
         const categoryMatch = category === "all" || cardCategory === category
 
-        if (difficultyMatch && categoryMatch) {
+        if (categoryMatch) {
           card.style.display = "block"
         } else {
           card.style.display = "none"
@@ -412,7 +591,6 @@ function setupHomePageEvents() {
       })
     }
 
-    difficultyFilter.addEventListener("change", filterQuizzes)
     categoryFilter.addEventListener("change", filterQuizzes)
   }
 
@@ -429,25 +607,6 @@ function setupHomePageEvents() {
 
 // Setup events for the profile page
 function setupProfilePageEvents() {
-  // Edit avatar button
-  const editAvatarBtn = document.getElementById("edit-avatar-btn")
-  if (editAvatarBtn) {
-    editAvatarBtn.addEventListener("click", () => {
-      elements.avatarModal.classList.remove("hidden")
-
-      // Select current avatar if it exists
-      if (appState.currentUser && appState.currentUser.avatar) {
-        const currentAvatarOption = document.querySelector(
-          `.avatar-option[data-avatar="${appState.currentUser.avatar}"]`,
-        )
-        if (currentAvatarOption) {
-          elements.avatarOptions.forEach((opt) => opt.classList.remove("selected"))
-          currentAvatarOption.classList.add("selected")
-        }
-      }
-    })
-  }
-
   // Profile form submission
   const profileForm = document.getElementById("profile-form")
   if (profileForm) {
@@ -602,6 +761,7 @@ function setupQuizEvents() {
       // Update score and streak
       if (isCorrect) {
         appState.score += 100 + appState.timeLeft * 5
+        appState.elo += appState.score
         appState.streak++
       } else {
         appState.streak = 0
@@ -741,6 +901,7 @@ function loadNextQuestion() {
   const currentScore = document.getElementById("current-score")
   if (currentScore) {
     currentScore.textContent = appState.score
+    eloCell.textContent = appState.elo + currentScore.textContent
   }
 }
 
@@ -777,16 +938,11 @@ function updateQuizUI() {
 
   // Update quiz title and meta
   const quizTitle = document.getElementById("quiz-title")
-  const difficultyBadge = document.querySelector(".quiz-meta .difficulty")
   const questionsCount = document.querySelector(".quiz-meta .questions-count")
   const timeEstimate = document.querySelector(".quiz-meta .time-estimate")
 
   if (quizTitle) quizTitle.textContent = appState.currentQuiz.title
-  if (difficultyBadge) {
-    difficultyBadge.textContent =
-      appState.currentQuiz.difficulty.charAt(0).toUpperCase() + appState.currentQuiz.difficulty.slice(1)
-    difficultyBadge.className = `difficulty ${appState.currentQuiz.difficulty}`
-  }
+ 
   if (questionsCount) questionsCount.textContent = `${appState.currentQuiz.questions} Questions`
   if (timeEstimate) timeEstimate.textContent = appState.currentQuiz.timeEstimate
 
@@ -811,13 +967,11 @@ function updateProfileUI() {
 
   // Update profile info
   const profileUsername = document.getElementById("profile-username")
-  const profileAvatar = document.getElementById("profile-avatar")
   const editUsername = document.getElementById("edit-username")
   const editEmail = document.getElementById("edit-email")
   const editBio = document.getElementById("edit-bio")
 
   if (profileUsername) profileUsername.textContent = appState.currentUser.username
-  if (profileAvatar) profileAvatar.textContent = appState.currentUser.avatar || "👤"
   if (editUsername) editUsername.value = appState.currentUser.username
   if (editEmail) editEmail.value = appState.currentUser.email || ""
   if (editBio) editBio.value = appState.currentUser.bio || ""
@@ -830,11 +984,7 @@ function updateUIForLoginState() {
     elements.userDropdown.classList.remove("hidden")
     elements.usernameDisplay.textContent = appState.currentUser.username
 
-    // Update avatar in dropdown
-    const avatarElement = elements.userDropdown.querySelector(".avatar")
-    if (avatarElement) {
-      avatarElement.textContent = appState.currentUser.avatar || "👤"
-    }
+   
   } else {
     elements.loginButton.classList.remove("hidden")
     elements.userDropdown.classList.add("hidden")
@@ -847,7 +997,6 @@ function login(username, password) {
   appState.currentUser = {
     username,
     password,
-    avatar: "👤",
     elo: 1000,
     quizzesTaken: 0,
     correctAnswers: 0,
@@ -867,8 +1016,7 @@ function signup(username, email, password) {
     username,
     email,
     password,
-    avatar: "👤",
-    elo: 1000,
+    elo: 0,
     quizzesTaken: 0,
     correctAnswers: 0,
     totalQuestions: 0,

@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Football Quiz Platform</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="hero-section/hero-section.css">
+  <link rel="stylesheet" href="quiz-selection/quiz-selection.css">
+  <link rel="stylesheet" href="leaderboard/leaderboard.css">
+  <link rel="stylesheet" href="create-quiz/create-quiz.css">
+  <link rel="stylesheet" href="profile/profile.css">
+  <link rel="stylesheet" href="admin/admin-styles.css">
+  <link rel="stylesheet" href="result/result.css">
+  <link rel="stylesheet" href="quiz-complete/quiz-complete.css">
+  <link rel="stylesheet" href="quiz/quiz-modal.css">
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -26,7 +36,6 @@
         <button id="login-button" class="btn btn-outline">Log In</button>
         <div id="user-dropdown" class="hidden">
           <div class="user-info">
-            <div class="avatar">👤</div>
             <span id="username-display">Username</span>
           </div>
           <div class="dropdown-menu">
@@ -52,19 +61,8 @@
         </div>
         <div class="footer-links">
           <div class="footer-column">
-            <h3>Platform</h3>
-            <ul>
-              <li><a href="#/" data-page="home">Home</a></li>
-              <li><a href="#/dashboard" data-page="dashboard">My Quizzes</a></li>
-              <li><a href="#/leaderboard" data-page="leaderboard">Leaderboard</a></li>
-              <li><a href="#/profile" data-page="profile">Profile</a></li>
-            </ul>
-          </div>
-          <div class="footer-column">
             <h3>Resources</h3>
             <ul>
-              <li><a href="#/help">Help Center</a></li>
-              <li><a href="#/support">Contact Support</a></li>
               <li><a href="#/privacy">Privacy Policy</a></li>
               <li><a href="#/terms">Terms of Service</a></li>
             </ul>
@@ -72,7 +70,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2023 Football Quiz Platform. All rights reserved.</p>
+        <p>&copy; 2025 Football Quiz Platform. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -121,29 +119,6 @@
             <button type="submit" class="btn btn-primary btn-block">Create Account</button>
           </form>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Avatar Selection Modal -->
-  <div id="avatar-modal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Choose Your Avatar</h2>
-        <button class="close-modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="avatar-options">
-          <button class="avatar-option" data-avatar="👤">👤</button>
-          <button class="avatar-option" data-avatar="👨‍🦰">👨‍🦰</button>
-          <button class="avatar-option" data-avatar="👩‍🦰">👩‍🦰</button>
-          <button class="avatar-option" data-avatar="👨‍🦱">👨‍🦱</button>
-          <button class="avatar-option" data-avatar="👩‍🦱">👩‍🦱</button>
-          <button class="avatar-option" data-avatar="🧔">🧔</button>
-          <button class="avatar-option" data-avatar="👨‍🦲">👨‍🦲</button>
-          <button class="avatar-option" data-avatar="👩‍🦲">👩‍🦲</button>
-        </div>
-        <button id="save-avatar" class="btn btn-primary">Save Avatar</button>
       </div>
     </div>
   </div>
@@ -236,130 +211,14 @@
         <header class="section-header">
           <h2>Available Quizzes</h2>
           <div class="filters">
-            <select id="difficulty-filter">
-              <option value="all">All Difficulties</option>
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
             <select id="category-filter">
-              <option value="all">All Categories</option>
-              <option value="world-cup">World Cup</option>
-              <option value="premier-league">Premier League</option>
-              <option value="champions-league">Champions League</option>
-              <option value="players">Famous Players</option>
+             
             </select>
           </div>
         </header>
-
+    
         <div class="quiz-grid" id="quiz-grid">
-          <article class="quiz-card" data-difficulty="easy" data-category="world-cup">
-            <div class="quiz-card-header">
-              <span class="difficulty easy">Easy</span>
-              <span class="category">World Cup</span>
-            </div>
-            <div class="quiz-card-body">
-              <h3>World Cup History</h3>
-              <p>Test your knowledge about World Cup history with these beginner-friendly questions.</p>
-              <div class="quiz-meta">
-                <span>10 questions</span>
-                <span>5 min</span>
-              </div>
-            </div>
-            <div class="quiz-card-footer">
-              <a href="#/quiz/1" class="btn btn-primary" data-quiz-id="1">Start Quiz</a>
-            </div>
-          </article>
-
-          <article class="quiz-card" data-difficulty="medium" data-category="premier-league">
-            <div class="quiz-card-header">
-              <span class="difficulty medium">Medium</span>
-              <span class="category">Premier League</span>
-            </div>
-            <div class="quiz-card-body">
-              <h3>Premier League Legends</h3>
-              <p>How well do you know the greatest players in Premier League history?</p>
-              <div class="quiz-meta">
-                <span>15 questions</span>
-                <span>10 min</span>
-              </div>
-            </div>
-            <div class="quiz-card-footer">
-              <a href="#/quiz/2" class="btn btn-primary" data-quiz-id="2">Start Quiz</a>
-            </div>
-          </article>
-
-          <article class="quiz-card" data-difficulty="hard" data-category="champions-league">
-            <div class="quiz-card-header">
-              <span class="difficulty hard">Hard</span>
-              <span class="category">Champions League</span>
-            </div>
-            <div class="quiz-card-body">
-              <h3>Champions League Trivia</h3>
-              <p>Only true football experts will ace this challenging Champions League quiz.</p>
-              <div class="quiz-meta">
-                <span>20 questions</span>
-                <span>15 min</span>
-              </div>
-            </div>
-            <div class="quiz-card-footer">
-              <a href="#/quiz/3" class="btn btn-primary" data-quiz-id="3">Start Quiz</a>
-            </div>
-          </article>
-
-          <article class="quiz-card" data-difficulty="medium" data-category="players">
-            <div class="quiz-card-header">
-              <span class="difficulty medium">Medium</span>
-              <span class="category">Famous Players</span>
-            </div>
-            <div class="quiz-card-body">
-              <h3>Football Stars</h3>
-              <p>Test your knowledge about the biggest football stars of all time.</p>
-              <div class="quiz-meta">
-                <span>15 questions</span>
-                <span>8 min</span>
-              </div>
-            </div>
-            <div class="quiz-card-footer">
-              <a href="#/quiz/4" class="btn btn-primary" data-quiz-id="4">Start Quiz</a>
-            </div>
-          </article>
-
-          <article class="quiz-card" data-difficulty="easy" data-category="premier-league">
-            <div class="quiz-card-header">
-              <span class="difficulty easy">Easy</span>
-              <span class="category">Premier League</span>
-            </div>
-            <div class="quiz-card-body">
-              <h3>Premier League Basics</h3>
-              <p>New to football? Start with these basic Premier League questions.</p>
-              <div class="quiz-meta">
-                <span>10 questions</span>
-                <span>5 min</span>
-              </div>
-            </div>
-            <div class="quiz-card-footer">
-              <a href="#/quiz/5" class="btn btn-primary" data-quiz-id="5">Start Quiz</a>
-            </div>
-          </article>
-
-          <article class="quiz-card" data-difficulty="hard" data-category="world-cup">
-            <div class="quiz-card-header">
-              <span class="difficulty hard">Hard</span>
-              <span class="category">World Cup</span>
-            </div>
-            <div class="quiz-card-body">
-              <h3>World Cup Deep Dive</h3>
-              <p>Only the most dedicated football historians will know these World Cup facts.</p>
-              <div class="quiz-meta">
-                <span>20 questions</span>
-                <span>15 min</span>
-              </div>
-            </div>
-            <div class="quiz-card-footer">
-              <a href="#/quiz/6" class="btn btn-primary" data-quiz-id="6">Start Quiz</a>
-            </div>
-          </article>
+          <!-- Quiz cards will be populated by JavaScript -->
         </div>
       </div>
     </section>
@@ -382,67 +241,8 @@
                 <th>Accuracy</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><span class="rank rank-1">1</span></td>
-                <td>
-                  <div class="player-info">
-                    <div class="avatar">👨‍🦰</div>
-                    <span>FootballMaster</span>
-                  </div>
-                </td>
-                <td>1845</td>
-                <td>42</td>
-                <td>94%</td>
-              </tr>
-              <tr>
-                <td><span class="rank rank-2">2</span></td>
-                <td>
-                  <div class="player-info">
-                    <div class="avatar">👨‍🦱</div>
-                    <span>SoccerQueen</span>
-                  </div>
-                </td>
-                <td>1788</td>
-                <td>38</td>
-                <td>91%</td>
-              </tr>
-              <tr>
-                <td><span class="rank rank-3">3</span></td>
-                <td>
-                  <div class="player-info">
-                    <div class="avatar">🧔</div>
-                    <span>GoalMachine</span>
-                  </div>
-                </td>
-                <td>1756</td>
-                <td>45</td>
-                <td>89%</td>
-              </tr>
-              <tr>
-                <td><span class="rank">4</span></td>
-                <td>
-                  <div class="player-info">
-                    <div class="avatar">👩‍🦰</div>
-                    <span>FootballFan22</span>
-                  </div>
-                </td>
-                <td>1702</td>
-                <td>36</td>
-                <td>87%</td>
-              </tr>
-              <tr>
-                <td><span class="rank">5</span></td>
-                <td>
-                  <div class="player-info">
-                    <div class="avatar">👨‍🦲</div>
-                    <span>KickingKing</span>
-                  </div>
-                </td>
-                <td>1689</td>
-                <td>31</td>
-                <td>85%</td>
-              </tr>
+            <tbody id="leaderboard-body">
+              <!-- Data will be populated by JavaScript -->
             </tbody>
           </table>
         </div>
@@ -457,7 +257,6 @@
           <div class="quiz-info">
             <h1 id="quiz-title">Premier League Legends</h1>
             <div class="quiz-meta">
-              <span class="difficulty medium">Medium</span>
               <span class="questions-count">15 Questions</span>
               <span class="time-estimate">10 min</span>
             </div>
@@ -476,6 +275,7 @@
       <section class="quiz-content">
         <div class="container">
           <div class="quiz-timer">
+            
             <div class="timer-label">Time Remaining</div>
             <div class="timer-display" id="timer-display">00:30</div>
             <div class="timer-bar-container">
@@ -484,6 +284,7 @@
           </div>
 
           <div class="question-card">
+            <span class="difficulty medium">Hard</span>
             <h2 id="question-text">Who holds the record for most goals scored in a single Premier League season?</h2>
             
             <div class="options-list" id="options-list">
@@ -535,10 +336,6 @@
         <div class="profile-grid">
           <section class="profile-card">
             <div class="profile-header">
-              <div class="profile-avatar-container">
-                <div class="profile-avatar" id="profile-avatar">👤</div>
-                <button class="edit-avatar-btn" id="edit-avatar-btn">Edit</button>
-              </div>
               <div class="profile-info">
                 <h2 id="profile-username">Username</h2>
                 <div class="profile-rank">Elite Tactician</div>
@@ -637,13 +434,6 @@
                   <div class="badge-desc">Reach the #1 spot on the leaderboard</div>
                 </div>
               </div>
-              <div class="badge locked">
-                <div class="badge-icon">🌟</div>
-                <div class="badge-info">
-                  <div class="badge-name">Perfect Quiz</div>
-                  <div class="badge-desc">Score 100% on a hard difficulty quiz</div>
-                </div>
-              </div>
             </div>
           </section>
 
@@ -696,10 +486,8 @@
           <nav class="admin-nav">
             <ul>
               <li><a href="#/admin" class="admin-nav-link active" data-admin-page="dashboard">Dashboard</a></li>
-              <li><a href="#/admin/quizzes" class="admin-nav-link" data-admin-page="quizzes">Quizzes</a></li>
               <li><a href="#/admin/create-quiz" class="admin-nav-link" data-admin-page="create-quiz">Create Quiz</a></li>
               <li><a href="#/admin/players" class="admin-nav-link" data-admin-page="players">Players</a></li>
-              <li><a href="#/admin/reports" class="admin-nav-link" data-admin-page="reports">Reports</a></li>
               <li><a href="#/admin/settings" class="admin-nav-link" data-admin-page="settings">Settings</a></li>
             </ul>
           </nav>
@@ -715,28 +503,45 @@
               </div>
             </div>
 
-            <div class="dashboard-stats">
-              <div class="stat-card">
-                <div class="stat-value">24</div>
-                <div class="stat-label">Active Quizzes</div>
-                <div class="stat-change positive">+3 this week</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value">156</div>
-                <div class="stat-label">Registered Players</div>
-                <div class="stat-change positive">+12 this week</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value">1,245</div>
-                <div class="stat-label">Quizzes Completed</div>
-                <div class="stat-change positive">+89 this week</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value">18,672</div>
-                <div class="stat-label">Questions Answered</div>
-                <div class="stat-change positive">+1,342 this week</div>
-              </div>
-            </div>
+            <section class="dashboard-stats" aria-labelledby="dashboard-stats-heading">
+              <h2 id="dashboard-stats-heading" class="visually-hidden">Quiz Platform Statistics</h2>
+              
+              <article class="stat-card" aria-labelledby="active-quizzes-stat">
+                <h1 class="stat-value" id="active-quizzes-stat" aria-label="Active quizzes">24</h1>
+                <p class="stat-label">Active Quizzes</p>
+                <p class="stat-change positive">
+                  <span class="visually-hidden">Change: </span>
+                  <span aria-hidden="true">↑</span> +3 this week
+                </p>
+              </article>
+              
+              <article class="stat-card" aria-labelledby="registered-players-stat">
+                <h1 class="stat-value" id="registered-players-stat" aria-label="Registered players">156</h1>
+                <p class="stat-label">Registered Players</p>
+                <p class="stat-change positive">
+                  <span class="visually-hidden">Change: </span>
+                  <span aria-hidden="true">↑</span> +12 this week
+                </p>
+              </article>
+              
+              <article class="stat-card" aria-labelledby="quizzes-completed-stat">
+                <h1 class="stat-value" id="quizzes-completed-stat" aria-label="Quizzes completed">1,245</h1>
+                <p class="stat-label">Quizzes Completed</p>
+                <p class="stat-change positive">
+                  <span class="visually-hidden">Change: </span>
+                  <span aria-hidden="true">↑</span> +89 this week
+                </p>
+              </article>
+              
+              <article class="stat-card" aria-labelledby="questions-answered-stat">
+                <h1 class="stat-value" id="questions-answered-stat" aria-label="Questions answered">18,672</h1>
+                <p class="stat-label">Questions Answered</p>
+                <p class="stat-change positive">
+                  <span class="visually-hidden">Change: </span>
+                  <span aria-hidden="true">↑</span> +1,342 this week
+                </p>
+              </article>
+            </section>
 
             <div class="dashboard-grid">
               <section class="dashboard-card">
@@ -750,7 +555,6 @@
                       <tr>
                         <th>Quiz Name</th>
                         <th>Category</th>
-                        <th>Difficulty</th>
                         <th>Plays</th>
                         <th>Created</th>
                         <th>Actions</th>
@@ -758,22 +562,8 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td>World Cup History</td>
-                        <td>World Cup</td>
-                        <td><span class="difficulty easy">Easy</span></td>
-                        <td>124</td>
-                        <td>2 days ago</td>
-                        <td>
-                          <div class="table-actions">
-                            <a href="#/admin/edit-quiz/1" class="btn btn-icon" title="Edit">✏️</a>
-                            <button class="btn btn-icon" title="Delete">🗑️</button>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
                         <td>Premier League Legends</td>
                         <td>Premier League</td>
-                        <td><span class="difficulty medium">Medium</span></td>
                         <td>98</td>
                         <td>3 days ago</td>
                         <td>
@@ -786,7 +576,6 @@
                       <tr>
                         <td>Champions League Trivia</td>
                         <td>Champions League</td>
-                        <td><span class="difficulty hard">Hard</span></td>
                         <td>76</td>
                         <td>5 days ago</td>
                         <td>
@@ -813,7 +602,6 @@
                         <th>Username</th>
                         <th>ELO</th>
                         <th>Quizzes</th>
-                        <th>Accuracy</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -821,13 +609,11 @@
                       <tr>
                         <td>
                           <div class="player-info">
-                            <div class="avatar">👨‍🦰</div>
                             <span>FootballMaster</span>
                           </div>
                         </td>
                         <td>1845</td>
                         <td>42</td>
-                        <td>94%</td>
                         <td>
                           <div class="table-actions">
                             <a href="#/admin/view-player/1" class="btn btn-icon" title="View">👁️</a>
@@ -838,13 +624,11 @@
                       <tr>
                         <td>
                           <div class="player-info">
-                            <div class="avatar">👩‍🦰</div>
                             <span>SoccerQueen</span>
                           </div>
                         </td>
                         <td>1788</td>
                         <td>38</td>
-                        <td>91%</td>
                         <td>
                           <div class="table-actions">
                             <a href="#/admin/view-player/2" class="btn btn-icon" title="View">👁️</a>
@@ -870,10 +654,8 @@
           <nav class="admin-nav">
             <ul>
               <li><a href="#/admin" class="admin-nav-link" data-admin-page="dashboard">Dashboard</a></li>
-              <li><a href="#/admin/quizzes" class="admin-nav-link" data-admin-page="quizzes">Quizzes</a></li>
               <li><a href="#/admin/create-quiz" class="admin-nav-link active" data-admin-page="create-quiz">Create Quiz</a></li>
               <li><a href="#/admin/players" class="admin-nav-link" data-admin-page="players">Players</a></li>
-              <li><a href="#/admin/reports" class="admin-nav-link" data-admin-page="reports">Reports</a></li>
               <li><a href="#/admin/settings" class="admin-nav-link" data-admin-page="settings">Settings</a></li>
             </ul>
           </nav>
@@ -902,15 +684,6 @@
                     <option value="players">Famous Players</option>
                     <option value="tactics">Tactics & Formations</option>
                     <option value="history">Football History</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="quiz-difficulty">Difficulty</label>
-                  <select id="quiz-difficulty" required>
-                    <option value="">Select difficulty</option>
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -978,10 +751,6 @@
                       </div>
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label for="explanation-1">Explanation (Optional)</label>
-                    <textarea id="explanation-1" class="explanation-text" rows="2" placeholder="Explain the correct answer"></textarea>
-                  </div>
                 </div>
               </div>
             </section>
@@ -996,6 +765,6 @@
     </div>
   </template>
 
-  <script src="scripts.js"></script>
+  <script type="module" src="scripts.js"></script>
 </body>
 </html>
