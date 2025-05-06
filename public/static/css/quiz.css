@@ -81,7 +81,7 @@
     font-weight: 500;
 }
 
-/* Answer Options - Styled like the screenshot */
+/* Answer Options */
 .answer-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
