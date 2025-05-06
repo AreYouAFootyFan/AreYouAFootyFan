@@ -1,20 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Are you a Footy fan!</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Are you a Footy fan!</title>
+  <link rel="stylesheet" href="/static/js/css/styles.css" />
+  <link rel="stylesheet" href="/static/js/css/leaderboard/leaderboard.css" />
+  <link rel="stylesheet" href="/static/js/css/quiz-selection/quiz-selection.css" />
+  <link rel="stylesheet" href="/static/js/css/quiz/quiz-modal.css" />
+  <link rel="stylesheet" href="/static/js/css/quiz-complete/quiz-complete.css" />
+  <link rel="stylesheet" href="/static/js/css/hero-section/hero-section.css" />
+  <link rel="stylesheet" href="/static/js/css/profile/profile.css" />
+  <link rel="stylesheet" href="/static/js/css/admin/admin-styles.css" />
+  <link rel="stylesheet" href="/static/js/css/login/login.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
 </head>
 <body>
-    <nav class="main-nav">
+  
+
+  <header class="site-header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-icon">⚽</span>
+        <h1>Football Quiz</h1>
+      </div>
+      <nav class="main-nav">
         <ul>
-          <li><a href="/" class="nav-link active" data-link>Home</a></li>
-          <li><a href="/dashboard" class="nav-link" data-link>My Quizzes</a></li>
+          <li><a href="/home" class="nav-link active" data-link>Home</a></li>
           <li><a href="/profile" class="nav-link" data-link>Profile</a></li>
-          <li><a href="/admin" class="nav-link admin-link" data-link="">Admin</a></li>
+          <li><a href="/admin" class="nav-link admin-link" data-link>Admin</a></li>
         </ul>
-    </nav>
-    <section id="app"></section>
-    <script type="module" src="./static/js/index.js"></script>
+      </nav>
+      <div class="user-menu">
+        <button id="login-button" class="btn btn-outline"><a href="/login" class="nav-link admin-link" data-link>login</a></button>
+        <div id="user-dropdown" class="hidden">
+          <div class="user-info">
+            <span id="username-display">Username</span>
+          </div>
+          <div class="dropdown-menu">
+            <a href="#/profile" data-page="profile">Edit Profile</a>
+            <a href="#/dashboard" data-page="dashboard">My Quizzes</a>
+            <button id="logout-button">Log Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main app content will be injected here -->
+  <main id="app"></main>
+
+  <footer class="site-footer">
+    <section class="container">
+      <section class="footer-content">
+        <header class="footer-logo">
+          <p class="logo-icon" aria-hidden="true">⚽</p>
+          <h2>Football Quiz</h2>
+        </header>
+
+        <nav class="footer-links" aria-label="Footer Navigation">
+          <section class="footer-column">
+            <h3>Resources</h3>
+            <ul>
+              <li><a href="#/privacy">Privacy Policy</a></li>
+              <li><a href="#/terms">Terms of Service</a></li>
+            </ul>
+          </section>
+        </nav>
+      </section>
+
+      <section class="footer-bottom">
+        <p>&copy; 2025 Football Quiz Platform. All rights reserved.</p>
+      </section>
+    </section>
+  </footer>
+
+  <script type="module" src="./static/js/index.js"></script>
 </body>
 </html>

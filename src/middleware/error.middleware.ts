@@ -20,7 +20,6 @@ export const errorHandler = (
     });
     return;
   }
-
   response.status(status).json({
     error: message,
     ...(process.env.NODE_ENV === 'development' && { stack: error.stack })

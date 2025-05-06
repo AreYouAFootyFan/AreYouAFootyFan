@@ -23,13 +23,16 @@ export class QuizAttemptService {
   }
 
   
-  static async getAttemptById(id: number): Promise<any> {
+  static async getAttemptById(id: number, userId: number): Promise<any> {
     const attempt = await QuizAttemptModel.findByIdWithDetails(id);
     
     if (!attempt) {
       throw ErrorUtils.notFound('Quiz attempt not found');
     }
     
+    if (attempt.user_id !== userId) {
+      throw ErrorUtils.forbidden('You do not have permission to access this attempt');
+    }
     const questionsWithResponses = await QuizAttemptModel.getQuizQuestionsWithResponses(id);
     attempt.questions = questionsWithResponses;
     
@@ -37,7 +40,12 @@ export class QuizAttemptService {
   }
 
  
-  static async startQuiz(data: CreateQuizAttemptDto): Promise<any> {
+  static async startQuiz(data: CreateQuizAttemptDto, userRole: string): Promise<any> {
+    
+    if (userRole !== 'Quiz Taker') {
+      throw ErrorUtils.forbidden('Only Quiz Takers can start quizzes');
+    }
+
     const quiz = await QuizModel.findById(data.quiz_id);
     
     if (!quiz) {

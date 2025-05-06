@@ -58,8 +58,10 @@ export class UserResponseController {
         question_id: parsedQuestionId,
         answer_id: parsedAnswerId
       };
+
+      const userRole = request.user!.role;
       
-      const userResponse = await UserResponseService.submitResponse(data);
+      const userResponse = await UserResponseService.submitResponse(data, userRole);
       
       response.json(userResponse);
     } catch (error) {
@@ -68,7 +70,7 @@ export class UserResponseController {
   }
 
   
-  static async getResponseById(request: Request, _response: Response, next: NextFunction): Promise<void> {
+  static async getResponseById(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
       const id = parseInt(request.params.id);
       
@@ -76,8 +78,8 @@ export class UserResponseController {
         throw ErrorUtils.badRequest('Invalid response ID');
       }
       
-      const response = await UserResponseService.getResponseById(id);
-      response.json(response);
+      const userResponse = await UserResponseService.getResponseById(id);
+      response.json(userResponse);
     } catch (error) {
       next(error);
     }
