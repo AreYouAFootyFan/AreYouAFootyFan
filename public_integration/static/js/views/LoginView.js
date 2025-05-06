@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import authService from "../services/auth.service.js";
 
 export default class LoginView extends AbstractView {
     constructor() {
@@ -12,148 +13,140 @@ export default class LoginView extends AbstractView {
                 <article class="auth-container">
                     <header class="auth-header">
                         <figure>
-                            <img src="/assets/logo.svg" alt="App Logo" class="logo" />
+                            <span class="logo-icon" aria-hidden="true">⚽</span>
                         </figure>
-                        <h1>Welcome</h1>
+                        <h1>Welcome to Football Quiz</h1>
                         <p>Sign in to continue to your account</p>
                     </header>
 
                     <section class="auth-methods">
-                        <button class="social-auth-btn google-auth-btn" id="google-login">
-                            <img src="/assets/google-logo.svg" alt="Google" class="social-icon" />
-                            Continue with Google
-                        </button>
+                        <div id="google-signin-button"></div>
 
-                        <p class="divider"><span>or</span></p>
-
-                        <form id="email-login-form">
-                            <fieldset>
-                                <legend class="visually-hidden">Email Login</legend>
-                                
-                                <label for="email">
-                                    Email address
+                        <div id="username-container" style="display: none;">
+                            <h2>Set Your Username</h2>
+                            <p>Please choose a unique username to continue:</p>
+                            <form id="username-form">
+                                <label for="username">
+                                    Username
                                     <input 
-                                        type="email" 
-                                        id="email" 
-                                        name="email" 
-                                        autocomplete="email" 
-                                        placeholder="you@example.com" 
+                                        type="text" 
+                                        id="username" 
+                                        name="username" 
+                                        placeholder="Choose a username" 
+                                        minlength="3"
+                                        maxlength="32"
                                         required
                                     />
                                 </label>
-
-                                <label for="password">
-                                    Password
-                                    <span class="password-input-container">
-                                        <input 
-                                            type="password" 
-                                            id="password" 
-                                            name="password" 
-                                            autocomplete="current-password" 
-                                            placeholder="Enter your password" 
-                                            required
-                                        />
-                                        <button 
-                                            type="button" 
-                                            class="password-toggle" 
-                                            aria-label="Toggle password visibility"
-                                        >
-                                            <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                <circle cx="12" cy="12" r="3"></circle>
-                                            </svg>
-                                        </button>
-                                    </span>
-                                </label>
-
-                                <section class="form-options">
-                                    <label class="remember-me">
-                                        <input type="checkbox" id="remember" name="remember" />
-                                        Remember me
-                                    </label>
-                                    <a href="#" class="forgot-password">Forgot password?</a>
-                                </section>
-
-                                <button type="submit" class="login-btn">Sign in</button>
-                            </fieldset>
-                        </form>
+                                <button type="submit" class="login-btn">Save Username</button>
+                            </form>
+                        </div>
                     </section>
 
                     <footer class="auth-footer">
-                        <p>Don't have an account? <a href="#/signup" class="signup-link">Sign up</a></p>
+                        <p>Test your football knowledge and compete with players worldwide</p>
                     </footer>
                 </article>
-
-               
             </main>
         `;
     }
 
-    async afterRender() {
-        // Password visibility toggle
-        const passwordToggle = document.querySelector('.password-toggle');
-        const passwordInput = document.getElementById('password');
+    async mount() {
+        this.setupGoogleSignIn();
         
-        if (passwordToggle && passwordInput) {
-            passwordToggle.addEventListener('click', () => {
-                const type = passwordInput.getAttribute('type');
-                passwordInput.setAttribute('type', type === 'password' ? 'text' : 'password');
-            });
-        }
-
-        // Modal handling
-        const googleModal = document.getElementById('google-auth-modal');
-        const googleLoginBtn = document.getElementById('google-login');
-        const closeModalBtn = document.querySelector('.close-modal');
-        
-        if (googleModal && googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', () => {
-                googleModal.showModal();
-            });
+        const usernameForm = document.getElementById('username-form');
+        if (usernameForm) {
+            usernameForm.addEventListener('submit', this.handleUsernameSubmit.bind(this));
         }
         
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', () => {
-                googleModal.close();
-            });
-        }
-
-        // Account selection
-        const accountOptions = document.querySelectorAll('.google-account-option');
-        accountOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                accountOptions.forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-            });
-        });
-
-        // Form submission
-        const emailLoginForm = document.getElementById('email-login-form');
-        if (emailLoginForm) {
-            emailLoginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.showLoginSuccess();
-            });
+        const isAuthenticated = await authService.checkAuthentication();
+        if (isAuthenticated) {
+            if (authService.hasUsername()) {
+                window.location.href = '/home';
+            } else {
+                this.showUsernameForm();
+            }
         }
     }
 
-    showLoginSuccess() {
-        const notification = document.createElement('aside');
-        notification.className = 'success-notification';
-        notification.role = "status";
-        notification.innerHTML = `
-            <svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-            <span>Successfully logged in!</span>
-        `;
+    setupGoogleSignIn() {
+        authService.initGoogleSignIn(this.handleGoogleLogin.bind(this));
         
-        document.body.appendChild(notification);
+        const googleSigninButton = document.getElementById('google-signin-button');
+        if (googleSigninButton) {
+            googleSigninButton.innerHTML = `
+                <div id="g_id_onload"
+                    data-client_id="${authService.googleClientId}"
+                    data-callback="handleCredentialResponse">
+                </div>
+                <div class="g_id_signin" data-type="standard"></div>
+            `;
+            
+            const script = document.createElement('script');
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+    }
+
+    async handleGoogleLogin(googleToken) {
+        try {
+            const result = await authService.loginWithGoogle(googleToken);
+            
+            if (result.requiresUsername) {
+                this.showUsernameForm();
+            } else {
+                window.location.href = '/home';
+            }
+        } catch (error) {
+            console.error('Google login error:', error);
+            this.showLoginError('Login failed. Please try again.');
+        }
+    }
+
+    async handleUsernameSubmit(event) {
+        event.preventDefault();
         
-        setTimeout(() => {
-            notification.classList.add('fade-out');
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        const usernameInput = document.getElementById('username');
+        const username = usernameInput.value.trim();
+        
+        if (username.length < 3 || username.length > 32) {
+            this.showLoginError('Username must be between 3 and 32 characters.');
+            return;
+        }
+        
+        try {
+            await authService.setUsername(username);
+            window.location.href = '/home';
+        } catch (error) {
+            console.error('Set username error:', error);
+            this.showLoginError('Failed to set username. It might already be taken.');
+        }
+    }
+
+    showUsernameForm() {
+        const usernameContainer = document.getElementById('username-container');
+        const googleSigninButton = document.getElementById('google-signin-button');
+        
+        if (usernameContainer && googleSigninButton) {
+            usernameContainer.style.display = 'block';
+            googleSigninButton.style.display = 'none';
+        }
+    }
+
+    showLoginError(message) {
+        let errorElement = document.getElementById('login-error');
+        
+        if (!errorElement) {
+            errorElement = document.createElement('div');
+            errorElement.id = 'login-error';
+            errorElement.className = 'error-message';
+            
+            const authContainer = document.querySelector('.auth-container');
+            authContainer.appendChild(errorElement);
+        }
+        
+        errorElement.textContent = message;
     }
 }

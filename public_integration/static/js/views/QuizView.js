@@ -1,125 +1,342 @@
-// filepath: d:\AreYouAFootyFan\public\static\js\views\QuizView.js
 import AbstractView from "./AbstractView.js";
+import authService from "../services/auth.service.js";
+import quizService from "../services/quiz.service.js";
+import quizAttemptService from "../services/quiz-attempt.service.js";
 
-export default class extends AbstractView {
-    constructor(params) {
+export default class QuizView extends AbstractView {
+    constructor() {
         super();
         this.setTitle("Quiz");
-        this.setStyles(['./static/css/quiz.css']);
-        this.quizId = params.id;
-        this.currentQuestion = 0;
-        this.score = 0;
-        this.timeLeft = 12;
-        this.timer = null;
-        this.questions = [];
+        
+        this.quizId = localStorage.getItem('selected_quiz_id');
+        
+        this.quizData = null;
+        this.attempt = null;
+        this.currentQuestionIndex = 0;
+        this.currentQuestion = null;
         this.selectedAnswer = null;
-        this.answerSubmitted = false;
-        this.isActive = false; // Flag to track if view is active
+        this.timer = null;
+        this.timeLeft = 0;
+        this.score = 0;
+        this.isQuizCompleted = false;
     }
 
-    async getQuestions() {
-        try {
-            // Fetch questions from our JSON file
-            const response = await fetch('/static/data/questions.json');
-            if (!response.ok) {
-                throw new Error('Failed to load quiz questions');
-            }
-            this.questions = await response.json();
-            this.totalQuestions = this.questions.length;
-        } catch (error) {
-            console.error("Failed to fetch questions:", error);
-            // Fallback to a simple question if fetch fails
-            this.questions = [
-                {
-                    id: 1,
-                    text: "Which team won the UEFA Champions League in 2023?",
-                    category: "Recent History",
-                    difficulty: "MEDIUM",
-                    answers: [
-                        { id: 'A', text: "Real Madrid", isCorrect: true },
-                        { id: 'B', text: "Manchester City", isCorrect: false },
-                        { id: 'C', text: "Bayern Munich", isCorrect: false },
-                        { id: 'D', text: "Inter Milan", isCorrect: false }
-                    ]
-                }
-            ];
-            this.totalQuestions = 1;
+    async getHtml() {
+        return `
+            <section class="quiz-page">
+                <div id="quiz-container" class="quiz-container">
+                    <div class="loading-container">
+                        <p>Loading quiz...</p>
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    async mount() {
+        const isAuthenticated = await authService.checkAuthentication();
+        if (!isAuthenticated) {
+            window.location.href = '/';
+            return;
         }
-    }
 
-    // Called when view is mounted
-    mount() {
-        this.isActive = true;
+        this.updateHeader();
         
-        // Initialize and start the quiz
-        this.renderQuestion();
-        this.startTimer();
+        if (this.quizId) {
+            await this.startQuiz(this.quizId);
+        } else {
+            this.showError("No quiz selected. Please go back to the home page and select a quiz.");
+        }
         
-        // Add event listener to handle page visibility changes
         document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
         
-        // Add event listener to clean up when navigating away
         window.addEventListener('beforeunload', this.cleanup.bind(this));
-        window.addEventListener('popstate', this.cleanup.bind(this));
-        
-        // Add listener for any link click for navigation
-        document.body.addEventListener('click', this.handleNavigation.bind(this));
     }
-    
-    // Clean up resources when view is unmounted
+
     cleanup() {
-        if (this.isActive) {
-            this.isActive = false;
-            this.clearTimer();
-            document.removeEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-            window.removeEventListener('beforeunload', this.cleanup.bind(this));
-            window.removeEventListener('popstate', this.cleanup.bind(this));
-            document.body.removeEventListener('click', this.handleNavigation.bind(this));
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
         }
+        
+        document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     }
-    
-    // Handle navigation away from quiz
-    handleNavigation(event) {
-        if (event.target.matches('[data-link]')) {
-            this.cleanup();
-        }
-    }
-    
-    // Handle tab visibility changes
+
     handleVisibilityChange() {
         if (document.hidden) {
-            // Page is hidden (user switched tabs)
-            this.clearTimer();
-        } else if (this.isActive && !this.answerSubmitted) {
-            // Page is visible again and quiz is still active
-            this.startTimer();
+            this.pauseTimer();
+        } else {
+            this.resumeTimer();
+        }
+    }
+
+    updateHeader() {
+        const user = authService.getUser();
+        const loginLink = document.querySelector('.user-menu .btn');
+        const userDropdown = document.getElementById('user-dropdown');
+        const usernameDisplay = document.getElementById('username-display');
+        
+        if (user) {
+            if (loginLink) loginLink.classList.add('hidden');
+            if (userDropdown) {
+                userDropdown.classList.remove('hidden');
+                if (usernameDisplay) {
+                    usernameDisplay.textContent = user.username || 'User';
+                }
+            }
+            
+            const adminLink = document.querySelector('.admin-link');
+            if (adminLink) {
+                if (authService.isQuizMaster()) {
+                    adminLink.classList.add('hidden');
+                } else {
+                    adminLink.classList.add('hidden');
+                }
+            }
+            
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', () => {
+                    authService.logout();
+                });
+            }
+        }
+    }
+
+    async startQuiz(quizId) {
+        try {
+            this.attempt = await quizAttemptService.startQuiz(quizId);
+            
+            this.quizData = {
+                title: this.attempt.quiz_title,
+                description: this.attempt.quiz_description,
+                totalQuestions: this.attempt.questions.length
+            };
+            
+            this.loadQuestion(0);
+        } catch (error) {
+            console.error('Error starting quiz:', error);
+            this.showError(`Failed to start quiz: ${error.message}`);
+        }
+    }
+
+    loadQuestion(index) {
+        if (!this.attempt || !this.attempt.questions || index >= this.attempt.questions.length) {
+            this.completeQuiz();
+            return;
+        }
+        
+        this.currentQuestionIndex = index;
+        this.currentQuestion = this.attempt.questions[index];
+        this.selectedAnswer = null;
+        
+        this.timeLeft = this.currentQuestion.time_limit_seconds;
+        
+        this.renderQuestion();
+        
+        this.startTimer();
+    }
+
+    renderQuestion() {
+        const quizContainer = document.getElementById('quiz-container');
+        if (!quizContainer) return;
+
+        const question = this.currentQuestion;
+        
+        quizContainer.innerHTML = `
+            <header class="question-header">
+                <section class="question-info">
+                    <p class="question-number">Question ${this.currentQuestionIndex + 1}/${this.quizData.totalQuestions}</p>
+                    <p class="score">Score: ${this.score}</p>
+                </section>
+                <section class="question-type">
+                    <p>Quiz</p>
+                    <p class="type-value">${this.quizData.title}</p>
+                </section>
+                <section class="timer">
+                    <p>Time</p>
+                    <p id="timer-value">${this.timeLeft}s</p>
+                </section>
+            </header>
+            
+            <div class="progress-container">
+                <div class="progress-bar" style="width: 100%"></div>
+            </div>
+            
+            <main class="question-content">
+                <aside class="category-info">
+                    <span>${question.difficulty_level} • ${question.points_on_correct} points</span>
+                </aside>
+                <h2 class="question-text">${question.question_text}</h2>
+                
+                <div class="answer-grid">
+                    ${this.renderAnswerOptions(question.answers)}
+                </div>
+            </main>
+            
+            <footer class="action-buttons">
+                <button id="submit-btn" class="submit-btn" disabled>Submit Answer</button>
+            </footer>
+        `;
+        
+        document.querySelectorAll('.answer-option').forEach(option => {
+            option.addEventListener('click', () => this.selectAnswer(option.dataset.id));
+        });
+        
+        document.getElementById('submit-btn').addEventListener('click', () => this.submitAnswer());
+    }
+
+    renderAnswerOptions(answers) {
+        const shuffledAnswers = [...answers].sort(() => Math.random() - 0.5);
+        
+        return shuffledAnswers.map(answer => `
+            <button id="option-${answer.answer_id}" class="answer-option" data-id="${answer.answer_id}">
+                <span class="option-letter">${this.getOptionLetter(answer.answer_id)}</span>
+                <span class="option-text">${answer.answer_text}</span>
+            </button>
+        `).join('');
+    }
+
+    getOptionLetter(answerId) {
+        const index = this.currentQuestion.answers.findIndex(a => a.answer_id === answerId);
+        return ['A', 'B', 'C', 'D'][index] || '?';
+    }
+
+    selectAnswer(answerId) {
+        document.querySelectorAll('.answer-option').forEach(option => {
+            option.classList.remove('selected-answer');
+        });
+        
+        const selectedOption = document.querySelector(`.answer-option[data-id="${answerId}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('selected-answer');
+            this.selectedAnswer = parseInt(answerId);
+            
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+            }
+        }
+    }
+
+    async submitAnswer() {
+        if (!this.selectedAnswer) return;
+        
+        try {
+            this.pauseTimer();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+            }
+            
+            const response = await quizAttemptService.submitResponse({
+                attempt_id: this.attempt.attempt_id,
+                question_id: this.currentQuestion.question_id,
+                answer_id: this.selectedAnswer
+            });
+            
+            this.score += response.points_earned;
+            
+            this.showAnswerFeedback(response);
+            
+            this.updateActionButtons(response.quiz_completed);
+        } catch (error) {
+            console.error('Error submitting answer:', error);
+            
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+            }
+            
+            this.resumeTimer();
+        }
+    }
+
+    showAnswerFeedback(response) {
+        const answerOptions = document.querySelectorAll('.answer-option');
+        
+        answerOptions.forEach(option => {
+            const answerId = parseInt(option.dataset.id);
+            const answer = this.currentQuestion.answers.find(a => a.answer_id === answerId);
+            
+            if (answer.is_correct) {
+                option.classList.add('correct-answer');
+            } else if (answerId === this.selectedAnswer && !answer.is_correct) {
+                option.classList.add('wrong-answer');
+            }
+        });
+        
+        const questionContent = document.querySelector('.question-content');
+        if (questionContent) {
+            const feedbackElement = document.createElement('div');
+            feedbackElement.className = 'answer-feedback';
+            feedbackElement.innerHTML = `
+                <p class="points ${response.points_earned >= 0 ? 'positive' : 'negative'}">
+                    ${response.points_earned >= 0 ? '+' : ''}${response.points_earned} points
+                </p>
+            `;
+            questionContent.appendChild(feedbackElement);
+        }
+        
+        const scoreElement = document.querySelector('.score');
+        if (scoreElement) {
+            scoreElement.textContent = `Score: ${this.score}`;
+        }
+    }
+
+    updateActionButtons(quizCompleted) {
+        const actionButtons = document.querySelector('.action-buttons');
+        if (!actionButtons) return;
+        
+        actionButtons.innerHTML = '';
+        
+        if (quizCompleted || this.currentQuestionIndex >= this.quizData.totalQuestions - 1) {
+            const finishButton = document.createElement('button');
+            finishButton.id = 'finish-btn';
+            finishButton.className = 'results-btn';
+            finishButton.textContent = 'See Results';
+            finishButton.addEventListener('click', () => this.completeQuiz());
+            actionButtons.appendChild(finishButton);
+        } else {
+            const nextButton = document.createElement('button');
+            nextButton.id = 'next-btn';
+            nextButton.className = 'next-btn';
+            nextButton.textContent = 'Next Question';
+            nextButton.addEventListener('click', () => this.loadQuestion(this.currentQuestionIndex + 1));
+            actionButtons.appendChild(nextButton);
         }
     }
 
     startTimer() {
-        // Always clear any existing timer first to prevent duplicates
-        this.clearTimer();
-        
-        if (!this.isActive || this.answerSubmitted) return;
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
         
         this.updateTimerDisplay();
         
         this.timer = setInterval(() => {
-            if (this.timeLeft <= 0) {
-                this.clearTimer();
-                this.handleTimeUp();
-                return;
-            }
+            this.timeLeft--;
             
-            this.timeLeft -= 1;
-            this.updateTimerDisplay();
+            if (this.timeLeft <= 0) {
+                clearInterval(this.timer);
+                this.handleTimeUp();
+            } else {
+                this.updateTimerDisplay();
+            }
         }, 1000);
     }
 
-    clearTimer() {
+    pauseTimer() {
         if (this.timer) {
             clearInterval(this.timer);
             this.timer = null;
+        }
+    }
+
+    resumeTimer() {
+        if (!this.timer && this.timeLeft > 0 && !this.selectedAnswer) {
+            this.startTimer();
         }
     }
 
@@ -131,394 +348,124 @@ export default class extends AbstractView {
         
         const progressBar = document.querySelector('.progress-bar');
         if (progressBar) {
-            const percentage = (this.timeLeft / 12) * 100;
+            const percentage = (this.timeLeft / this.currentQuestion.time_limit_seconds) * 100;
             progressBar.style.width = `${percentage}%`;
-        }
-    }
-    
-    handleTimeUp() {
-        if (!this.isActive || this.answerSubmitted) return;
-        
-        // Mark the question as timed out
-        this.answerSubmitted = true;
-        
-        // Show the correct answer
-        const currentQuestion = this.questions[this.currentQuestion];
-        const correctOption = currentQuestion.answers.find(a => a.isCorrect);
-        if (correctOption) {
-            const element = document.querySelector(`#option-${correctOption.id}`);
-            if (element) {
-                element.classList.add('correct-answer');
-            }
-        }
-        
-        // Update buttons
-        this.updateActionButtons();
-    }
-
-    selectAnswer(selectedAnswer) {
-        if (!this.isActive || this.answerSubmitted) return;
-        
-        // Clear previous selection
-        document.querySelectorAll('.answer-option').forEach(option => {
-            option.classList.remove('selected-answer');
-        });
-        
-        // Highlight new selection
-        const optionButton = document.querySelector(`#option-${selectedAnswer}`);
-        if (optionButton) {
-            optionButton.classList.add('selected-answer');
-            this.selectedAnswer = selectedAnswer;
-        }
-        
-        // Enable the submit button
-        const submitButton = document.getElementById('submit-btn');
-        if (submitButton) {
-            submitButton.disabled = false;
-        }
-    }
-
-    submitAnswer() {
-        if (!this.isActive || !this.selectedAnswer || this.answerSubmitted) return;
-        
-        this.answerSubmitted = true;
-        this.clearTimer(); // Stop the timer
-        
-        const currentQuestion = this.questions[this.currentQuestion];
-        const selectedOption = currentQuestion.answers.find(a => a.id === this.selectedAnswer);
-        
-        if (selectedOption && selectedOption.isCorrect) {
-            this.score += 1;
-            document.querySelector(`#option-${this.selectedAnswer}`).classList.add('correct-answer');
-        } else {
-            document.querySelector(`#option-${this.selectedAnswer}`).classList.add('wrong-answer');
-            // Highlight the correct answer
-            const correctOption = currentQuestion.answers.find(a => a.isCorrect);
-            if (correctOption) {
-                document.querySelector(`#option-${correctOption.id}`).classList.add('correct-answer');
-            }
-        }
-        
-        // Update score display
-        const scoreElement = document.querySelector('.score');
-        if (scoreElement) {
-            scoreElement.textContent = `Score ${this.score}`;
-        }
-        
-        // Update buttons
-        this.updateActionButtons();
-    }
-
-    updateActionButtons() {
-        const actionButtons = document.querySelector('.action-buttons');
-        if (!actionButtons) return;
-        
-        // Clear existing buttons
-        while (actionButtons.firstChild) {
-            actionButtons.removeChild(actionButtons.firstChild);
-        }
-        
-        if (this.answerSubmitted) {
-            // Show Next or See Results button
-            if (this.currentQuestion < this.questions.length - 1) {
-            const nextButton = document.createElement('button');
-            nextButton.id = 'next-btn';
-            nextButton.className = 'next-btn';
-            nextButton.textContent = 'Next Question';
-            nextButton.addEventListener('click', () => this.moveToNextQuestion(), { once: true });
-            actionButtons.appendChild(nextButton);
+            
+            if (this.timeLeft <= 5) {
+                progressBar.style.backgroundColor = '#ef4444';
             } else {
-            const resultsButton = document.createElement('button');
-            resultsButton.id = 'results-btn';
-            resultsButton.className = 'results-btn';
-            resultsButton.textContent = 'See Results';
-            resultsButton.addEventListener('click', () => this.showResults(), { once: true });
-            actionButtons.appendChild(resultsButton);
+                progressBar.style.backgroundColor = '#2196f3';
             }
-        } else {
-            // Show Submit button (disabled until an answer is selected)
-            const submitButton = document.createElement('button');
-            submitButton.id = 'submit-btn';
-            submitButton.className = 'submit-btn';
-            submitButton.textContent = 'Submit Answer';
-            submitButton.disabled = true;
-            submitButton.addEventListener('click', () => this.submitAnswer(), { once: true });
-            actionButtons.appendChild(submitButton);
         }
     }
 
-    moveToNextQuestion() {
-        if (!this.isActive) return;
-        
-        this.clearTimer();
-        this.currentQuestion += 1;
-        this.selectedAnswer = null;
-        this.answerSubmitted = false;
-        this.timeLeft = 12;
-        
-        // Render the next question
-        this.renderQuestion();
-        this.startTimer();
+    handleTimeUp() {
+        if (this.selectedAnswer) {
+            this.loadQuestion(this.currentQuestionIndex + 1);
+        } else {
+            const questionContent = document.querySelector('.question-content');
+            if (questionContent) {
+                const timeUpElement = document.createElement('div');
+                timeUpElement.className = 'time-up-message';
+                timeUpElement.innerHTML = `<p>Time's up! Moving to the next question.</p>`;
+                questionContent.appendChild(timeUpElement);
+            }
+            
+            document.querySelectorAll('.answer-option').forEach(option => {
+                const answerId = parseInt(option.dataset.id);
+                const answer = this.currentQuestion.answers.find(a => a.answer_id === answerId);
+                
+                if (answer && answer.is_correct) {
+                    option.classList.add('correct-answer');
+                }
+            });
+            
+            const actionButtons = document.querySelector('.action-buttons');
+            if (actionButtons) {
+                actionButtons.innerHTML = '';
+                
+                if (this.currentQuestionIndex >= this.quizData.totalQuestions - 1) {
+                    const finishButton = document.createElement('button');
+                    finishButton.id = 'finish-btn';
+                    finishButton.className = 'results-btn';
+                    finishButton.textContent = 'See Results';
+                    finishButton.addEventListener('click', () => this.completeQuiz());
+                    actionButtons.appendChild(finishButton);
+                } else {
+                    const nextButton = document.createElement('button');
+                    nextButton.id = 'next-btn';
+                    nextButton.className = 'next-btn';
+                    nextButton.textContent = 'Next Question';
+                    nextButton.addEventListener('click', () => this.loadQuestion(this.currentQuestionIndex + 1));
+                    actionButtons.appendChild(nextButton);
+                }
+            }
+        }
     }
 
-    showResults() {
-        if (!this.isActive) return;
+    async completeQuiz() {
+        try {
+            await quizAttemptService.completeQuiz(this.attempt.attempt_id);
+            
+            const summary = await quizAttemptService.getAttemptSummary(this.attempt.attempt_id);
+            
+            this.showQuizResults(summary);
+            
+            if (this.timer) {
+                clearInterval(this.timer);
+                this.timer = null;
+            }
+            
+            this.isQuizCompleted = true;
+        } catch (error) {
+            console.error('Error completing quiz:', error);
+            this.showError(`Failed to complete quiz: ${error.message}`);
+        }
+    }
+
+    showQuizResults(summary) {
+        const quizContainer = document.getElementById('quiz-container');
+        if (!quizContainer) return;
         
-        this.clearTimer();
+        const answeredPercent = Math.round((summary.answered_questions / summary.total_questions) * 100);
+        const accuracyPercent = summary.answered_questions > 0 
+            ? Math.round((summary.correct_answers / summary.answered_questions) * 100) 
+            : 0;
         
+        quizContainer.innerHTML = `
+            <div class="results-container">
+                <h2>Quiz Complete!</h2>
+                
+                <div class="final-score">
+                    Your score: ${summary.total_points} points
+                </div>
+                
+                <div class="percentage">
+                    ${accuracyPercent}%
+                </div>
+                
+                <div class="stats-summary">
+                    <p>Questions answered: ${summary.answered_questions}/${summary.total_questions} (${answeredPercent}%)</p>
+                    <p>Correct answers: ${summary.correct_answers}/${summary.answered_questions}</p>
+                    <p>Incorrect answers: ${summary.incorrect_answers}</p>
+                </div>
+                
+                <div class="results-actions">
+                    <a href="/home" class="btn btn-primary home-btn" data-link>Back to Home</a>
+                </div>
+            </div>
+        `;
+    }
+
+    showError(message) {
         const quizContainer = document.getElementById('quiz-container');
         if (quizContainer) {
-            // Clear existing content
-            quizContainer.textContent = '';
-            
-            // Create results container
-            const resultsContainer = document.createElement('div');
-            resultsContainer.className = 'results-container';
-            
-            // Create heading
-            const heading = document.createElement('h2');
-            heading.textContent = 'Quiz Complete!';
-            resultsContainer.appendChild(heading);
-            
-            // Create final score element
-            const finalScore = document.createElement('div');
-            finalScore.className = 'final-score';
-            finalScore.textContent = `Your score: ${this.score}/${this.totalQuestions}`;
-            resultsContainer.appendChild(finalScore);
-            
-            // Create percentage element
-            const percentage = document.createElement('div');
-            percentage.className = 'percentage';
-            percentage.textContent = `${Math.round((this.score / this.totalQuestions) * 100)}%`;
-            resultsContainer.appendChild(percentage);
-            
-            // Create actions container
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'results-actions';
-            
-            // Create restart button
-            const restartBtn = document.createElement('button');
-            restartBtn.id = 'restart-btn';
-            restartBtn.className = 'restart-btn';
-            restartBtn.textContent = 'Try Again';
-            actionsDiv.appendChild(restartBtn);
-            
-            // Create home link
-            const homeLink = document.createElement('a');
-            homeLink.href = '/';
-            homeLink.className = 'home-btn';
-            homeLink.setAttribute('data-link', '');
-            homeLink.textContent = 'Back to Home';
-            actionsDiv.appendChild(homeLink);
-            
-            // Add actions to results container
-            resultsContainer.appendChild(actionsDiv);
-            
-            // Add results container to quiz container
-            quizContainer.appendChild(resultsContainer);
-            
-            const restartButton = document.getElementById('restart-btn');
-            if (restartButton) {
-                restartButton.addEventListener('click', () => {
-                    // Reset quiz state and restart
-                    this.currentQuestion = 0;
-                    this.score = 0;
-                    this.selectedAnswer = null;
-                    this.answerSubmitted = false;
-                    this.timeLeft = 12;
-                    
-                    this.renderQuestion();
-                    this.startTimer();
-                }, { once: true });
-            }
+            quizContainer.innerHTML = `
+                <div class="error-container">
+                    <p class="error-message">${message}</p>
+                    <a href="/home" class="btn btn-primary" data-link>Back to Home</a>
+                </div>
+            `;
         }
-    }
-
-    renderQuestion() {
-        const question = this.questions[this.currentQuestion];
-        const questionContainer = document.getElementById('quiz-container');
-        
-        if (questionContainer && question) {
-            // Clear existing content
-            while (questionContainer.firstChild) {
-                questionContainer.removeChild(questionContainer.firstChild);
-            }
-            
-            // Create elements using DOM methods
-            const header = document.createElement('header');
-            header.className = 'question-header';
-            
-            // Question info section
-            const infoSection = document.createElement('section');
-            infoSection.className = 'question-info';
-            
-            const questionNumber = document.createElement('p');
-            questionNumber.className = 'question-number';
-            questionNumber.textContent = `Question ${this.currentQuestion + 1}/${this.totalQuestions}`;
-            
-            const scoreElement = document.createElement('p');
-            scoreElement.className = 'score';
-            scoreElement.textContent = `Score ${this.score}`;
-            
-            infoSection.appendChild(questionNumber);
-            infoSection.appendChild(scoreElement);
-            
-            // Question type section
-            const typeSection = document.createElement('section');
-            typeSection.className = 'question-type';
-            
-            const typeLabel = document.createElement('p');
-            typeLabel.textContent = 'Type';
-            
-            const typeValue = document.createElement('p');
-            typeValue.className = 'type-value';
-            typeValue.textContent = 'Multiple Choice';
-            
-            typeSection.appendChild(typeLabel);
-            typeSection.appendChild(typeValue);
-            
-            // Timer section
-            const timerSection = document.createElement('section');
-            timerSection.className = 'timer';
-            
-            const timerLabel = document.createElement('p');
-            timerLabel.textContent = 'Time';
-            
-            const timerValue = document.createElement('p');
-            timerValue.id = 'timer-value';
-            timerValue.textContent = `${this.timeLeft}s`;
-            
-            timerSection.appendChild(timerLabel);
-            timerSection.appendChild(timerValue);
-            
-            header.appendChild(infoSection);
-            header.appendChild(typeSection);
-            header.appendChild(timerSection);
-            
-            // Progress bar
-            const progressBar = document.createElement('progress');
-            progressBar.className = 'progress-bar';
-            progressBar.value = this.timeLeft;
-            progressBar.max = 12;
-            
-            // Main content
-            const main = document.createElement('main');
-            main.className = 'question-content';
-            
-            const categoryInfo = document.createElement('aside');
-            categoryInfo.className = 'category-info';
-            
-            const categorySpan = document.createElement('span');
-            categorySpan.textContent = `${question.category} • ${question.difficulty}`;
-            categoryInfo.appendChild(categorySpan);
-            
-            const questionText = document.createElement('h2');
-            questionText.className = 'question-text';
-            questionText.textContent = question.text;
-            
-            const answerGrid = document.createElement('fieldset');
-            answerGrid.className = 'answer-grid';
-            
-            // Create answer options
-            question.answers.forEach(answer => {
-                const optionButton = document.createElement('button');
-                optionButton.id = `option-${answer.id}`;
-                optionButton.className = 'answer-option';
-                optionButton.dataset.option = answer.id;
-                
-                const optionLetter = document.createElement('span');
-                optionLetter.className = 'option-letter';
-                optionLetter.textContent = answer.id;
-                
-                const optionText = document.createElement('span');
-                optionText.className = 'option-text';
-                optionText.textContent = answer.text;
-                
-                optionButton.appendChild(optionLetter);
-                optionButton.appendChild(optionText);
-                answerGrid.appendChild(optionButton);
-            });
-            
-            main.appendChild(categoryInfo);
-            main.appendChild(questionText);
-            main.appendChild(answerGrid);
-            
-            // Footer for action buttons
-            const footer = document.createElement('footer');
-            footer.className = 'action-buttons';
-            
-            // Append all elements to the question container
-            questionContainer.appendChild(header);
-            questionContainer.appendChild(progressBar);
-            questionContainer.appendChild(main);
-            questionContainer.appendChild(footer);
-            
-            // Add event listeners to answer buttons
-            document.querySelectorAll('.answer-option').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const selectedAnswer = e.currentTarget.dataset.option;
-                    this.selectAnswer(selectedAnswer);
-                });
-            });
-            
-            // Add submit button
-            this.updateActionButtons();
-        }
-    }
-
-    getQuestionHtml(question) {
-        return `
-            <header class="question-header">
-                <section class="question-info">
-                    <p class="question-number">Question ${this.currentQuestion + 1}/${this.totalQuestions}</p>
-                    <p class="score">Score ${this.score}</p>
-                </section>
-                <section class="question-type">
-                    <p>Type</p>
-                    <p class="type-value">Multiple Choice</p>
-                </section>
-                <section class="timer">
-                    <p>Time</p>
-                    <p id="timer-value">${this.timeLeft}s</p>
-                </section>
-            </header>
-            
-            <progress class="progress-bar" value="${this.timeLeft}" max="12"></progress>
-            
-            <main class="question-content">
-                <aside class="category-info">
-                    <span>${question.category} • ${question.difficulty}</span>
-                </aside>
-                <h2 class="question-text">${question.text}</h2>
-                
-                <fieldset class="answer-grid">
-                    ${question.answers.map(answer => `
-                    <button id="option-${answer.id}" class="answer-option" data-option="${answer.id}">
-                        <span class="option-letter">${answer.id}</span>
-                        <span class="option-text">${answer.text}</span>
-                    </button>
-                    `).join('')}
-                </fieldset>
-            </main>
-            
-            <footer class="action-buttons">
-                <!-- Buttons will be rendered by updateActionButtons() -->
-            </footer>
-        `;
-    }
-
-    async getHtml() {
-        await this.getQuestions();
-        
-        const html = `
-            <section class="quiz-page">
-                <article id="quiz-container" class="quiz-container" aria-live="polite" aria-atomic="true">
-                    <!-- Question will be rendered here by renderQuestion() -->
-                </article>
-            </section>
-        `;
-        
-        // We'll initialize the quiz in the mount method instead of using setTimeout
-        return html;
     }
 }
