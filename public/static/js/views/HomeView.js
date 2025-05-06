@@ -9,6 +9,11 @@ export default class extends AbstractView {
     async getHtml(){
         return `
             <h1>Are You a Footy Fan?</h1>
+            <p>Test your football knowledge with our challenging quizzes!</p>
+            
+            <div class="home-actions">
+                <a href="/quiz" class="btn start-quiz-btn" data-link>Start Quiz</a>
+            </div>
         `;
     }
 }
