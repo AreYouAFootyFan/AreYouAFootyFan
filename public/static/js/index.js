@@ -20,14 +20,13 @@ const router = async () => {
     }
 
     const routes = [
-        { path: '/login', view:  LoginView},
+        { path: '/', view:  LoginView},
         { path: '/home', view:  HomeView},
         { path: '/profile', view: ProfileView },
         { path: '/quiz', view: QuizView },
         { path: '/quizzes', view: QuizView },
-
         { path: '/admin', view: AdminDashboardView },
-        { path: 'admin/create-quiz', view: CreateQuizView },
+        { path: '/create-quiz', view: CreateQuizView },
     ];
 
     // pathToRegex function to handle routes with parameters

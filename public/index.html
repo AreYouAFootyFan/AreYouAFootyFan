@@ -22,33 +22,37 @@
   
 
   <header class="site-header">
-    <div class="container">
-      <div class="logo">
-        <span class="logo-icon">⚽</span>
+    <section class="container">
+      <a href="/" class="logo" data-link>
+        <span class="logo-icon" aria-hidden="true">⚽</span>
         <h1>Football Quiz</h1>
-      </div>
-      <nav class="main-nav">
+      </a>
+  
+      <nav class="main-nav" aria-label="Main navigation">
         <ul>
           <li><a href="/home" class="nav-link active" data-link>Home</a></li>
           <li><a href="/profile" class="nav-link" data-link>Profile</a></li>
           <li><a href="/admin" class="nav-link admin-link" data-link>Admin</a></li>
         </ul>
       </nav>
-      <div class="user-menu">
-        <button id="login-button" class="btn btn-outline"><a href="/login" class="nav-link admin-link" data-link>login</a></button>
-        <div id="user-dropdown" class="hidden">
-          <div class="user-info">
-            <span id="username-display">Username</span>
-          </div>
-          <div class="dropdown-menu">
-            <a href="#/profile" data-page="profile">Edit Profile</a>
-            <a href="#/dashboard" data-page="dashboard">My Quizzes</a>
-            <button id="logout-button">Log Out</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  
+      <aside class="user-menu">
+        <a href="/login" class="btn btn-outline nav-link" data-link>Login</a>
+  
+        <details id="user-dropdown" class="hidden">
+          <summary id="username-display">Username</summary>
+          <nav class="dropdown-menu" aria-label="User menu">
+            <ul>
+              <li><a href="/profile" data-page="profile">Edit Profile</a></li>
+              <li><a href="/dashboard" data-page="dashboard">My Quizzes</a></li>
+              <li><button id="logout-button">Log Out</button></li>
+            </ul>
+          </nav>
+        </details>
+      </aside>
+    </section>
   </header>
+  
 
   <!-- Main app content will be injected here -->
   <main id="app"></main>
