@@ -161,8 +161,37 @@ function initializeApp() {
   document.getElementById('login-container').style.display = 'none';
   document.getElementById('app').style.display = 'block';
 
-  document.getElementById('user-name').textContent = currentUser.username;
-  document.getElementById('user-id').textContent = currentUser.role_id;
+  if (currentUser) {
+    const userDisplay = document.createElement('div');
+    userDisplay.className = 'header';
+    userDisplay.innerHTML = `
+      <div class="user-info">
+        <span id="user-display">${currentUser.username || 'Unnamed User'}</span>
+        <span id="user-role">(${currentUser.role_name || (currentUser.role_id === 2 ? 'Quiz Master' : 'Quiz Taker')})</span>
+      </div>
+      <button id="logout-btn">Logout</button>
+    `;
+    
+    const appDiv = document.getElementById('app');
+    appDiv.insertBefore(userDisplay, appDiv.firstChild);
+    
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      auth.logout();
+    });
+  }
+
+  if (window.modules && window.modules.categories) {
+    window.modules.categories.fetchCategories();
+  }
+  if (window.modules && window.modules.difficulties) {
+    window.modules.difficulties.fetchDifficultyLevels();
+  }
+  if (window.modules && window.modules.quizzes) {
+    window.modules.quizzes.fetchQuizzes();
+  }
+  if (window.modules && window.modules.quizTaking) {
+    window.modules.quizTaking.loadAvailableQuizzes();
+  }
 }
 
 window.modules.auth = auth;

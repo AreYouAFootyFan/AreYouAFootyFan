@@ -75,11 +75,9 @@ export class UserResponseModel {
   
   
   static async update(responseId: number, data: { answer_id: number }): Promise<UserResponse | null> {
-    console.log('Poes 1');
 
     const client = await db.connect();
     
-    console.log('Poes 2');
     
     try {
       await client.query('BEGIN');

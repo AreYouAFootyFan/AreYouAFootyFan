@@ -8,23 +8,18 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+
   <script>
-    handleCredentialResponse = (response) => {
-  auth.handleLogin(response.credential)
-    .then(data => {
-      console.log(data)
-    })
-    .catch(error => {
-      console.log("no")
-    });
-};
+    window.handleCredentialResponse = function(response) {
+      console.log("Initial callback handler - will be replaced by auth.js");
+    };
   </script>
+
   <div id="login-container" class="login-container">
     <h1>Football Quiz App</h1>
     <p>Please login with your Google account to continue</p>
     
     <div id="g_id_onload"
-    
          data-client_id="139220435832-r9666l09203vjkd9bf74rlbnogc75vh7.apps.googleusercontent.com"
          data-callback="handleCredentialResponse">
     </div>
@@ -43,11 +38,9 @@
     </div>
   </div>
 
-  <div id="app">
+  <div id="app" style="display: none;">
     <h1>Football Quiz App</h1>
     <p>Backend API test interface</p>
-    <div id="user-name"></div>
-    <div id="user-id"></div>
     
     <div class="section">
       <h2>Category Management</h2>
@@ -71,8 +64,7 @@
         <p>Click "Refresh Categories" to load categories.</p>
       </div>
     </div>
-
-    <div class="section">
+<div class="section">
       <h2>Difficulty Level Management</h2>
       
       <h3>Create New Difficulty Level</h3>

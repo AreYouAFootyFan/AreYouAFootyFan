@@ -4,20 +4,20 @@ import { UpdateUserDto } from '../DTOs/user.dto';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class UserController {
-  static async getCurrentUser(request: Request, response: Response, next: NextFunction): Promise<void> {
-    try {
-      const userId = request.user?.id;
-      
-      if (!userId) {
-        throw ErrorUtils.unauthorized('User not authenticated');
+    static async getCurrentUser(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+          const userId = request.user?.id;
+          
+          if (!userId) {
+            throw ErrorUtils.unauthorized('User not authenticated');
+          }
+          
+          const user = await UserService.getUserWithRoleById(userId);
+          response.json(user); 
+        } catch (error) {
+          next(error);
+        }
       }
-      
-      const user = await UserService.getUserWithRoleById(userId);
-      response.json(user);
-    } catch (error) {
-      next(error);
-    }
-  }
 
   static async setUsername(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
