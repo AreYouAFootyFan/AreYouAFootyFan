@@ -39,6 +39,7 @@ jobs:
             echo 'db_name = "${{ secrets.DB_NAME }}"' >> terraform.tfvars
             echo 'backend_bucket = "${{ secrets.BUCKET_NAME }}"' >> terraform.tfvars
             echo 'backend_key = "${{ secrets.BACKEND_KEY }}"' >> terraform.tfvars
+            echo 'project_name = "${{ secrets.PROJECT_NAME }}"' >> terraform.tfvars
 
         # Validate Terraform configuration
         - name: "Terraform Validate"
