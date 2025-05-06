@@ -1,9 +1,9 @@
 import AbstractView from "./AbstractView.js";
 
-export default class AdminView extends AbstractView {
+export default class extends AbstractView {
     constructor() {
         super();
-        this.setTitle("Admin");
+        this.setTitle("Auth");
     }
 
     async getHtml(){
