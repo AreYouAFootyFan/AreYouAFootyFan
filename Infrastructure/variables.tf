@@ -16,11 +16,6 @@ variable "backend_region" {
   default     = "af-south-1"
 }
 
-# variable "backend_dynamodb_table" {
-#   description = "DynamoDB table for state locking"
-#   type        = string
-# }
-
 # General variables
 variable "project_name" {
   description = "Project name prefix for resources"
@@ -68,4 +63,10 @@ variable "db_username" {
 variable "db_name" {
   description = "The name of the database"
   type        = string
+}
+
+variable "publicly_accessible" {
+  type        = bool
+  default     = false
+  description = "Whether the RDS instance should be publicly accessible"
 }

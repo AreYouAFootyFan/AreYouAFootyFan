@@ -3,9 +3,9 @@ variable "project_name" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "Subnet ID to launch the instance in"
-  type        = string
+variable "subnet_ids" {
+  description = "Subnet IDs to launch the instances in"
+  type        = list(string)
 }
 
 variable "instance_count" {

@@ -20,9 +20,10 @@ resource "aws_db_instance" "this" {
   db_subnet_group_name      = aws_db_subnet_group.this[0].name
   vpc_security_group_ids    = var.vpc_security_group_ids
   skip_final_snapshot       = true
-  publicly_accessible       = true
+  publicly_accessible       = var.publicly_accessible
   storage_encrypted         = false
   apply_immediately         = true
+  multi_az                  = false
   tags = {
     Name = "${var.project_name}-db"
   }

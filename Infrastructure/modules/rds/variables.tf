@@ -39,3 +39,9 @@ variable "db_name" {
   description = "The name of the database"
   type        = string
 }
+
+variable "publicly_accessible" {
+  type        = bool
+  default     = false
+  description = "Whether the RDS instance should be publicly accessible"
+}
