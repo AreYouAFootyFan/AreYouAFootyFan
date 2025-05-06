@@ -40,17 +40,14 @@ export function initQuizManagement() {
 async function fetchQuizzes() {
   try {
     elements.quizzesResult.innerHTML = 'Loading...';
-    
-    const response = await fetch('/api/quizzes');
-    const quizzes = await response.json();
-    
+    const quizzes = await apiRequest('/api/quizzes');    
     if (Array.isArray(quizzes)) {
       if (quizzes.length === 0) {
         elements.quizzesResult.innerHTML = '<p>No quizzes found.</p>';
       } else {
         const quizzesWithStatus = await Promise.all(quizzes.map(async (quiz) => {
           try {
-            const statusResponse = await fetch(`/api/quizzes/${quiz.quiz_id}/status`);
+            const statusResponse = await apiRequest(`/api/quizzes/${quiz.quiz_id}/status`);
             const status = await statusResponse.json();
             return {
               ...quiz,

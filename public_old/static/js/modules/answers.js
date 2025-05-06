@@ -48,11 +48,10 @@ async function fetchAnswersByQuestionId(questionId) {
   try {
     elements.answersResult.innerHTML = 'Loading...';
     
-    const response = await fetch(`/api/answers/question/${questionId}`);
-    const data = await response.json();
+    const data = await apiRequest(`/api/answers/question/${questionId}`);
     
-    const validationResponse = await fetch(`/api/questions/${questionId}/validate`);
-    const validationData = await validationResponse.json();
+    const validationData = await apiRequest(`/api/questions/${questionId}/validate`);
+   
     
     const statusClass = validationData.validation.isValid ? 'valid-status' : 'invalid-status';
     elements.answerStatus.innerHTML = `<p class="${statusClass}">${validationData.validation.message}</p>`;

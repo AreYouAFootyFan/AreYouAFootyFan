@@ -5,11 +5,9 @@ import { ErrorUtils } from '../utils/error.utils';
 
 export class QuizAttemptController {
   
-  static async getUserAttempts(_request: Request, response: Response, next: NextFunction): Promise<void> {
+  static async getUserAttempts(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      // TODO: Get user_id from authentication middleware
-      // For now, use a placeholder user ID
-      const userId = 1; // This should come from auth
+      const userId = request.user!.id;
       
       const attempts = await QuizAttemptService.getUserAttempts(userId);
       response.json(attempts);
@@ -26,8 +24,9 @@ export class QuizAttemptController {
       if (isNaN(id)) {
         throw ErrorUtils.badRequest('Invalid attempt ID');
       }
-      
-      const attempt = await QuizAttemptService.getAttemptById(id);
+      const userId = request.user!.id;
+
+      const attempt = await QuizAttemptService.getAttemptById(id, userId);
       response.json(attempt);
     } catch (error) {
       next(error);
@@ -43,9 +42,8 @@ export class QuizAttemptController {
         throw ErrorUtils.badRequest('Quiz ID is required');
       }
       
-      // TODO: Get user_id from authentication middleware
-      // For now, use a placeholder user ID
-      const userId = 1; // This should come from auth
+      const userId = request.user!.id;
+      const userRole = request.user!.role;
       
       const parsedQuizId = parseInt(quiz_id.toString());
       
@@ -58,7 +56,7 @@ export class QuizAttemptController {
         quiz_id: parsedQuizId
       };
       
-      const attempt = await QuizAttemptService.startQuiz(data);
+      const attempt = await QuizAttemptService.startQuiz(data, userRole);
       response.status(201).json(attempt);
     } catch (error) {
       next(error);

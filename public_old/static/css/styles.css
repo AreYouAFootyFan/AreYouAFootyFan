@@ -207,3 +207,46 @@ button.delete-category:hover {
 #refresh-quizzes:hover {
   background-color: #218838;
 }
+
+/* Add to public/static/css/styles.css */
+
+.login-container {
+  max-width: 400px;
+  margin: 3rem auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#user-display {
+  font-weight: bold;
+}
+
+#user-role {
+  font-style: italic;
+  color: #666;
+}
+
+#logout-btn {
+  background-color: #e74c3c;
+}
+
+#logout-btn:hover {
+  background-color: #c0392b;
+}
