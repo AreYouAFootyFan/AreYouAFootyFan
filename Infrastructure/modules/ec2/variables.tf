@@ -3,9 +3,9 @@ variable "project_name" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "Subnet ID to launch the instance in"
-  type        = string
+variable "subnet_ids" {
+  description = "Subnet IDs to launch the instances in"
+  type        = list(string)
 }
 
 variable "instance_count" {
@@ -21,6 +21,12 @@ variable "aws_region" {
 
 variable "security_group_id" {
   description = "Security group ID for the instance"
+  type        = string
+  default     = null
+}
+
+variable "iam_instance_profile" {
+  description = "The name of the IAM instance profile to associate with the EC2 instance."
   type        = string
   default     = null
 }

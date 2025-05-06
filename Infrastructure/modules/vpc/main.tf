@@ -1,17 +1,20 @@
 resource "aws_vpc" "this" {
   cidr_block = var.vpc_cidr
+  enable_dns_support    = true
+  enable_dns_hostnames  = true
   tags = {
     Name = "${var.project_name}-vpc"
   }
 }
 
 resource "aws_subnet" "public" {
+  count             = var.public_subnet_count
   vpc_id            = aws_vpc.this.id
-  cidr_block        = cidrsubnet(var.vpc_cidr, 8, 0)
+  cidr_block        = cidrsubnet(var.vpc_cidr, 8, count.index + 100)
   map_public_ip_on_launch = true
-  availability_zone = data.aws_availability_zones.available.names[0]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
   tags = {
-    Name = "${var.project_name}-public"
+    Name = "${var.project_name}-public-${count.index}"
   }
 }
 
@@ -33,9 +36,9 @@ resource "aws_security_group" "default" {
   vpc_id      = aws_vpc.this.id
 
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -49,4 +52,13 @@ resource "aws_security_group" "default" {
   tags = {
     Name = "${var.project_name}-default-sg"
   }
+}
+
+resource "aws_security_group_rule" "allow_rds_access" {
+  type        = "ingress"
+  from_port   = 5432
+  to_port     = 5432
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = aws_vpc.this.default_security_group_id
 }
