@@ -8,43 +8,43 @@ export default class AdminDashboardView extends AbstractView {
 
     async getHtml() {
         return `
-            <div class="admin-page">
-                <div class="admin-main">
+            <section class="admin-page">
+                <article class="admin-main">
                     ${this.getSidebar()}
-                    <div class="admin-content" id="admin-content">
+                    <section class="admin-content" id="admin-content">
                         ${this.getDashboardContent()}
-                    </div>
-                </div>
-            </div>
+                    </section>
+                </article>
+            </section>
         `;
     }
 
     getSidebar() {
         return `
-            <div class="admin-sidebar">
-                <nav class="admin-nav">
+            <section class="admin-sidebar">
+                <article class="admin-nav">
                     <ul>
                         <li><a href="/admin" class="admin-nav-link active" data-admin-page="dashboard">Dashboard</a></li>
                         <li><a href="/create-quiz" class="admin-nav-link" data-admin-page="create-quiz">Create Quiz</a></li>
                     </ul>
-                </nav>
-            </div>
+                </article>
+            </section>
         `;
     }
 
     getDashboardContent() {
         return `
-            <div id="admin-dashboard" class="admin-page-content active">
-                <div class="page-header">
+            <main id="admin-dashboard" class="admin-page-content active">
+                <section class="page-header">
                     <h1>Admin Dashboard</h1>
                     <div class="header-actions">
                         <a href="/admin/create-quiz" class="btn btn-primary" data-admin-page="create-quiz">Create New Quiz</a>
                     </div>
-                </div>
+                </section>
 
                 ${this.getDashboardStats()}
                 ${this.getDashboardGrid()}
-            </div>
+            </main>
         `;
     }
 
@@ -96,11 +96,11 @@ export default class AdminDashboardView extends AbstractView {
         return `
             <div class="dashboard-grid">
                 <section class="dashboard-card">
-                    <div class="card-header">
+                    <header class="card-header">
                         <h2>Recent Quizzes</h2>
                         <a href="#/admin/quizzes" class="btn btn-text" data-admin-page="quizzes">View All</a>
-                    </div>
-                    <div class="card-content">
+                    </header>
+                    <section class="card-content">
                         <table class="admin-table">
                             <thead>
                                 <tr>
@@ -118,10 +118,10 @@ export default class AdminDashboardView extends AbstractView {
                                     <td>98</td>
                                     <td>3 days ago</td>
                                     <td>
-                                        <div class="table-actions">
+                                        <section class="table-actions">
                                             <a href="#/admin/edit-quiz/2" class="btn btn-icon" title="Edit">✏️</a>
                                             <button class="btn btn-icon delete-quiz" data-quiz-id="2" title="Delete">🗑️</button>
-                                        </div>
+                                        </section>
                                     </td>
                                 </tr>
                                 <tr>
@@ -130,23 +130,23 @@ export default class AdminDashboardView extends AbstractView {
                                     <td>76</td>
                                     <td>5 days ago</td>
                                     <td>
-                                        <div class="table-actions">
+                                        <section class="table-actions">
                                             <a href="#/admin/edit-quiz/3" class="btn btn-icon" title="Edit">✏️</a>
                                             <button class="btn btn-icon delete-quiz" data-quiz-id="3" title="Delete">🗑️</button>
-                                        </div>
+                                        </section>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </section>
                 </section>
 
                 <section class="dashboard-card">
-                    <div class="card-header">
+                    <header class="card-header">
                         <h2>Top Players</h2>
                         <a href="#/admin/players" class="btn btn-text" data-admin-page="players">View All</a>
-                    </div>
-                    <div class="card-content">
+                    </header>
+                    <main class="card-content">
                         <table class="admin-table">
                             <thead>
                                 <tr>
@@ -166,10 +166,10 @@ export default class AdminDashboardView extends AbstractView {
                                     <td>1845</td>
                                     <td>42</td>
                                     <td>
-                                        <div class="table-actions">
+                                        <section class="table-actions">
                                             <a href="#/admin/view-player/1" class="btn btn-icon" title="View">👁️</a>
                                             <button class="btn btn-icon delete-player" data-player-id="1" title="Delete">🗑️</button>
-                                        </div>
+                                        </section>
                                     </td>
                                 </tr>
                                 <tr>
@@ -181,15 +181,15 @@ export default class AdminDashboardView extends AbstractView {
                                     <td>1788</td>
                                     <td>38</td>
                                     <td>
-                                        <div class="table-actions">
+                                        <section class="table-actions">
                                             <a href="#/admin/view-player/2" class="btn btn-icon" title="View">👁️</a>
                                             <button class="btn btn-icon delete-player" data-player-id="2" title="Delete">🗑️</button>
-                                        </div>
+                                        </section>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </main>
                 </section>
             </div>
         `;
