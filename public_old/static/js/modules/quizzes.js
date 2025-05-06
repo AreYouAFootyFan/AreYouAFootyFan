@@ -40,11 +40,7 @@ export function initQuizManagement() {
 async function fetchQuizzes() {
   try {
     elements.quizzesResult.innerHTML = 'Loading...';
-    
-    const response = await apiRequest('/api/quizzes');
-    const quizzes = await response.json();
-
-    
+    const quizzes = await apiRequest('/api/quizzes');    
     if (Array.isArray(quizzes)) {
       if (quizzes.length === 0) {
         elements.quizzesResult.innerHTML = '<p>No quizzes found.</p>';

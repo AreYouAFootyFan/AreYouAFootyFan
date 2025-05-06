@@ -38,7 +38,6 @@ export class QuizController {
         response.json(quizzes);
         return;
       }
-      
       const quizzes = await QuizService.getAllQuizzes();
       response.json(quizzes);
     } catch (error) {
