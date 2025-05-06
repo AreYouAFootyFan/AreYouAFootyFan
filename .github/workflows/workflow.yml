@@ -5,7 +5,7 @@ on:
         branches: 
             - main
             - development
-            - tevlen/api
+            - tevlen/pipeline
 
 jobs:
     terraform:
