@@ -27,6 +27,9 @@ jobs:
 
         # Initialise Terraform
         - name: "Terraform Init"
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           run: terraform init -backend-config="backend.config"
 
         - name: "Create terraform.tfvars"
@@ -39,6 +42,9 @@ jobs:
 
         # Validate Terraform configuration
         - name: "Terraform Validate"
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           run: terraform validate
 
         # Apply Terraform changes
