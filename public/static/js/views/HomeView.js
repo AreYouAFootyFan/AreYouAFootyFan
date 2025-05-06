@@ -9,59 +9,61 @@ export default class HomeView extends AbstractView {
 
     async getHtml() {
         return `
-    <section class="hero">
-      <div class="container">
-        <div class="hero-content">
-          <h2>Test Your Football Knowledge</h2>
-          <p>Choose from a variety of quizzes and compete with players worldwide</p>
-        </div>
-      </div>
-    </section>
+            <section class="hero">
+                <article class="container">
+                    <header class="hero-content">
+                        <h2>Test Your Football Knowledge</h2>
+                        <p>Choose from a variety of quizzes and compete with players worldwide</p>
+                    </header>
+                </article>
+            </section>
 
-    <section class="quiz-selection">
-      <div class="container">
-        <header class="section-header">
-          <h2>Available Quizzes</h2>
-          <div class="filters">
-            <select id="category-filter">
-              <option value="">All Categories</option>
-              ${appState.categories.map(category => `
-                <option value="${category.id}">${category.name}</option>
-              `).join('')}
-            </select>
-          </div>
-        </header>
-        
-        <div class="quiz-grid" id="quiz-grid">
-          ${this.renderQuizCards()}
-        </div>
-      </div>
-    </section>
+            <section class="quiz-selection">
+                <article class="container">
+                    <header class="section-header">
+                        <h2>Available Quizzes</h2>
+                        <nav class="filters" aria-label="Quiz filters">
+                            <select id="category-filter">
+                                <option value="">All Categories</option>
+                                ${appState.categories.map(category => `
+                                    <option value="${category.id}">${category.name}</option>
+                                `).join('')}
+                            </select>
+                        </nav>
+                    </header>
+                    
+                    <main class="quiz-grid" id="quiz-grid">
+                        ${this.renderQuizCards()}
+                    </main>
+                </article>
+            </section>
 
-    <section class="leaderboard-preview">
-      <div class="container">
-        <header class="section-header">
-          <h2>Top Players</h2>
-          <a href="#/leaderboard" class="btn btn-text" data-page="leaderboard">View Full Leaderboard</a>
-        </header>
-        
-        <div class="leaderboard-table-container">
-          <table class="leaderboard-table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>ELO</th>
-                <th>Quizzes</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboard-body">
-              ${this.renderLeaderboardRows()}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+            <section class="leaderboard-preview">
+                <article class="container">
+                    <header class="section-header">
+                        <h2>Top Players</h2>
+                        <nav>
+                            <a href="#/leaderboard" class="btn btn-text" data-page="leaderboard">View Full Leaderboard</a>
+                        </nav>
+                    </header>
+                    
+                    <figure class="leaderboard-table-container">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Rank</th>
+                                    <th scope="col">Player</th>
+                                    <th scope="col">ELO</th>
+                                    <th scope="col">Quizzes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                ${this.renderLeaderboardRows()}
+                            </tbody>
+                        </table>
+                    </figure>
+                </article>
+            </section>
         `;
     }
 
@@ -73,20 +75,23 @@ export default class HomeView extends AbstractView {
             
             return `
             <article class="quiz-card" data-category="${quiz.category}">
-                <div class="quiz-card-header">
-                    <span class="category">${categoryDisplay}</span>
-                </div>
-                <div class="quiz-card-body">
+                <header class="quiz-card-header">
+                    <p class="category"><strong>${categoryDisplay}</strong></p>
+                </header>
+                
+                <section class="quiz-card-body">
                     <h3>${quiz.title}</h3>
                     <p>${quiz.description}</p>
-                    <div class="quiz-meta">
-                        <span>${quiz.questions} questions</span>
-                        <span>${quiz.timeEstimate}</span>
-                    </div>
-                </div>
-                <div class="quiz-card-footer">
-                    <a href="#/quiz/${quiz.id}" class="btn btn-primary" data-quiz-id="${quiz.id}">Start Quiz</a>
-                </div>
+                    
+                    <footer class="quiz-meta">
+                        <p><small>${quiz.questions} questions</small></p>
+                        <p><small>${quiz.timeEstimate}</small></p>
+                    </footer>
+                </section>
+                
+                <nav class="quiz-card-footer">
+                    <a href="/quiz" class="btn btn-primary" data-quiz-id="${quiz.id}">Start Quiz</a>
+                </nav>
             </article>
             `;
         }).join('');
