@@ -5,6 +5,7 @@ on:
         branches: 
             - main
             - development
+            - tevlen/api
 
 jobs:
     terraform:
@@ -32,6 +33,7 @@ jobs:
           run: |
             echo 'db_password = "${{ secrets.DB_PASSWORD }}"' > terraform.tfvars
             echo 'db_username = "${{ secrets.DB_USERNAME }}"' >> terraform.tfvars
+            echo 'db_name = "${{ secrets.DB_NAME }}"' >> terraform.tfvars
             echo 'backend_bucket = "${{ secrets.BUCKET_NAME }}"' >> terraform.tfvars
             echo 'backend_key = "${{ secrets.BACKEND_KEY }}"' >> terraform.tfvars
 
