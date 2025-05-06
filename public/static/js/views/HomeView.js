@@ -8,6 +8,7 @@ export default class HomeView extends AbstractView {
     }
 
     async getHtml() {
+        // Injecting a <script> tag directly inside the HTML to handle modal logic
         return `
             <section class="hero">
                 <article class="container">
@@ -23,7 +24,7 @@ export default class HomeView extends AbstractView {
                     <header class="section-header">
                         <h2>Available Quizzes</h2>
                         <nav class="filters" aria-label="Quiz filters">
-                            <select id="category-filter">
+                            <select id="category-filter" onchange="filterQuizzes(this.value)">
                                 <option value="">All Categories</option>
                                 ${appState.categories.map(category => `
                                     <option value="${category.id}">${category.name}</option>
@@ -43,7 +44,9 @@ export default class HomeView extends AbstractView {
                     <header class="section-header">
                         <h2>Top Players</h2>
                         <nav>
-                            <a href="#/leaderboard" class="btn btn-text" data-page="leaderboard">View Full Leaderboard</a>
+                            <button class="btn btn-text" onclick="document.getElementById('leaderboard-modal').classList.add('show')">
+                                View Full Leaderboard
+                            </button>
                         </nav>
                     </header>
                     
@@ -64,15 +67,51 @@ export default class HomeView extends AbstractView {
                     </figure>
                 </article>
             </section>
+
+            <!-- Full Leaderboard Modal -->
+            <section class="leaderboard-modal" id="leaderboard-modal">
+                <div class="modal-content">
+                    <button class="modal-close" onclick="document.getElementById('leaderboard-modal').classList.remove('show')">
+                        &times;
+                    </button>
+                    <h2>Full Leaderboard</h2>
+                    <table class="leaderboard-table full">
+                        <thead>
+                            <tr>
+                                <th scope="col">Rank</th>
+                                <th scope="col">Player</th>
+                                <th scope="col">ELO</th>
+                                <th scope="col">Quizzes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${this.renderLeaderboardRows()}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         `;
+    }
+
+     filterQuizzes(category) {
+        const cards = document.querySelectorAll('.quiz-card');
+        cards.forEach(card => {
+            card.style.display = (!category || card.dataset.category === category) ? 'block' : 'none';
+        });
+
+        const modal = document.getElementById('leaderboard-modal');
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
     }
 
     renderQuizCards() {
         return appState.quizzes.map(quiz => {
-            // Find the category display name for this quiz
             const category = appState.categories.find(cat => cat.id === quiz.category);
             const categoryDisplay = category ? category.name : quiz.category;
-            
+
             return `
             <article class="quiz-card" data-category="${quiz.category}">
                 <header class="quiz-card-header">
@@ -106,24 +145,5 @@ export default class HomeView extends AbstractView {
                 <td>${player.quizzes}</td>
             </tr>
         `).join('');
-    }
-
-    async afterRender() {
-        document.getElementById('category-filter').addEventListener('change', (e) => {
-            const selectedCategory = e.target.value;
-            this.filterQuizzes(selectedCategory);
-        });
-    }
-
-    filterQuizzes(category) {
-        const quizCards = document.querySelectorAll('.quiz-card');
-        
-        quizCards.forEach(card => {
-            if (!category || card.dataset.category === category) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
     }
 }
