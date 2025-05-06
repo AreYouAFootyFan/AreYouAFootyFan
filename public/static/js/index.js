@@ -1,7 +1,9 @@
-import AdminView from "./views/AdminView.js";
+import AdminDashboardView from "./views/AdminDashBoardView.js";
 import HomeView from "./views/HomeView.js";
-import ProfileView
- from "./views/ProfileView.js";import QuizView from "./views/QuizView.js";
+import ProfileView from "./views/ProfileView.js";
+import QuizView from "./views/QuizView.js";
+import CreateQuizView from "./views/CreateQuizView.js";
+import LoginView from "./views/LoginView.js";
 
 // Keep track of the current view instance to handle cleanup
 let currentView = null;
@@ -18,10 +20,14 @@ const router = async () => {
     }
 
     const routes = [
+        { path: '/login', view:  LoginView},
         { path: '/home', view:  HomeView},
-        { path: '/admin', view: AdminView },
         { path: '/profile', view: ProfileView },
-        { path: '/quiz', view: QuizView }
+        { path: '/quiz', view: QuizView },
+        { path: '/quizzes', view: QuizView },
+
+        { path: '/admin', view: AdminDashboardView },
+        { path: 'admin/create-quiz', view: CreateQuizView },
     ];
 
     // pathToRegex function to handle routes with parameters

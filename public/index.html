@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="/static/js/css/quiz-complete/quiz-complete.css" />
   <link rel="stylesheet" href="/static/js/css/hero-section/hero-section.css" />
   <link rel="stylesheet" href="/static/js/css/profile/profile.css" />
+  <link rel="stylesheet" href="/static/js/css/admin/admin-styles.css" />
+  <link rel="stylesheet" href="/static/js/css/login/login.css" />
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 
@@ -27,13 +30,12 @@
       <nav class="main-nav">
         <ul>
           <li><a href="/home" class="nav-link active" data-link>Home</a></li>
-          <li><a href="/quizzes" class="nav-link" data-link>My Quizzes</a></li>
           <li><a href="/profile" class="nav-link" data-link>Profile</a></li>
           <li><a href="/admin" class="nav-link admin-link" data-link>Admin</a></li>
         </ul>
       </nav>
       <div class="user-menu">
-        <button id="login-button" class="btn btn-outline">Log In</button>
+        <button id="login-button" class="btn btn-outline"><a href="/login" class="nav-link admin-link" data-link>login</a></button>
         <div id="user-dropdown" class="hidden">
           <div class="user-info">
             <span id="username-display">Username</span>
