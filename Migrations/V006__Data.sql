@@ -79,10 +79,10 @@ INSERT INTO questions (quiz_id, question_text, difficulty_id) VALUES
 -- Answers
 -- Q1
 INSERT INTO answers (question_id, answer_text, is_correct) VALUES 
-    (8, 'Brazil', false),
-    (8, 'Uruguay', true),
-    (8, 'Italy', false),
-    (8, 'Germany', false);
+    (8, 'Brazil', false), -- 29
+    (8, 'Uruguay', true), -- 30
+    (8, 'Italy', false), -- 31
+    (8, 'Germany', false); -- 32
 
 -- Q2
 INSERT INTO answers (question_id, answer_text, is_correct) VALUES 
@@ -119,35 +119,35 @@ INSERT INTO answers (question_id, answer_text, is_correct) VALUES
     (13, 'Ronaldinho', false),
     (13, 'Pelé', false);
 
--- -- Quiz Attempts
--- INSERT INTO quiz_attempts (user_id, quiz_id) VALUES 
---     (2, 2),
---     (2, 3),
---     (2, 4);
+-- Quiz Attempts
+INSERT INTO quiz_attempts (user_id, quiz_id) VALUES 
+    (2, 2),
+    (2, 3),
+    (2, 4);
 
--- -- User Responses
--- -- Attempt 1: User 2 takes Quiz 1 (Q1 + Q2)
--- INSERT INTO user_responses
---     (attempt_id, question_id, chosen_answer, points_earned)
--- VALUES 
---     (1, 1, 2, 5),  -- correct (Easy)
---     (1, 2, 5, 10); -- correct (Medium)
+-- User Responses
+-- Attempt 1: User 2 takes Quiz 1 (Q1 + Q2)
+INSERT INTO user_responses
+    (attempt_id, question_id, chosen_answer, points_earned)
+VALUES 
+    (1, 8, 30, 5),  -- correct (Easy)
+    (1, 9, 33, 10); -- correct (Medium)
 
--- -- Attempt 2: User 2 takes Quiz 2 (Q3 + Q4)
--- INSERT INTO user_responses
---     (attempt_id, question_id, chosen_answer, points_earned)
--- VALUES 
---     (2, 3, 7, 5),  -- correct
---     (2, 4, 13, 20); -- correct (Hard)
+-- Attempt 2: User 2 takes Quiz 2 (Q3 + Q4)
+INSERT INTO user_responses
+    (attempt_id, question_id, chosen_answer, points_earned)
+VALUES 
+    (2, 10, 38, 5),  -- correct
+    (2, 11, 44, 20); -- correct (Hard)
 
--- -- Attempt 3: User 2 takes Quiz 3 (Q5 + Q6)
--- INSERT INTO user_responses
---     (attempt_id, question_id, chosen_answer, points_earned)
--- VALUES
---     (3, 5, 20, 20),  -- correct
---     (3, 6, 21, 5); -- correct
+-- Attempt 3: User 2 takes Quiz 3 (Q5 + Q6)
+INSERT INTO user_responses
+    (attempt_id, question_id, chosen_answer, points_earned)
+VALUES
+    (3, 12, 48, 20),  -- correct
+    (3, 13, 49, 5); -- correct
 
--- -- Badge History
--- INSERT INTO badge_history (user_id, badge_id) VALUES 
---     (2, 1), -- Rookie
---     (2, 2); -- Midfielder
+-- Badge History
+INSERT INTO badge_history (user_id, badge_id) VALUES 
+    (2, 1), -- Rookie
+    (2, 2); -- Midfielder
