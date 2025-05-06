@@ -11,6 +11,12 @@ export const state = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('app').style.display !== 'none') {
+    initializeModules();
+  }
+});
+
+function initializeModules() {
   initCategoryManagement();
   initDifficultyManagement();
   initQuizManagement();
@@ -27,4 +33,4 @@ document.addEventListener('DOMContentLoaded', () => {
   difficultyModule.fetchDifficultyLevels();
   quizModule.fetchQuizzes();
   quizTakingModule.loadAvailableQuizzes();
-});
+}

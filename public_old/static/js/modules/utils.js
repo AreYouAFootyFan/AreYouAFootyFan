@@ -1,4 +1,3 @@
-
 window.modules = window.modules || {};
 
 /**
@@ -9,13 +8,30 @@ window.modules = window.modules || {};
  */
 export async function apiRequest(url, options = {}) {
   try {
-    if (!options.headers) {
+    const auth = window.modules.auth;
+    
+    if (auth && auth.isAuthenticated()) {
+      if (!options.headers) {
+        options.headers = auth.getAuthHeaders();
+      } else {
+        options.headers = {
+          ...options.headers,
+          'Authorization': `Bearer ${auth.getToken()}`
+        };
+      }
+    } else if (!options.headers) {
       options.headers = {
         'Content-Type': 'application/json'
       };
     }
     
     const response = await fetch(url, options);
+    
+    if (response.status === 401 && auth) {
+      auth.logout();
+      throw new Error('Your session has expired. Please login again.');
+    }
+    
     const data = await response.json();
     
     if (!response.ok) {

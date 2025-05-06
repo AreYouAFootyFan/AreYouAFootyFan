@@ -12,6 +12,8 @@ import questionRoutes from './routes/question.routes';
 import answerRoutes from './routes/answer.routes';
 import quizAttemptRoutes from './routes/quiz-attempt.routes';
 import userResponseRoutes from './routes/user-response.routes';
+import userRoutes from './routes/user.routes';
+import authRoutes from './routes/auth.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +29,8 @@ app.use('/api/questions', questionRoutes);
 app.use('/api/answers', answerRoutes);
 app.use('/api/quiz-attempts', quizAttemptRoutes);
 app.use('/api/user-responses', userResponseRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get('/{*any}', (_request, response) => {
   response.sendFile(path.join(__dirname, '../public_old/index.html'));
