@@ -23,60 +23,6 @@ export default class LoginView extends AbstractView {
                             <img src="/assets/google-logo.svg" alt="Google" class="social-icon" />
                             Continue with Google
                         </button>
-
-                        <p class="divider"><span>or</span></p>
-
-                        <form id="email-login-form">
-                            <fieldset>
-                                <legend class="visually-hidden">Email Login</legend>
-                                
-                                <label for="email">
-                                    Email address
-                                    <input 
-                                        type="email" 
-                                        id="email" 
-                                        name="email" 
-                                        autocomplete="email" 
-                                        placeholder="you@example.com" 
-                                        required
-                                    />
-                                </label>
-
-                                <label for="password">
-                                    Password
-                                    <span class="password-input-container">
-                                        <input 
-                                            type="password" 
-                                            id="password" 
-                                            name="password" 
-                                            autocomplete="current-password" 
-                                            placeholder="Enter your password" 
-                                            required
-                                        />
-                                        <button 
-                                            type="button" 
-                                            class="password-toggle" 
-                                            aria-label="Toggle password visibility"
-                                        >
-                                            <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                <circle cx="12" cy="12" r="3"></circle>
-                                            </svg>
-                                        </button>
-                                    </span>
-                                </label>
-
-                                <section class="form-options">
-                                    <label class="remember-me">
-                                        <input type="checkbox" id="remember" name="remember" />
-                                        Remember me
-                                    </label>
-                                    <a href="#" class="forgot-password">Forgot password?</a>
-                                </section>
-
-                                <button type="submit" class="login-btn">Sign in</button>
-                            </fieldset>
-                        </form>
                     </section>
 
                     <footer class="auth-footer">

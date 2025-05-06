@@ -1,4 +1,4 @@
-import AdminDashboardView from "./views/AdminDashboardView.js";
+import AdminDashboardView from "./views/AdminDashBoardView.js";
 import HomeView from "./views/HomeView.js";
 import ProfileView from "./views/ProfileView.js";
 import QuizView from "./views/QuizView.js";
