@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '../public')));
+app.use('/static', express.static(path.join(__dirname, '../public/static')));
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/difficulty-levels', difficultyRoutes);
@@ -28,7 +28,7 @@ app.use('/api/answers', answerRoutes);
 app.use('/api/quiz-attempts', quizAttemptRoutes);
 app.use('/api/user-responses', userResponseRoutes);
 
-app.get('/', (_request, response) => {
+app.get('/{*any}', (_request, response) => {
   response.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
