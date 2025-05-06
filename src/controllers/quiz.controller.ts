@@ -79,9 +79,8 @@ export class QuizController {
         throw ErrorUtils.badRequest('Quiz description cannot exceed 128 characters');
       }
 
-      // TODO: Get actual user ID from auth middleware
-      // For now, use a placeholder user ID
-      const created_by = 1; // This will be replaced with actual user ID from auth
+      const created_by = request.user!.id;
+      const user_role = request.user!.role;
       
       let parsedCategoryId: number | undefined | null = undefined;
       if (category_id !== undefined) {
@@ -101,7 +100,7 @@ export class QuizController {
         quiz_description, 
         category_id: parsedCategoryId, 
         created_by 
-      });
+      }, user_role);
       
       response.status(201).json(quiz);
     } catch (error) {
