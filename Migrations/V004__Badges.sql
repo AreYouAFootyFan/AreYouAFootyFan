@@ -1,6 +1,7 @@
 INSERT INTO badges (badge_name, minimum_points) VALUES
-    ('Rookie', 50),
-    ('Bench Warmer', 100),
-    ('Midfielder', 200),
-    ('Striker', 500),
-    ('Legend', 1000);
+  ('Rookie', 50),
+  ('Amateur', 200),
+  ('Semi-Pro', 500),
+  ('Professional', 1000),
+  ('World Class', 2000),
+  ('Legendary', 5000);
