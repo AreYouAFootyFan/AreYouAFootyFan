@@ -24,7 +24,19 @@ resource "aws_db_instance" "this" {
   storage_encrypted         = false
   apply_immediately         = true
   multi_az                  = false
+  parameter_group_name      = aws_db_parameter_group.this.name
   tags = {
     Name = "${var.project_name}-db"
+  }
+}
+
+resource "aws_db_parameter_group" "this" {
+  name = "${var.project_name}-db-parameter-group"
+  family = "postgres17"
+  description = "Parameter group for ${var.project_name} database"
+
+  parameter {
+    name = "rds.force_ssl"
+    value = "0"
   }
 }

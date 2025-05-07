@@ -9,15 +9,37 @@ resource "aws_instance" "this" {
   }
   user_data = <<-EOF
     #!/bin/bash
-    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+    # Updating system and installing dependencies
     apt-get update -y
-    apt-get install -y nodejs git
-    npm install -g pm2
-    mkdir -p /home/ubuntu/footy-api
-    chown ubuntu:ubuntu /home/ubuntu/footy-api
-    echo "Node.js, npm, and pm2 installed. Ready for API deployment." > /home/ubuntu/footy-api/DEPLOYMENT_STATUS.txt
+    apt-get install -y curl git
+
+    # Installing Node.js (LTS)
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+    apt-get install -y nodejs
+
+    # Installing PM2, TypeScript, and ts-node globally
+    npm install -g pm2 typescript ts-node
+
+    # Cloning the repo
+    git clone https://github.com/AreYouAFootyFan/AreYouAFootyFan.git /home/ubuntu/footy-app
+
+    # Setting permissions
+    chown -R ubuntu:ubuntu /home/ubuntu/footy-app
+
+    # Installing dependencies
+    cd /home/ubuntu/footy-app
+    sudo -u ubuntu npm install
+
+    # Start the app with PM2 using ts-node
+    sudo -u ubuntu pm2 start src/app.ts --name "footy-app" --interpreter ./node_modules/.bin/ts-node
+
+    # Set PM2 to start on boot
+    sudo -u ubuntu pm2 startup systemd -u ubuntu --hp /home/ubuntu
+    sudo -u ubuntu pm2 save
+
   EOF
   iam_instance_profile = var.iam_instance_profile
+  key_name = var.key_name
 }
 
 data "aws_ami" "ubuntu" {
