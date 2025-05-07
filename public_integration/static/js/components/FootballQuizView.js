@@ -36,7 +36,6 @@ class FootballQuizView extends HTMLElement {
         styleElement.id = styleId;
         
         styleElement.textContent = `
-          /* Quiz View Styles - Properly scoped to the component */
           football-quiz-view {
             display: block;
             width: 100%;
@@ -76,7 +75,6 @@ class FootballQuizView extends HTMLElement {
             margin-bottom: 1.5rem;
           }
           
-          /* Question Card */
           football-quiz-view .question-card {
             background-color: white;
             border-radius: 0.5rem;
@@ -85,7 +83,6 @@ class FootballQuizView extends HTMLElement {
             margin-bottom: 2rem;
           }
           
-          /* Header Section */
           football-quiz-view .question-header {
             display: flex;
             justify-content: space-between;
@@ -119,7 +116,6 @@ class FootballQuizView extends HTMLElement {
             color: var(--error);
           }
           
-          /* Progress Bar */
           football-quiz-view .progress-container {
             height: 0.375rem;
             background-color: var(--gray-200);
@@ -136,7 +132,6 @@ class FootballQuizView extends HTMLElement {
             background-color: var(--error);
           }
           
-          /* Question Content */
           football-quiz-view .question-content {
             padding: 2rem;
           }
@@ -154,7 +149,6 @@ class FootballQuizView extends HTMLElement {
             line-height: 1.4;
           }
           
-          /* Answer Options */
           football-quiz-view .answer-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
@@ -223,7 +217,6 @@ class FootballQuizView extends HTMLElement {
             color: white;
           }
           
-          /* Answer Feedback */
           football-quiz-view .answer-feedback {
             margin-top: 2rem;
             text-align: center;
@@ -244,7 +237,6 @@ class FootballQuizView extends HTMLElement {
             color: var(--error);
           }
           
-          /* Action Buttons */
           football-quiz-view .action-buttons {
             padding: 1.5rem;
             border-top: 0.0625rem solid var(--gray-200);
@@ -289,7 +281,6 @@ class FootballQuizView extends HTMLElement {
             background-color: var(--secondary-dark);
           }
           
-          /* Time's Up Message */
           football-quiz-view .time-up-message {
             margin-top: 2rem;
             padding: 1rem;
@@ -300,7 +291,6 @@ class FootballQuizView extends HTMLElement {
             color: var(--error);
           }
           
-          /* Results Screen */
           football-quiz-view .results-container {
             background-color: white;
             border-radius: 0.5rem;
@@ -356,7 +346,6 @@ class FootballQuizView extends HTMLElement {
             background-color: var(--primary-dark);
           }
           
-          /* Responsive Design using fluid layouts instead of media queries */
           football-quiz-view .question-header {
             display: flex;
             flex-wrap: wrap;
@@ -407,7 +396,6 @@ class FootballQuizView extends HTMLElement {
         return;
       }
   
-      // Check if the user is a Quiz Taker
       if (authService.isQuizMaster && authService.isQuizMaster()) {
         this.showError("Quiz Masters cannot take quizzes. Please use a Quiz Taker account.");
         return;
@@ -537,7 +525,6 @@ class FootballQuizView extends HTMLElement {
     }
     
     renderAnswerOptions(answers) {
-      // Create a new array with copied objects to avoid modifying the original
       const shuffledAnswers = answers.map(a => ({...a})).sort(() => Math.random() - 0.5);
       
       return shuffledAnswers.map((answer, index) => `
@@ -735,12 +722,10 @@ class FootballQuizView extends HTMLElement {
       
       handleTimeUp() {
         if (this.selectedAnswer) {
-          // If user already selected an answer but didn't submit
           this.submitAnswer();
         } else {
           const questionContent = this.querySelector('.question-content');
           if (questionContent) {
-            // Show correct answer
             this.querySelectorAll('.answer-option').forEach(option => {
               const answerId = parseInt(option.dataset.id);
               const answer = this.currentQuestion.answers.find(a => a.answer_id === answerId);
@@ -750,14 +735,12 @@ class FootballQuizView extends HTMLElement {
               }
             });
             
-            // Add time's up message
             const timeUpElement = document.createElement('div');
             timeUpElement.className = 'time-up-message';
             timeUpElement.innerHTML = `<p>Time's up! The correct answer is shown above.</p>`;
             questionContent.appendChild(timeUpElement);
           }
           
-          // Update buttons
           const actionButtons = this.querySelector('.action-buttons');
           if (actionButtons) {
             actionButtons.innerHTML = '';

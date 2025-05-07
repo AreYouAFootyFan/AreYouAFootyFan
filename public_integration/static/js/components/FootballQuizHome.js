@@ -21,13 +21,11 @@ class FootballQuizHome extends HTMLElement {
         styleElement.id = styleId;
         
         styleElement.textContent = `
-          /* Self-contained home page styles */
           football-quiz-home {
             display: block;
             width: 100%;
           }
           
-          /* Hero section */
           .fq-hero {
             background-color: #3b82f6;
             color: white;
@@ -55,7 +53,6 @@ class FootballQuizHome extends HTMLElement {
             margin: 0 auto;
           }
           
-          /* Categories section */
           .fq-categories {
             max-width: 75rem;
             margin: 0 auto 2rem auto;
@@ -81,7 +78,6 @@ class FootballQuizHome extends HTMLElement {
             min-width: 12rem;
           }
           
-          /* Quiz grid */
           .fq-quiz-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
@@ -89,14 +85,12 @@ class FootballQuizHome extends HTMLElement {
             margin-bottom: 2rem;
           }
           
-          /* For smaller screens */
           @supports (width: min(18rem, 100%)) {
             .fq-quiz-grid {
               grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
             }
           }
           
-          /* Quiz card */
           .fq-quiz-card {
             background-color: white;
             border-radius: 0.5rem;
@@ -195,7 +189,6 @@ class FootballQuizHome extends HTMLElement {
             background-color: #2563eb;
           }
           
-          /* Leaderboard section */
           .fq-leaderboard {
             background-color: white;
             padding: 3rem 1rem;
@@ -278,7 +271,6 @@ class FootballQuizHome extends HTMLElement {
             color: #6b21a8;
           }
           
-          /* Empty state */
           .fq-empty-state {
             text-align: center;
             padding: 3rem 1rem;
@@ -306,7 +298,6 @@ class FootballQuizHome extends HTMLElement {
             margin: 0 auto;
           }
           
-          /* Modal */
           .fq-modal {
             position: fixed;
             top: 0;
@@ -371,7 +362,6 @@ class FootballQuizHome extends HTMLElement {
             background-color: #f8fafc;
           }
   
-          /* Full leaderboard modal */
           .fq-full-leaderboard-modal {
             position: fixed;
             top: 0;
@@ -427,7 +417,6 @@ class FootballQuizHome extends HTMLElement {
             background-color: #f1f5f9;
             color: #0f172a;
           }
-            /* User notification banner */
           .fq-notification {
             width: 100%;
             max-width: 73rem;
@@ -450,7 +439,6 @@ class FootballQuizHome extends HTMLElement {
             font-size: 0.875rem;
           }
           
-          /* Loading state */
           .fq-loading {
             display: flex;
             align-items: center;
@@ -474,7 +462,6 @@ class FootballQuizHome extends HTMLElement {
             to { transform: rotate(360deg); }
           }
           
-          /* Helper classes */
           .fq-hidden {
             display: none !important;
           }
@@ -514,7 +501,6 @@ class FootballQuizHome extends HTMLElement {
             </div>
           </section>
           
-          <!-- Leaderboard Section -->
           <section class="fq-leaderboard">
             <div class="fq-leaderboard-inner">
               <div class="fq-section-header">
@@ -545,7 +531,6 @@ class FootballQuizHome extends HTMLElement {
             </div>
           </section>
           
-          <!-- Quiz Master Modal -->
           <div class="fq-modal" id="quiz-master-modal">
             <div class="fq-modal-content">
               <h3 class="fq-modal-title">Quiz Master Account</h3>
@@ -557,7 +542,6 @@ class FootballQuizHome extends HTMLElement {
             </div>
           </div>
           
-          <!-- Full Leaderboard Modal -->
           <div class="fq-full-leaderboard-modal" id="full-leaderboard-modal">
             <div class="fq-full-leaderboard-content">
               <button class="fq-close-btn" id="close-leaderboard-btn">&times;</button>

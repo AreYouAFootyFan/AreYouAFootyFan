@@ -16,7 +16,6 @@ class FootballQuizFooter extends HTMLElement {
         styleElement.id = styleId;
         
         styleElement.textContent = `
-          /* Self-contained footer styles */
           football-quiz-footer {
             display: block;
             width: 100%;
