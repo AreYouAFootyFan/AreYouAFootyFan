@@ -3,6 +3,7 @@ class FootballQuizHome extends HTMLElement {
       super();
       this.quizzes = [];
       this.categories = [];
+      this.leaderboardData = [];
       this.selectedCategory = '';
     }
   
@@ -369,8 +370,64 @@ class FootballQuizHome extends HTMLElement {
           .fq-btn-secondary:hover {
             background-color: #f8fafc;
           }
+  
+          /* Full leaderboard modal */
+          .fq-full-leaderboard-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+          }
           
-          /* User notification banner */
+          .fq-full-leaderboard-modal.fq-visible {
+            opacity: 1;
+            visibility: visible;
+          }
+          
+          .fq-full-leaderboard-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            width: 100%;
+            max-width: 40rem;
+            padding: 1.5rem;
+            position: relative;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+          }
+          
+          .fq-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #64748b;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+          }
+          
+          .fq-close-btn:hover {
+            background-color: #f1f5f9;
+            color: #0f172a;
+          }
+            /* User notification banner */
           .fq-notification {
             width: 100%;
             max-width: 73rem;
@@ -391,6 +448,35 @@ class FootballQuizHome extends HTMLElement {
           .fq-notification-message {
             color: #7c2d12;
             font-size: 0.875rem;
+          }
+          
+          /* Loading state */
+          .fq-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #64748b;
+          }
+          
+          .fq-loading-spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 0.125rem solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: fq-spin 0.75s linear infinite;
+          }
+          
+          @keyframes fq-spin {
+            to { transform: rotate(360deg); }
+          }
+          
+          /* Helper classes */
+          .fq-hidden {
+            display: none !important;
           }
         `;
         
@@ -428,11 +514,12 @@ class FootballQuizHome extends HTMLElement {
             </div>
           </section>
           
+          <!-- Leaderboard Section -->
           <section class="fq-leaderboard">
             <div class="fq-leaderboard-inner">
               <div class="fq-section-header">
                 <h2 class="fq-section-title">Top Players</h2>
-                <a href="#" class="fq-view-all" id="view-full-leaderboard">View Full Leaderboard</a>
+                <button class="fq-view-all" id="view-full-leaderboard">View Full Leaderboard</button>
               </div>
               
               <div class="fq-table-container">
@@ -446,13 +533,19 @@ class FootballQuizHome extends HTMLElement {
                     </tr>
                   </thead>
                   <tbody id="leaderboard-body">
-                    <tr><td colspan="4">Loading leaderboard data...</td></tr>
+                    <tr>
+                      <td colspan="4" class="fq-loading">
+                        <div class="fq-loading-spinner"></div>
+                        <span>Loading leaderboard data...</span>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
             </div>
           </section>
           
+          <!-- Quiz Master Modal -->
           <div class="fq-modal" id="quiz-master-modal">
             <div class="fq-modal-content">
               <h3 class="fq-modal-title">Quiz Master Account</h3>
@@ -460,6 +553,35 @@ class FootballQuizHome extends HTMLElement {
               <div class="fq-modal-actions">
                 <button class="fq-btn-secondary" id="close-modal-btn">Cancel</button>
                 <a href="/admin" class="fq-quiz-btn" data-link>Go to Admin</a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Full Leaderboard Modal -->
+          <div class="fq-full-leaderboard-modal" id="full-leaderboard-modal">
+            <div class="fq-full-leaderboard-content">
+              <button class="fq-close-btn" id="close-leaderboard-btn">&times;</button>
+              <h2 class="fq-section-title">Football Quiz Leaderboard</h2>
+              
+              <div class="fq-table-container">
+                <table class="fq-leaderboard-table">
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Player</th>
+                      <th>Points</th>
+                      <th>Quizzes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="full-leaderboard-body">
+                    <tr>
+                      <td colspan="4" class="fq-loading">
+                        <div class="fq-loading-spinner"></div>
+                        <span>Loading full leaderboard data...</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -483,7 +605,14 @@ class FootballQuizHome extends HTMLElement {
       if (viewLeaderboardBtn) {
         viewLeaderboardBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          console.log('View full leaderboard');
+          this.showFullLeaderboard();
+        });
+      }
+      
+      const closeLeaderboardBtn = this.querySelector('#close-leaderboard-btn');
+      if (closeLeaderboardBtn) {
+        closeLeaderboardBtn.addEventListener('click', () => {
+          this.hideFullLeaderboard();
         });
       }
       
@@ -502,32 +631,76 @@ class FootballQuizHome extends HTMLElement {
           }
         });
       }
+      
+      const leaderboardModal = this.querySelector('#full-leaderboard-modal');
+      if (leaderboardModal) {
+        leaderboardModal.addEventListener('click', (e) => {
+          if (e.target === leaderboardModal) {
+            this.hideFullLeaderboard();
+          }
+        });
+      }
     }
     
     async loadData() {
       try {
-        const authService = window.authService;
-        if (!authService) {
-          console.warn('Auth service not available');
-          return;
-        }
+        const dataPromises = [];
         
         if (window.categoryService) {
-          const categories = await window.categoryService.getAllCategories();
-          this.categories = categories;
-          this.populateCategoryFilter();
+          dataPromises.push(
+            window.categoryService.getAllCategories()
+              .then(categories => {
+                this.categories = categories;
+                this.populateCategoryFilter();
+              })
+              .catch(error => {
+                console.error('Error loading categories:', error);
+                this.loadDummyCategories();
+              })
+          );
+        } else {
+          this.loadDummyCategories();
         }
         
         if (window.quizService) {
-          const quizzes = await window.quizService.getValidQuizzes();
-          this.quizzes = quizzes;
-          this.renderQuizzes();
-        } 
+          dataPromises.push(
+            window.quizService.getValidQuizzes()
+              .then(quizzes => {
+                this.quizzes = quizzes;
+                this.renderQuizzes();
+              })
+              .catch(error => {
+                console.error('Error loading quizzes:', error);
+                this.loadDummyQuizzes();
+              })
+          );
+        } else {
+          this.loadDummyQuizzes();
+        }
         
-        this.loadLeaderboard();
+        if (window.leaderboardService) {
+          dataPromises.push(
+            window.leaderboardService.getTopPlayers(5)
+              .then(leaderboard => {
+                this.leaderboardData = leaderboard;
+                this.renderLeaderboard();
+              })
+              .catch(error => {
+                console.error('Error loading leaderboard:', error);
+                this.loadDummyLeaderboard();
+              })
+          );
+        } else {
+          this.loadDummyLeaderboard();
+        }
+        
+        await Promise.all(dataPromises);
         
       } catch (error) {
         console.error('Error loading data:', error);
+        this.loadDummyCategories();
+        this.loadDummyQuizzes();
+        this.loadDummyLeaderboard();
       }
     }
     
@@ -612,28 +785,76 @@ class FootballQuizHome extends HTMLElement {
       `;
     }
     
-    loadLeaderboard() {
-      const leaderboardData = [
-        { rank: 1, name: "FootballMaster", points: 1845, quizzes: 42 },
-        { rank: 2, name: "SoccerQueen", points: 1788, quizzes: 38 },
-        { rank: 3, name: "GoalMachine", points: 1756, quizzes: 45 },
-        { rank: 4, name: "FootballFan22", points: 1702, quizzes: 36 },
-        { rank: 5, name: "KickingKing", points: 1689, quizzes: 31 }
-      ];
-      
+    renderLeaderboard() {
       const leaderboardBody = this.querySelector('#leaderboard-body');
       if (!leaderboardBody) return;
       
-      leaderboardBody.innerHTML = leaderboardData.map(player => `
+      leaderboardBody.innerHTML = this.leaderboardData.map(player => `
         <tr>
           <td>
             <span class="fq-rank fq-rank-${player.rank <= 3 ? player.rank : ''}">${player.rank}</span>
           </td>
-          <td>${player.name}</td>
-          <td>${player.points}</td>
-          <td>${player.quizzes}</td>
+          <td>${player.username}</td>
+          <td>${player.total_points}</td>
+          <td>${player.quizzes_taken || 0}</td>
         </tr>
       `).join('');
+    }
+    
+    async showFullLeaderboard() {
+      const leaderboardModal = this.querySelector('#full-leaderboard-modal');
+      const fullLeaderboardBody = this.querySelector('#full-leaderboard-body');
+      
+      if (!leaderboardModal || !fullLeaderboardBody) return;
+      
+      leaderboardModal.classList.add('fq-visible');
+      
+      try {
+        if (window.leaderboardService) {
+          const fullLeaderboard = await window.leaderboardService.getLeaderboard();
+          
+          fullLeaderboardBody.innerHTML = fullLeaderboard.map(player => `
+            <tr>
+              <td>
+                <span class="fq-rank fq-rank-${player.rank <= 3 ? player.rank : ''}">${player.rank}</span>
+              </td>
+              <td>${player.username}</td>
+              <td>${player.total_points}</td>
+              <td>${player.quizzes_taken || 0}</td>
+            </tr>
+          `).join('');
+        } else {
+          fullLeaderboardBody.innerHTML = this.leaderboardData.map(player => `
+            <tr>
+              <td>
+                <span class="fq-rank fq-rank-${player.rank <= 3 ? player.rank : ''}">${player.rank}</span>
+              </td>
+              <td>${player.username}</td>
+              <td>${player.total_points}</td>
+              <td>${player.quizzes_taken || 0}</td>
+            </tr>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Error loading full leaderboard:', error);
+        fullLeaderboardBody.innerHTML = `
+          <tr>
+            <td colspan="4">
+              <div class="fq-empty-state">
+                <h3 class="fq-empty-title">Error loading leaderboard</h3>
+                <p class="fq-empty-message">There was a problem loading the full leaderboard data. Please try again later.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+    }
+    
+    hideFullLeaderboard() {
+      const leaderboardModal = this.querySelector('#full-leaderboard-modal');
+      if (leaderboardModal) {
+        leaderboardModal.classList.remove('fq-visible');
+      }
     }
     
     checkUserRole() {

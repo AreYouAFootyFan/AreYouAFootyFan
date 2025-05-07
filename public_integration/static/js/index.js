@@ -8,8 +8,8 @@ import LoginView from "./views/LoginView.js";
 import authService from "./services/auth.service.js";
 import categoryService from "./services/category.service.js";
 import quizService from "./services/quiz.service.js";
+import leaderboardService from "./services/leaderboard.service.js"
 
-// Import services
 import "./services/api.service.js";
 import "./services/category.service.js";
 import "./services/difficulty.service.js";
@@ -18,10 +18,10 @@ import "./services/question.service.js";
 import "./services/answer.service.js";
 import "./services/quiz-attempt.service.js";
 
-// Make authService globally available for components
 window.authService = authService;
 window.categoryService = categoryService;
 window.quizService = quizService;
+window.leaderboardService = leaderboardService
 
 let currentView = null;
 
