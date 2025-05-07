@@ -116,6 +116,7 @@ jobs:
               PGDATABASE=${{ secrets.DB_NAME }}
               PGPASSWORD=${{ secrets.DB_PASSWORD }}
               PGPORT=${{ secrets.DB_PORT }}
+              PORT=${{ secrets.PORT }}
               NODE_ENV=development
               GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
               EOF
