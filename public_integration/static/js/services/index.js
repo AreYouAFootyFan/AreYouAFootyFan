@@ -6,6 +6,7 @@ import quizService from './quiz.service.js';
 import questionService from './question.service.js';
 import answerService from './answer.service.js';
 import quizAttemptService from './quiz-attempt.service.js';
+import leaderboardService from './leaderboard.service.js';
 
 export {
     authService,
@@ -15,5 +16,6 @@ export {
     quizService,
     questionService,
     answerService,
-    quizAttemptService
+    quizAttemptService,
+    leaderboardService
 };

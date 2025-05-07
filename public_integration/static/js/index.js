@@ -6,6 +6,8 @@ import QuizView from "./views/QuizView.js";
 import CreateQuizView from "./views/CreateQuizView.js";
 import LoginView from "./views/LoginView.js";
 import authService from "./services/auth.service.js";
+import categoryService from "./services/category.service.js";
+import quizService from "./services/quiz.service.js";
 
 // Import services
 import "./services/api.service.js";
@@ -18,6 +20,8 @@ import "./services/quiz-attempt.service.js";
 
 // Make authService globally available for components
 window.authService = authService;
+window.categoryService = categoryService;
+window.quizService = quizService;
 
 let currentView = null;
 
