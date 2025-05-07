@@ -129,7 +129,7 @@ export default class LoginView extends AbstractView {
       
                   <section id="google-signin-button"></section>
       
-                  <form id="username-container">
+                  <form id="username-container" novalidate onsubmit="return false;>
                   <h2>Set Your Username</h2>
                   <p>Please choose a unique username to continue:</p>
                   <label for="username">Username</label>
@@ -174,10 +174,10 @@ export default class LoginView extends AbstractView {
 
         this.setupGoogleSignIn();
         
-        const usernameForm = document.getElementById('username-container');
-        if (usernameForm) {
-            usernameForm.addEventListener('submit', this.handleUsernameSubmit.bind(this));
-        }
+        // const usernameForm = document.getElementById('username-container');
+        // if (usernameForm) {
+        //     usernameForm.addEventListener('submit', this.handleUsernameSubmit.bind(this));
+        // }
         
         const isAuthenticated = await authService.checkAuthentication();
         if (isAuthenticated) {
@@ -245,6 +245,7 @@ export default class LoginView extends AbstractView {
             usernameContainer.style.display = 'block';
             googleSigninButton.style.display = 'none';
         }
+        usernameContainer.addEventListener('submit', this.handleUsernameSubmit.bind(this));
     }
 
     showLoginError(message) {
