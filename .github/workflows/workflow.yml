@@ -110,6 +110,15 @@ jobs:
             key: ${{ secrets.EC2_SSH_KEY }}
             script: |
               cd /home/ubuntu/footy-app
+              cat > .env << EOF
+              PGHOST=${{ secrets.DB_HOST }}
+              PGUSER=${{ secrets.DB_USERNAME }}
+              PGDATABASE=${{ secrets.DB_NAME }}
+              PGPASSWORD=${{ secrets.DB_PASSWORD }}
+              PGPORT=${{ secrets.DB_PORT }}
+              NODE_ENV=development
+              GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+              EOF
               git pull origin ${{ github.ref_name }}
               npm install
               pm2 restart footy-app || pm2 start src/app.ts --name "footy-app" --interpreter ./node_modules/.bin/ts-node
