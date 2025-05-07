@@ -119,14 +119,6 @@ class FootballQuizHome extends HTMLElement {
             font-weight: 600;
           }
           
-          .fq-difficulty {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            text-transform: uppercase;
-          }
-          
           .fq-easy {
             background-color: #d1fae5;
             color: #065f46;
@@ -736,10 +728,6 @@ class FootballQuizHome extends HTMLElement {
     }
     
     renderQuizCard(quiz) {
-      let difficultyClass = 'fq-medium';
-      if (quiz.difficulty === 'Easy') difficultyClass = 'fq-easy';
-      if (quiz.difficulty === 'Hard') difficultyClass = 'fq-hard';
-      
       const totalSeconds = (quiz.question_count || 0) * 20;
       const timeEstimate = totalSeconds < 60 
         ? `${totalSeconds} sec` 
@@ -749,7 +737,6 @@ class FootballQuizHome extends HTMLElement {
         <article class="fq-quiz-card">
           <header class="fq-quiz-header">
             <div class="fq-quiz-category">${quiz.category_name || 'Uncategorized'}</div>
-            <div class="fq-difficulty ${difficultyClass}">${quiz.difficulty || 'Medium'}</div>
           </header>
           
           <div class="fq-quiz-body">

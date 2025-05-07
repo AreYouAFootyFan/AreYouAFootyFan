@@ -2,7 +2,7 @@ import AbstractView from "./AbstractView.js";
 import authService from "../services/auth.service.js";
 import quizService from "../services/quiz.service.js";
 import categoryService from "../services/category.service.js";
-import questionService from "../services/question.service.js";
+import quizValidatorService from "../services/quiz-validator.service.js";
 
 export default class AdminDashboardView extends AbstractView {
   constructor() {
@@ -10,7 +10,7 @@ export default class AdminDashboardView extends AbstractView {
     this.setTitle("Admin Dashboard");
     this.quizzes = [];
     this.categories = [];
-    this.viewMode = 'dashboard';
+    this.viewMode = 'dashboard'; 
   }
 
   async getHtml() {
@@ -287,17 +287,18 @@ export default class AdminDashboardView extends AbstractView {
       for (let i = 0; i < this.quizzes.length; i++) {
         const quiz = this.quizzes[i];
         try {
-          const questions = await questionService.getQuestionsByQuizId(quiz.quiz_id);
+          const validation = await quizValidatorService.validateQuiz(quiz.quiz_id);
           
-          quiz.valid_questions = questions.filter(q => 
-            q.answer_count === 4 && q.correct_answer_count === 1
-          ).length;
-          
-          quiz.question_count = questions.length;
+          quiz.valid_questions = validation.valid_questions;
+          quiz.question_count = validation.total_questions;
+          quiz.is_valid = validation.is_valid;
+          quiz.validation_message = validation.validation_message;
         } catch (error) {
-          console.error(`Error loading questions for quiz ${quiz.quiz_id}:`, error);
-          quiz.question_count = 0;
+          console.error(`Error validating quiz ${quiz.quiz_id}:`, error);
           quiz.valid_questions = 0;
+          quiz.question_count = 0;
+          quiz.is_valid = false;
+          quiz.validation_message = 'Unable to validate quiz';
         }
       }
       
@@ -322,7 +323,13 @@ export default class AdminDashboardView extends AbstractView {
           </tbody>
         </table>
       `;
-    
+      
+      document.querySelectorAll('.edit-quiz').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const quizId = e.currentTarget.dataset.id;
+          this.handleEditQuiz(quizId);
+        });
+      });
       
       document.querySelectorAll('.manage-questions').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -530,7 +537,7 @@ export default class AdminDashboardView extends AbstractView {
   }
   
   renderQuizRow(quiz) {
-    const isValid = quiz.valid_questions >= 5;
+    const isValid = quiz.is_valid;
     const statusClass = isValid ? 'valid-status' : 'invalid-status';
     const statusText = isValid ? 'Ready' : `Not Ready (${quiz.valid_questions}/5)`;
     

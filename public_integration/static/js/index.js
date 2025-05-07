@@ -1,4 +1,3 @@
-// Updated index.js with web component support
 import AdminDashboardView from "./views/AdminDashBoardView.js";
 import HomeView from "./views/HomeView.js";
 import ProfileView from "./views/ProfileView.js";
@@ -70,7 +69,7 @@ const router = async () => {
 
   if(!currentRoute){
     currentRoute = {
-      route: routes[0], //redirect to login
+      route: routes[0],
       result: [location.pathname]
     };
   }

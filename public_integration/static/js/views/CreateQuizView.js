@@ -5,6 +5,7 @@ import categoryService from "../services/category.service.js";
 import questionService from "../services/question.service.js";
 import difficultyService from "../services/difficulty.service.js";
 import answerService from "../services/answer.service.js";
+import quizValidatorService from "../services/quiz-validator.service.js";
 
 export default class CreateQuizView extends AbstractView {
   constructor() {
@@ -24,7 +25,7 @@ export default class CreateQuizView extends AbstractView {
     this.categories = [];
     this.difficulties = [];
     this.questions = [];
-    this.viewMode = this.isEditing ? 'questions' : 'quiz';
+    this.viewMode = this.isEditing ? 'questions' : 'quiz'; // 'quiz', 'questions', 'question-form', 'answers'
   }
 
   async getHtml() {
@@ -204,12 +205,10 @@ export default class CreateQuizView extends AbstractView {
   }
   
   getAnswerFormVisible() {
-    // This is a helper method to determine if the answer form should be initially visible
     return false;
   }
 
   async mount() {
-    
     const isAuthenticated = await authService.checkAuthentication();
     if (!isAuthenticated) {
       window.location.href = '/login';
@@ -241,7 +240,6 @@ export default class CreateQuizView extends AbstractView {
     
     localStorage.removeItem('current_question_id');
     localStorage.removeItem('current_question_text');
-
     
     const textInput = document.getElementById('question-text');
     const difficultySelect = document.getElementById('question-difficulty');
@@ -400,20 +398,11 @@ export default class CreateQuizView extends AbstractView {
       
       questionsContainer.innerHTML = '<p class="loading-text">Loading questions...</p>';
       
-      this.questions = await questionService.getQuestionsByQuizId(this.quizId);
+      const quizValidation = await quizValidatorService.validateQuiz(this.quizId);
       
-      for (let i = 0; i < this.questions.length; i++) {
-        const question = this.questions[i];
-        try {
-          const answers = await answerService.getAnswersByQuestionId(question.question_id);
-          question.answer_count = answers.length;
-          question.correct_answer_count = answers.filter(a => a.is_correct).length;
-        } catch (error) {
-          console.error(`Error validating question ${question.question_id}:`, error);
-        }
-      }
+      this.questions = quizValidation.questions;
       
-      this.updateQuizStatus();
+      this.updateQuizStatus(quizValidation);
       
       if (this.questions.length === 0) {
         questionsContainer.innerHTML = '<p class="empty-message">No questions found. Add your first question!</p>';
@@ -440,11 +429,12 @@ export default class CreateQuizView extends AbstractView {
     questionCard.className = 'question-card';
     questionCard.dataset.id = question.question_id;
     
-    const isValid = question.answer_count === 4 && question.correct_answer_count === 1;
+    const isValid = question.is_valid;
     const statusClass = isValid ? 'status-valid' : 'status-invalid';
-    const statusText = isValid 
-      ? 'Valid: 4 answers with 1 correct' 
-      : `Incomplete: ${question.answer_count}/4 answers, ${question.correct_answer_count}/1 correct`;
+    
+    const statusText = question.validation_messages && question.validation_messages.length > 0 
+      ? question.validation_messages[0]
+      : isValid ? 'Valid question' : 'Invalid question';
     
     questionCard.innerHTML = `
       <div class="card-header">
@@ -488,19 +478,16 @@ export default class CreateQuizView extends AbstractView {
     return questionCard;
   }
   
-  updateQuizStatus() {
+  updateQuizStatus(validation) {
     const statusContainer = document.getElementById('quiz-status');
     if (!statusContainer) return;
     
-    const validQuestions = this.questions.filter(q => {
-      return q.answer_count === 4 && q.correct_answer_count === 1;
-    });
-    
-    const isValid = validQuestions.length >= 5;
+    const isValid = validation ? validation.is_valid : this.questions.filter(q => q.is_valid).length >= 5;
+    const validQuestions = validation ? validation.valid_questions : this.questions.filter(q => q.is_valid).length;
     
     statusContainer.innerHTML = `
       <div class="status-badge ${isValid ? 'valid-status' : 'invalid-status'}">
-        ${isValid ? 'Quiz Ready' : `Quiz Not Ready (${validQuestions.length}/5 valid questions)`}
+        ${isValid ? 'Quiz Ready' : `Quiz Not Ready (${validQuestions}/5 valid questions)`}
       </div>
     `;
   }
@@ -512,28 +499,24 @@ export default class CreateQuizView extends AbstractView {
       
       answersContainer.innerHTML = '<p class="loading-text">Loading answers...</p>';
       
-      let question = this.questions.find(q => q.question_id == questionId);
-      
-      if (!question) {
-        question = await questionService.getQuestionById(questionId);
-      }
+      const questionValidation = await quizValidatorService.validateQuestion(questionId);
       
       const answers = await answerService.getAnswersByQuestionId(questionId);
       
       const questionTextElement = document.getElementById('current-question-text');
       if (questionTextElement) {
-        questionTextElement.textContent = question.question_text;
+        questionTextElement.textContent = questionValidation.question_text;
       }
-      
-      const correctAnswersCount = answers.filter(a => a.is_correct).length;
       
       const answerStatus = document.getElementById('answer-status');
       if (answerStatus) {
-        const isValid = answers.length === 4 && correctAnswersCount === 1;
+        const isValid = questionValidation.is_valid;
         const statusClass = isValid ? 'status-valid' : 'status-invalid';
-        const statusText = isValid 
-          ? 'Valid: 4 answers with 1 correct' 
-          : `Incomplete: ${answers.length}/4 answers, ${correctAnswersCount}/1 correct`;
+        
+        const statusText = questionValidation.validation_messages && 
+                          questionValidation.validation_messages.length > 0 ? 
+                          questionValidation.validation_messages[0] : 
+                          isValid ? 'Valid question' : 'Invalid question';
         
         answerStatus.innerHTML = `<div class="status-badge ${statusClass}">${statusText}</div>`;
       }
