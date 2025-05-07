@@ -123,7 +123,7 @@ export default class LoginView extends AbstractView {
               <section class="auth-container">
                   <header class="auth-header">
                   <span class="logo-icon" aria-hidden="true">⚽</span>
-                  <h1>Welcome to Football Quiz</h1>
+                  <h1>Welcome to Footy Quiz</h1>
                   <p>Sign in to test your football knowledge</p>
                   </header>
       

@@ -6,7 +6,6 @@ import CreateQuizView from "./views/CreateQuizView.js";
 import LoginView from "./views/LoginView.js";
 import authService from "./services/auth.service.js";
 
-// Import all required services
 import "./services/auth.service.js";
 import "./services/api.service.js";
 import "./services/category.service.js";
@@ -16,7 +15,6 @@ import "./services/question.service.js";
 import "./services/answer.service.js";
 import "./services/quiz-attempt.service.js";
 
-// Keep track of the current view instance to handle cleanup
 let currentView = null;
 
 const navigator = (url) => {
@@ -25,7 +23,6 @@ const navigator = (url) => {
 };
 
 const router = async () => {
-  // Clean up previous view if it exists
   if (currentView && typeof currentView.cleanup === 'function') {
     currentView.cleanup();
   }
@@ -40,10 +37,8 @@ const router = async () => {
     { path: '/login', view: LoginView },
   ];
 
-  // pathToRegex function to handle routes with parameters
   const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
   
-  // Get params from match
   const getParams = match => {
     const values = match.result.slice(1);
     const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
@@ -53,7 +48,6 @@ const router = async () => {
     }));
   };
 
-  // Find the matching route
   const possibleRoutes = routes.map(route => {
     return {
       route: route,
@@ -70,11 +64,9 @@ const router = async () => {
     };
   };
   
-  // Create the view instance
   const view = new currentRoute.route.view(getParams(currentRoute));
   currentView = view;
 
-  // Check if we're on login page and hide header/footer if so
   const isLoginPage = currentRoute.route.view === LoginView;
   const header = document.querySelector('header.site-header');
   const footer = document.querySelector('footer.site-footer');
@@ -87,10 +79,8 @@ const router = async () => {
     footer.style.display = isLoginPage ? 'none' : 'flex';
   }
 
-  // Render the view
   document.querySelector("#app").innerHTML = await view.getHtml();
   
-  // Mount the view if it has a mount method
   if (typeof view.mount === 'function') {
     view.mount();
   }
@@ -106,13 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Load Google Sign-In script
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
 
-    // Initialize router
     router();
 });
