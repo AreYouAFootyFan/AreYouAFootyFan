@@ -110,6 +110,7 @@ jobs:
             key: ${{ secrets.EC2_SSH_KEY }}
             script: |
               cd /home/ubuntu/footy-app
+              npm install ts-node
               cat > .env << EOF
               PGHOST=${{ secrets.DB_HOST }}
               PGUSER=${{ secrets.DB_USERNAME }}
@@ -122,4 +123,4 @@ jobs:
               EOF
               git pull origin ${{ github.ref_name }}
               npm install
-              pm2 restart footy-app || pm2 start src/app.ts --name "footy-app" --interpreter ts-node
+              pm2 restart footy-app || pm2 start src/app.ts --name "footy-app" --interpreter ./node_modules/.bin/ts-node
