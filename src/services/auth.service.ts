@@ -25,34 +25,58 @@ export class AuthService {
   private static certExpiryTime: number = 0;
 
 
-  static async verifyGoogleToken(token: string): Promise<GoogleTokenPayload> {
+  static async decodeGoogleJWT(token: string): Promise<GoogleTokenPayload> {
     try {
+        const decoded = jwt.decode(token, { complete: true });
       
-    const decoded = jwt.decode(token, { complete: true });
+        if (!decoded || typeof decoded !== 'object' || !decoded.payload) {
+            throw ErrorUtils.unauthorized('Invalid token format');
+        }
       
-      if (!decoded || typeof decoded !== 'object' || !decoded.payload) {
-        throw ErrorUtils.unauthorized('Invalid token format');
+        const payload = decoded.payload as GoogleTokenPayload;
+      
+        return payload;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw ErrorUtils.unauthorized(`Invalid Google token: ${error.message}`);
       }
-      
-      const payload = decoded.payload as GoogleTokenPayload;
+      throw ErrorUtils.unauthorized('Invalid Google token');
+    }
+  }
 
-      if (payload.iss !== 'https://accounts.google.com' && 
-          payload.iss !== 'accounts.google.com') {
-        throw ErrorUtils.unauthorized('Invalid token issuer');
-      }
+  static async getGoogleJWT(code: string): Promise<string> {
+    try {
+        const baseUrl = "https://oauth2.googleapis.com/token";
+
+        const options = {
+          code: code,
+          client_id: process.env.GOOGLE_CLIENT_ID ?? '',
+          client_secret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+          redirect_uri: process.env.GOOGLE_REDIRECT_URL ?? '',
+          grant_type: "authorization_code",
+        };
+        
+        const params = new URLSearchParams(options);
+
+        const response = await fetch(baseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: params.toString()
+        });
+
+        const data = await response.json();
+        
+    //   const decoded = jwt.decode(data.id_token, { complete: true });
       
-      // if (payload.aud !== this.GOOGLE_AUD) {
-      //   throw ErrorUtils.unauthorized('Invalid token audience');
-      // }
+    //   if (!decoded || typeof decoded !== 'object' || !decoded.payload) {
+    //     throw ErrorUtils.unauthorized('Invalid google token format');
+    //   }
+
+    //   const payload = decoded.payload as GoogleTokenPayload;
       
-      // const now = Math.floor(Date.now() / 1000);
-      // if (payload.exp < now) {
-      //   throw ErrorUtils.unauthorized('Token expired');
-      // }
-      
-      // need to lookinto validiating the sig
-      
-      return payload;
+      return data.id_token;
     } catch (error) {
       if (error instanceof Error) {
         throw ErrorUtils.unauthorized(`Invalid Google token: ${error.message}`);
@@ -62,11 +86,13 @@ export class AuthService {
   }
 
 
-  static async loginWithGoogle(googleToken: string): Promise<{ token: string, user: any, requiresUsername: boolean }> {
-    const payload = await this.verifyGoogleToken(googleToken);
+  static async loginWithGoogle(googleCode: string): Promise<{ token: string, user: any, requiresUsername: boolean }> {
+    const googleJwt = await this.getGoogleJWT(googleCode);
     
+    const payload = await this.decodeGoogleJWT(googleJwt);
+
     const googleId = payload.sub;
-    
+
     if (!googleId) {
       throw ErrorUtils.unauthorized('Invalid Google token: missing user ID');
     }
@@ -77,7 +103,7 @@ export class AuthService {
     const userWithRole = await UserService.getUserWithRoleById(user.user_id);
     
     return {
-      token: googleToken,
+      token: googleJwt,
       user: userWithRole,
       requiresUsername
     };
@@ -86,7 +112,7 @@ export class AuthService {
 
   static async getUserFromToken(token: string): Promise<{ id: number, role: string }> {
     try {
-      const payload = await this.verifyGoogleToken(token);
+      const payload = await this.decodeGoogleJWT(token);
       
       const user = await UserService.getUserByGoogleId(payload.sub);
       

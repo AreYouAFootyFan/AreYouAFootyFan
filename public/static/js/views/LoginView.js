@@ -163,6 +163,15 @@ export default class LoginView extends AbstractView {
         if (siteHeader) siteHeader.style.display = 'none';
         if (siteFooter) siteFooter.style.display = 'none';
         
+        const urlParams = new URLSearchParams(window.location.search);
+        const googleCode = urlParams.get('code');
+    
+        if (googleCode) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            await this.handleGoogleLogin(googleCode);
+            return;
+        }
+
         this.setupGoogleSignIn();
         
         const usernameForm = document.getElementById('username-container');
@@ -180,30 +189,22 @@ export default class LoginView extends AbstractView {
         }
     }
 
-    setupGoogleSignIn() {
-        authService.initGoogleSignIn(this.handleGoogleLogin.bind(this));
-        
+    setupGoogleSignIn() {        
         const googleSigninButton = document.getElementById('google-signin-button');
         if (googleSigninButton) {
             googleSigninButton.innerHTML = `
-                <div id="g_id_onload"
-                    data-client_id="${authService.googleClientId}"
-                    data-callback="handleCredentialResponse">
+                <div id="g_id_onload">
+                    <a href="${authService.getAuthURL()}">Sign In</a>
                 </div>
                 <div class="g_id_signin" data-type="standard"></div>
             `;
-            
-            const script = document.createElement('script');
-            script.src = 'https://accounts.google.com/gsi/client';
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
+        
         }
     }
 
-    async handleGoogleLogin(googleToken) {
+    async handleGoogleLogin(googleCode) {
         try {
-            const result = await authService.loginWithGoogle(googleToken);
+            const result = await authService.loginWithGoogle(googleCode);
             
             if (result.requiresUsername) {
                 this.showUsernameForm();
