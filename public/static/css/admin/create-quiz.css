@@ -1,4 +1,3 @@
-/* Quiz Creator Styles */
 .quiz-creator {
     width: 100%;
     min-height: calc(100vh - 8rem);
@@ -11,7 +10,6 @@
     height: 100%;
   }
   
-  /* Sidebar with steps */
   .creator-sidebar {
     width: 16rem;
     background-color: white;
@@ -80,7 +78,6 @@
     padding-top: 2rem;
   }
   
-  /* Content Area */
   .creator-content {
     flex: 1;
     padding: 2rem;
@@ -109,7 +106,6 @@
     font-size: 1.75rem;
   }
   
-  /* Forms */
   .creator-form {
     background-color: white;
     border-radius: 0.5rem;
@@ -118,63 +114,7 @@
     margin: 0 auto;
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
   }
-  
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--gray-700);
-  }
-  
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 0.0625rem solid var(--gray-300);
-    border-radius: 0.25rem;
-    font-size: 1rem;
-    background-color: white;
-    transition: border-color 0.2s;
-  }
-  
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 0.125rem rgba(59, 130, 246, 0.2);
-  }
-  
-  .form-help {
-    font-size: 0.75rem;
-    color: var(--gray-500);
-    margin-top: 0.25rem;
-  }
-  
-  .form-check {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .form-check input[type="checkbox"] {
-    width: auto;
-  }
-  
-  .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1.5rem;
-  }
-  
-  /* Questions Management */
+    
   .questions-info {
     background-color: var(--info-light);
     color: var(--info-dark);
@@ -194,23 +134,6 @@
     align-items: center;
   }
   
-  .status-badge {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-  
-  .valid-status {
-    background-color: var(--success-light);
-    color: var(--success-dark);
-  }
-  
-  .invalid-status {
-    background-color: var(--error-light);
-    color: var(--error-dark);
-  }
   
   .questions-list {
     display: grid;
@@ -232,26 +155,10 @@
     box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
   }
   
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 0.0625rem solid var(--gray-200);
-  }
-  
-  .card-header h3 {
-    margin: 0;
-    font-size: 1rem;
-  }
   
   .question-actions {
     display: flex;
     gap: 0.5rem;
-  }
-  
-  .card-content {
-    padding: 1rem;
   }
   
   .question-text {
@@ -301,8 +208,21 @@
     justify-content: space-between;
     margin-top: 2rem;
   }
-  
-  /* Answer Management */
+
+  .creator-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    text-decoration: none;
+  }
+
   .question-preview {
     background-color: white;
     padding: 1.5rem;
@@ -394,208 +314,6 @@
     font-size: 1.25rem;
   }
   
-  /* Buttons */
-  .creator-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    font-weight: 500;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-    text-decoration: none;
-  }
-  
-  .primary-btn {
-    background-color: var(--primary);
-    color: white;
-  }
-  
-  .primary-btn:hover {
-    background-color: var(--primary-dark);
-  }
-  
-  .secondary-btn {
-    background-color: var(--gray-200);
-    color: var(--gray-700);
-  }
-  
-  .secondary-btn:hover {
-    background-color: var(--gray-300);
-  }
-  
-  .danger-btn {
-    background-color: var(--error);
-    color: white;
-  }
-  
-  .danger-btn:hover {
-    background-color: var(--error-dark);
-  }
-  
-  .action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s ease;
-  }
-  
-  .action-btn:hover {
-    background-color: var(--gray-200);
-  }
-  
-  .action-icon {
-    font-size: 1rem;
-  }
-  
-  /* Notification toast */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    padding: 1rem 1.5rem;
-    border-radius: 0.25rem;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
-    z-index: 1001;
-    min-width: 20rem;
-    max-width: 25rem;
-    transition: opacity 0.3s, transform 0.3s;
-    transform: translateY(0);
-  }
-  
-  .toast.hidden {
-    transform: translateY(2rem);
-    opacity: 0;
-    visibility: hidden;
-  }
-  
-  .toast.success {
-    background-color: var(--success);
-  }
-  
-  .toast.error {
-    background-color: var(--error);
-  }
-  
-  .toast.info {
-    background-color: var(--info);
-  }
-  
-  .close-toast {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.25rem;
-    cursor: pointer;
-    width: 1.5rem;
-    height: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 1rem;
-  }
-  
-  /* Modals */
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-  }
-  
-  .modal.visible {
-    opacity: 1;
-    visibility: visible;
-  }
-  
-  .modal-content {
-    background-color: white;
-    border-radius: 0.5rem;
-    width: 100%;
-    max-width: 30rem;
-    overflow: hidden;
-    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
-  }
-  
-  .modal-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 0.0625rem solid var(--gray-200);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .modal-header h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-  
-  .close-modal {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--gray-500);
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-  }
-  
-  .close-modal:hover {
-    background-color: var(--gray-200);
-    color: var(--gray-800);
-  }
-  
-  .modal-body {
-    padding: 1.5rem;
-  }
-  
-  /* Helper classes */
-  .loading-text {
-    color: var(--gray-500);
-    text-align: center;
-    margin: 1rem 0;
-  }
-  
-  .empty-message {
-    color: var(--gray-600);
-    text-align: center;
-    margin: 2rem 0;
-  }
-  
-  .error-message {
-    color: var(--error);
-    text-align: center;
-    margin: 2rem 0;
-  }
-  
-  /* Responsive design */
   @media (max-width: 48rem) {
     .creator-container {
       flex-direction: column;
@@ -643,14 +361,6 @@
     
     .answers-list {
       grid-template-columns: 1fr;
-    }
-    
-    .form-actions {
-      flex-direction: column;
-    }
-    
-    .form-actions button {
-      width: 100%;
     }
     
     .navigation-actions {

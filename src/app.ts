@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/static', express.static(path.join(__dirname, '../public_integration/static')));
+app.use('/static', express.static(path.join(__dirname, '../public/static')));
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/difficulty-levels', difficultyRoutes);
@@ -40,7 +40,7 @@ app.use('/api/stats', statsRoutes);
 
 
 app.get('/{*any}', (_request, response) => {
-  response.sendFile(path.join(__dirname, '../public_integration/index.html'));
+  response.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 app.use(notFoundHandler);

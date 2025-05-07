@@ -41,14 +41,14 @@ export class AuthService {
         throw ErrorUtils.unauthorized('Invalid token issuer');
       }
       
-      if (payload.aud !== this.GOOGLE_AUD) {
-        throw ErrorUtils.unauthorized('Invalid token audience');
-      }
+      // if (payload.aud !== this.GOOGLE_AUD) {
+      //   throw ErrorUtils.unauthorized('Invalid token audience');
+      // }
       
-      const now = Math.floor(Date.now() / 1000);
-      if (payload.exp < now) {
-        throw ErrorUtils.unauthorized('Token expired');
-      }
+      // const now = Math.floor(Date.now() / 1000);
+      // if (payload.exp < now) {
+      //   throw ErrorUtils.unauthorized('Token expired');
+      // }
       
       // need to lookinto validiating the sig
       

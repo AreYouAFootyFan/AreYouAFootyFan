@@ -4,84 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Are you a Footy fan!</title>
-  <link rel="stylesheet" href="/static/js/css/styles.css" />
-  <link rel="stylesheet" href="/static/js/css/leaderboard/leaderboard.css" />
-  <link rel="stylesheet" href="/static/js/css/quiz-selection/quiz-selection.css" />
-  <link rel="stylesheet" href="/static/js/css/quiz/quiz-modal.css" />
-  <link rel="stylesheet" href="/static/js/css/quiz-complete/quiz-complete.css" />
-  <link rel="stylesheet" href="/static/js/css/hero-section/hero-section.css" />
-  <link rel="stylesheet" href="/static/js/css/profile/profile.css" />
-  <link rel="stylesheet" href="/static/js/css/admin/admin-styles.css" />
-  <link rel="stylesheet" href="/static/js/css/login/login.css" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="/static/css/admin/admin-dashboard.css" />
+  <link rel="stylesheet" href="/static/css/admin/create-quiz.css" />
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-
 </head>
 <body>
-  
+  <football-quiz-header></football-quiz-header>
 
-  <header class="site-header">
-    <section class="container">
-      <a href="/" class="logo" data-link>
-        <span class="logo-icon" aria-hidden="true">⚽</span>
-        <h1>Football Quiz</h1>
-      </a>
-  
-      <nav class="main-nav" aria-label="Main navigation">
-        <ul>
-          <li><a href="/home" class="nav-link active" data-link>Home</a></li>
-          <li><a href="/profile" class="nav-link" data-link>Profile</a></li>
-          <li><a href="/admin" class="nav-link admin-link" data-link>Admin</a></li>
-        </ul>
-      </nav>
-  
-      <aside class="user-menu">
-        <a href="/login" class="btn btn-outline nav-link" data-link>Login</a>
-  
-        <details id="user-dropdown" class="hidden">
-          <summary id="username-display">Username</summary>
-          <nav class="dropdown-menu" aria-label="User menu">
-            <ul>
-              <li><a href="/profile" data-page="profile">Edit Profile</a></li>
-              <li><a href="/dashboard" data-page="dashboard">My Quizzes</a></li>
-              <li><button id="logout-button">Log Out</button></li>
-            </ul>
-          </nav>
-        </details>
-      </aside>
-    </section>
-  </header>
-  
-
-  <!-- Main app content will be injected here -->
   <main id="app"></main>
 
-  <footer class="site-footer">
-    <section class="container">
-      <section class="footer-content">
-        <header class="footer-logo">
-          <p class="logo-icon" aria-hidden="true">⚽</p>
-          <h2>Football Quiz</h2>
-        </header>
+  <football-quiz-footer></football-quiz-footer>
 
-        <nav class="footer-links" aria-label="Footer Navigation">
-          <section class="footer-column">
-            <h3>Resources</h3>
-            <ul>
-              <li><a href="#/privacy">Privacy Policy</a></li>
-              <li><a href="#/terms">Terms of Service</a></li>
-            </ul>
-          </section>
-        </nav>
-      </section>
-
-      <section class="footer-bottom">
-        <p>&copy; 2025 Football Quiz Platform. All rights reserved.</p>
-      </section>
-    </section>
-  </footer>
-
-  <script type="module" src="./static/js/index.js"></script>
+  <script type="module" src="/static/js/components/FootballQuizHeader.js"></script>
+  <script type="module" src="/static/js/components/FootballQuizFooter.js"></script>
+  
+  <script type="module" src="/static/js/index.js"></script>
 </body>
 </html>
