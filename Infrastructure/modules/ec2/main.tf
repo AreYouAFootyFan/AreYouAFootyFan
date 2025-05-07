@@ -18,6 +18,7 @@ resource "aws_instance" "this" {
     echo "Node.js, npm, and pm2 installed. Ready for API deployment." > /home/ubuntu/footy-api/DEPLOYMENT_STATUS.txt
   EOF
   iam_instance_profile = var.iam_instance_profile
+  key_name = var.key_name
 }
 
 data "aws_ami" "ubuntu" {

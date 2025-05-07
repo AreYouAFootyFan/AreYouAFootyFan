@@ -142,3 +142,4 @@ dist
 .terraform*
 *.tfvars
 test.sql
+*.pem
