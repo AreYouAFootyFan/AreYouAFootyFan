@@ -3,6 +3,7 @@ import authService from "../services/auth.service.js";
 import quizService from "../services/quiz.service.js";
 import categoryService from "../services/category.service.js";
 import quizValidatorService from "../services/quiz-validator.service.js";
+import statsService from "../services/stats.service.js";
 
 export default class AdminDashboardView extends AbstractView {
   constructor() {
@@ -40,7 +41,7 @@ export default class AdminDashboardView extends AbstractView {
               <div class="admin-stats">
                 <div class="stat-card">
                   <h2 class="stat-value" id="active-quizzes-stat">0</h2>
-                  <p class="stat-label">Active Quizzes</p>
+                  <p class="stat-label">Total Quizzes Created</p>
                 </div>
                 
                 <div class="stat-card">
@@ -62,7 +63,7 @@ export default class AdminDashboardView extends AbstractView {
               <div class="admin-cards">
                 <div class="admin-card">
                   <header class="card-header">
-                    <h2>Recent Quizzes</h2>
+                    <h2>Recently Created quizzes</h2>
                     <button data-view="quizzes" class="text-btn">View All</button>
                   </header>
                   <div class="card-content" id="recent-quizzes">
@@ -269,10 +270,20 @@ export default class AdminDashboardView extends AbstractView {
   }
   
   async loadStats() {
-    document.getElementById('active-quizzes-stat').textContent = '24';
-    document.getElementById('registered-players-stat').textContent = '156';
-    document.getElementById('quizzes-completed-stat').textContent = '1,245';
-    document.getElementById('questions-answered-stat').textContent = '18,672';
+    try {
+      const stats = await statsService.getDashboardStats();
+      
+      document.getElementById('active-quizzes-stat').textContent = stats.active_quizzes.toLocaleString();
+      document.getElementById('registered-players-stat').textContent = stats.registered_players.toLocaleString();
+      document.getElementById('quizzes-completed-stat').textContent = stats.quizzes_completed.toLocaleString();
+      document.getElementById('questions-answered-stat').textContent = stats.questions_answered.toLocaleString();
+    } catch (error) {
+      console.error('Error loading stats:', error);
+      document.getElementById('active-quizzes-stat').textContent = '0';
+      document.getElementById('registered-players-stat').textContent = '0';
+      document.getElementById('quizzes-completed-stat').textContent = '0';
+      document.getElementById('questions-answered-stat').textContent = '0';
+    }
   }
   
   async loadQuizzes() {
