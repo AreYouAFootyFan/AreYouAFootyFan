@@ -1,3 +1,4 @@
+// Updated index.js with web component support
 import AdminDashboardView from "./views/AdminDashBoardView.js";
 import HomeView from "./views/HomeView.js";
 import ProfileView from "./views/ProfileView.js";
@@ -6,7 +7,7 @@ import CreateQuizView from "./views/CreateQuizView.js";
 import LoginView from "./views/LoginView.js";
 import authService from "./services/auth.service.js";
 
-import "./services/auth.service.js";
+// Import services
 import "./services/api.service.js";
 import "./services/category.service.js";
 import "./services/difficulty.service.js";
@@ -14,6 +15,9 @@ import "./services/quiz.service.js";
 import "./services/question.service.js";
 import "./services/answer.service.js";
 import "./services/quiz-attempt.service.js";
+
+// Make authService globally available for components
+window.authService = authService;
 
 let currentView = null;
 
@@ -62,21 +66,29 @@ const router = async () => {
       route: routes[0], //redirect to login
       result: [location.pathname]
     };
-  };
+  }
   
   const view = new currentRoute.route.view(getParams(currentRoute));
   currentView = view;
 
   const isLoginPage = currentRoute.route.view === LoginView;
-  const header = document.querySelector('header.site-header');
-  const footer = document.querySelector('footer.site-footer');
+  const header = document.querySelector('football-quiz-header');
+  const footer = document.querySelector('football-quiz-footer');
   
   if (header) {
-    header.style.display = isLoginPage ? 'none' : 'flex';
+    header.style.display = isLoginPage ? 'none' : 'block';
+    // Update header UI after view is loaded
+    if (!isLoginPage) {
+      // We need to update the header UI twice:
+      // 1. Immediately to catch the current auth state
+      // 2. After a short delay to ensure everything is loaded
+      updateHeaderUI();
+      setTimeout(updateHeaderUI, 100);
+    }
   }
   
   if (footer) {
-    footer.style.display = isLoginPage ? 'none' : 'flex';
+    footer.style.display = isLoginPage ? 'none' : 'block';
   }
 
   document.querySelector("#app").innerHTML = await view.getHtml();
@@ -85,6 +97,39 @@ const router = async () => {
     view.mount();
   }
 };
+
+// Global function to update header UI - can be called from anywhere
+function updateHeaderUI() {
+  const header = document.querySelector('football-quiz-header');
+  if (header && typeof header.updateUserUI === 'function') {
+    header.updateUserUI();
+  }
+  if (header && typeof header.updateActiveNavLink === 'function') {
+    header.updateActiveNavLink();
+  }
+}
+
+// Make updateHeaderUI accessible globally
+window.updateHeaderUI = updateHeaderUI;
+
+// Listen for auth state changes in the authService
+const originalLoginWithGoogle = authService.loginWithGoogle;
+if (originalLoginWithGoogle) {
+  authService.loginWithGoogle = async function(...args) {
+    const result = await originalLoginWithGoogle.apply(this, args);
+    updateHeaderUI();
+    return result;
+  };
+}
+
+const originalLogout = authService.logout;
+if (originalLogout) {
+  authService.logout = function(...args) {
+    const result = originalLogout.apply(this, args);
+    updateHeaderUI();
+    return result;
+  };
+}
 
 window.addEventListener("popstate", router);
 
