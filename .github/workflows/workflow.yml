@@ -122,4 +122,4 @@ jobs:
               EOF
               git pull origin ${{ github.ref_name }}
               npm install
-              pm2 restart footy-app || pm2 start src/app.ts --name "footy-app" --interpreter ./node_modules/.bin/ts-node
+              pm2 restart footy-app || pm2 start src/app.ts --name "footy-app" --interpreter ts-node
