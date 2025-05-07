@@ -37,4 +37,10 @@ variable "key_name" {
   default     = null
 }
 
+variable "github_pages_url" {
+  description = "The GitHub Pages URL for the frontend"
+  type        = string
+  default     = "areyouafootyfan.github.io/AreYouAFootyFan"
+}
+
 
