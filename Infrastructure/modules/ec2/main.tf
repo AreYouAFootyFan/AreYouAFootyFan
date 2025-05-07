@@ -9,63 +9,34 @@ resource "aws_instance" "this" {
   }
   user_data = <<-EOF
     #!/bin/bash
-    # Update system and install dependencies
+    # Updating system and installing dependencies
     apt-get update -y
-    apt-get install -y nginx
+    apt-get install -y curl git
 
-    # Install Node.js
+    # Installing Node.js (LTS)
     curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-    apt-get install -y nodejs git
+    apt-get install -y nodejs
 
-    # Install PM2 globally
-    npm install -g pm2
+    # Installing PM2, TypeScript, and ts-node globally
+    npm install -g pm2 typescript ts-node
 
-    # Create application directory
-    mkdir -p /home/ubuntu/footy-api
-    chown -R ubuntu:ubuntu /home/ubuntu/footy-api
+    # Cloning the repo
+    git clone https://github.com/AreYouAFootyFan/AreYouAFootyFan.git /home/ubuntu/footy-app
 
-    # Configure Nginx
-    cat > /etc/nginx/sites-available/footy-app << 'EOL'
-    server {
-        listen 80;
-        server_name _;
+    # Setting permissions
+    chown -R ubuntu:ubuntu /home/ubuntu/footy-app
 
-        # Backend API
-        location /api {
-            proxy_pass http://localhost:3000;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_cache_bypass $http_upgrade;
-        }
+    # Installing dependencies
+    cd /home/ubuntu/footy-app
+    sudo -u ubuntu npm install
 
-        # Redirect all other traffic to GitHub Pages
-        location / {
-            return 301 https://${var.github_pages_url}$request_uri;
-        }
-    }
-    EOL
+    # Start the app with PM2 using ts-node
+    sudo -u ubuntu pm2 start src/app.ts --name "footy-app" --interpreter ./node_modules/.bin/ts-node
 
-    # Enable the site
-    ln -sf /etc/nginx/sites-available/footy-app /etc/nginx/sites-enabled/
-    rm -f /etc/nginx/sites-enabled/default
-    systemctl restart nginx
+    # Set PM2 to start on boot
+    sudo -u ubuntu pm2 startup systemd -u ubuntu --hp /home/ubuntu
+    sudo -u ubuntu pm2 save
 
-    # Create deployment script
-    cat > /home/ubuntu/deploy.sh << 'EOL'
-    #!/bin/bash
-    cd /home/ubuntu/footy-api
-    git pull
-    npm install
-    npm run build
-    pm2 restart all || pm2 start src/app.ts --name "footy-api"
-    EOL
-
-    chmod +x /home/ubuntu/deploy.sh
-    chown ubuntu:ubuntu /home/ubuntu/deploy.sh
-
-    echo "System ready for deployment. Use /home/ubuntu/deploy.sh to deploy updates." > /home/ubuntu/footy-api/DEPLOYMENT_STATUS.txt
   EOF
   iam_instance_profile = var.iam_instance_profile
   key_name = var.key_name
