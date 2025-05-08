@@ -74,3 +74,31 @@ BEGIN
     GROUP BY q.quiz_title, qa.start_time, qa.end_time;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Returns all quizzes with an additional column for the user's quiz end timestamp
+CREATE OR REPLACE FUNCTION get_quizzes_for_user(p_user_id INT)
+RETURNS TABLE(quiz_id INT, quiz_title VARCHAR, quiz_description TEXT, end_timestamp TIMESTAMP) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        q.quiz_id,
+        q.quiz_title,
+        q.quiz_description,
+        c.category_name,
+        u.username AS created_by,
+        q.created_at,
+        qa.end_time
+    FROM quizzes q
+    INNER JOIN categories c
+    ON
+        q.category_id = c.category_id
+    INNER JOIN users u
+    ON
+        q.created_by = u.user_id
+    LEFT JOIN quiz_attempts qa
+    ON
+        q.quiz_id = qa.quiz_id
+    AND
+        qa.user_id = p_user_id;
+END;
+$$ LANGUAGE plpgsql;
