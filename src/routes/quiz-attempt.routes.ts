@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.use(authenticate);
 router.use(requireUsername);
-router.use(requireRole('Quiz Taker'));
+router.use(requireRole('Player'));
 
 router.get('/my-attempts', QuizAttemptController.getUserAttempts);
 router.get('/:id', QuizAttemptController.getAttemptById);

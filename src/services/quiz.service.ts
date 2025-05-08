@@ -43,8 +43,8 @@ export class QuizService {
   
   static async createQuiz(data: CreateQuizDto, userRole: string): Promise<Quiz> {
     
-    if (userRole !== 'Quiz Master') {
-      throw ErrorUtils.forbidden('Only Quiz Masters can create quizzes');
+    if (userRole !== 'Manager') {
+      throw ErrorUtils.forbidden('Only Managers can create quizzes');
     }
     
     if (data.category_id) {

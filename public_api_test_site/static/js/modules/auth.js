@@ -167,7 +167,7 @@ function initializeApp() {
     userDisplay.innerHTML = `
       <div class="user-info">
         <span id="user-display">${currentUser.username || 'Unnamed User'}</span>
-        <span id="user-role">(${currentUser.role_name || (currentUser.role_id === 2 ? 'Quiz Master' : 'Quiz Taker')})</span>
+        <span id="user-role">(${currentUser.role_name || (currentUser.role_id === 2 ? 'Manager' : 'Player')})</span>
       </div>
       <button id="logout-btn">Logout</button>
     `;

@@ -72,7 +72,7 @@ export default class ProfileView extends AbstractView {
           <li class="badge">
             <span class="badge-icon">🏆</span>
             <div class="badge-info">
-              <h3 class="badge-name">Quiz Master</h3>
+              <h3 class="badge-name">Manager</h3>
               <p class="badge-desc">Complete 10 quizzes with 80%+ accuracy</p>
             </div>
           </li>

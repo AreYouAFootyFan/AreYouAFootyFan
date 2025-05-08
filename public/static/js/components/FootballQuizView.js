@@ -397,7 +397,7 @@ class FootballQuizView extends HTMLElement {
       }
   
       if (authService.isQuizMaster && authService.isQuizMaster()) {
-        this.showError("Quiz Masters cannot take quizzes. Please use a Quiz Taker account.");
+        this.showError("Managers cannot take quizzes. Please use a Player account.");
         return;
       }
   

@@ -474,8 +474,8 @@ class FootballQuizHome extends HTMLElement {
           </section>
           
           <div class="fq-notification fq-hidden" id="quiz-maker-note">
-            <h3 class="fq-notification-title">Quiz Master Account</h3>
-            <p class="fq-notification-message">As a Quiz Master, you can create and manage quizzes but cannot participate in them. Use a Quiz Taker account to play quizzes.</p>
+            <h3 class="fq-notification-title">Manager Account</h3>
+            <p class="fq-notification-message">As a <em><strong>Manager</strong></em>, you can create and manage quizzes but cannot participate in them. Use a <em>Player</em> account to play quizzes.</p>
           </div>
           
           <section class="fq-categories">
@@ -525,8 +525,8 @@ class FootballQuizHome extends HTMLElement {
           
           <div class="fq-modal" id="quiz-master-modal">
             <div class="fq-modal-content">
-              <h3 class="fq-modal-title">Quiz Master Account</h3>
-              <p class="fq-modal-message">As a Quiz Master, you can create and manage quizzes but cannot participate in them. Would you like to go to the Admin dashboard instead?</p>
+              <h3 class="fq-modal-title">Manager Account</h3>
+              <p class="fq-modal-message">As a <em>Manager</em>, you can create and manage quizzes but cannot participate in them. Would you like to go to the Admin dashboard instead?</p>
               <div class="fq-modal-actions">
                 <button class="fq-btn-secondary" id="close-modal-btn">Cancel</button>
                 <a href="/admin" class="fq-quiz-btn" data-link>Go to Admin</a>

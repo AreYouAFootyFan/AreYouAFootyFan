@@ -229,7 +229,7 @@ class FootballQuizProfile extends HTMLElement {
       const profileContent = this.querySelector('#profile-content');
       if (!profileContent) return;
       
-      const roleName = this.user.role_name || (this.user.role_id === 2 ? 'Quiz Master' : 'Quiz Taker');
+      const roleName = this.user.role_name || (this.user.role_id === 2 ? 'Manager' : 'Player');
       
       profileContent.innerHTML = `
         <header class="profile-header">

@@ -42,8 +42,8 @@ export class QuizAttemptService {
  
   static async startQuiz(data: CreateQuizAttemptDto, userRole: string): Promise<any> {
     
-    if (userRole !== 'Quiz Taker') {
-      throw ErrorUtils.forbidden('Only Quiz Takers can start quizzes');
+    if (userRole !== 'Player') {
+      throw ErrorUtils.forbidden('Only Players can start quizzes');
     }
 
     const quiz = await QuizModel.findById(data.quiz_id);

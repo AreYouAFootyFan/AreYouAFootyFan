@@ -30,8 +30,8 @@ export class UserResponseService {
   static async submitResponse(data: CreateUserResponseDto, userRole: string): Promise<any> {
     const attempt = await QuizAttemptModel.findById(data.attempt_id);
     
-    if (userRole !== "Quiz Taker") {
-      throw ErrorUtils.forbidden('Only Quiz Takers can submit responses');
+    if (userRole !== "Player") {
+      throw ErrorUtils.forbidden('Only Players can submit responses');
     }
 
     if (!attempt) {

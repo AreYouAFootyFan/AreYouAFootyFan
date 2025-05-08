@@ -10,8 +10,8 @@ router.get('/quiz/:quizId', QuestionController.getQuestionsByQuizId);
 router.get('/:id/validate', QuestionController.validateQuestion);
 router.get('/:id', QuestionController.getQuestionById);
 
-router.post('/', requireUsername, requireRole('Quiz Master'), QuestionController.createQuestion);
-router.put('/:id', requireUsername, requireRole('Quiz Master'), QuestionController.updateQuestion);
-router.delete('/:id', requireUsername, requireRole('Quiz Master'), QuestionController.deleteQuestion);
+router.post('/', requireUsername, requireRole('Manager'), QuestionController.createQuestion);
+router.put('/:id', requireUsername, requireRole('Manager'), QuestionController.updateQuestion);
+router.delete('/:id', requireUsername, requireRole('Manager'), QuestionController.deleteQuestion);
 
 export default router;

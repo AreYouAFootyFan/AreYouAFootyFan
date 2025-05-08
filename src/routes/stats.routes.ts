@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.use(authenticate);
 router.use(requireUsername);
-router.use(requireRole('Quiz Master'));
+router.use(requireRole('Manager'));
 
 router.get('/dashboard', StatsController.getDashboardStats);
 

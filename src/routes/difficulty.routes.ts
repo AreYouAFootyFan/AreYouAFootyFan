@@ -9,7 +9,7 @@ router.use(authenticate);
 router.get('/', DifficultyController.getAllDifficultyLevels);
 router.get('/:id', DifficultyController.getDifficultyLevelById);
 
-router.post('/', requireUsername, requireRole('Quiz Master'), DifficultyController.createDifficultyLevel);
-router.put('/:id', requireUsername, requireRole('Quiz Master'), DifficultyController.updateDifficultyLevel);
-router.delete('/:id', requireUsername, requireRole('Quiz Master'), DifficultyController.deleteDifficultyLevel);
+router.post('/', requireUsername, requireRole('Manager'), DifficultyController.createDifficultyLevel);
+router.put('/:id', requireUsername, requireRole('Manager'), DifficultyController.updateDifficultyLevel);
+router.delete('/:id', requireUsername, requireRole('Manager'), DifficultyController.deleteDifficultyLevel);
 export default router;
