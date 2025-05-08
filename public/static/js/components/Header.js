@@ -63,6 +63,7 @@ class FootballQuizHeader extends HTMLElement {
         
         .logo-icon {
           font-size: 1.5rem;
+          font-style: normal;
         }
         
         .logo h1 {
@@ -225,7 +226,7 @@ class FootballQuizHeader extends HTMLElement {
           <section class="header-top-inner">
             <section class="logo-section">
               <a href="/" class="logo" data-link>
-                <span class="logo-icon" aria-hidden="true">⚽</span>
+                <i class="logo-icon" aria-hidden="true">⚽</i>
                 <h1>Football Quiz</h1>
               </a>
             </section>
@@ -367,7 +368,6 @@ class FootballQuizHeader extends HTMLElement {
   }
   
   disconnectedCallback() {
-    // Clean up event listeners
     window.removeEventListener('popstate', this.updateActiveNavLink);
   }
 }

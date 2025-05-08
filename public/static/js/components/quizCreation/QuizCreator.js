@@ -39,6 +39,8 @@ class QuizCreator extends HTMLElement {
             localStorage.removeItem('current_question_id');
             localStorage.removeItem('current_question_text');
         }
+        localStorage.removeItem('selected_quiz_id');
+        localStorage.removeItem('selected_quiz_title');
     }
     
     async checkAuthorization() {
@@ -796,7 +798,6 @@ class QuizCreator extends HTMLElement {
         notification.className = `notification ${type}`;
         notification.classList.add('visible');
         
-        // Auto-hide after 3 seconds
         setTimeout(() => {
             notification.classList.remove('visible');
         }, 3000);
