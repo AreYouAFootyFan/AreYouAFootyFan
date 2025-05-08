@@ -34,18 +34,11 @@ SELECT
     u.user_id,
     u.username,
     COALESCE(SUM(ur.points_earned), 0) AS total_points
-FROM 
-    users u
-JOIN 
-    roles r ON u.role_id = r.role_id
-LEFT JOIN 
-    quiz_attempts qa ON u.user_id = qa.user_id
-LEFT JOIN 
-    user_responses ur ON qa.attempt_id = ur.attempt_id
-WHERE 
-    r.role_name = 'Quiz Taker'
-GROUP BY 
-    u.user_id, u.username;
+FROM users u
+LEFT JOIN quiz_attempts qa ON u.user_id = qa.user_id
+LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
+WHERE u.role_id = 1
+GROUP BY u.user_id, u.username;
 
 /*
     View: user_category_scores
@@ -59,18 +52,12 @@ SELECT
     c.category_id,
     c.category_name,
     SUM(ur.points_earned) AS total_points
-FROM
-    users u
-JOIN
-    quiz_attempts qa ON u.user_id = qa.user_id
-JOIN
-    quizzes q ON qa.quiz_id = q.quiz_id
-JOIN
-    categories c ON q.category_id = c.category_id
-JOIN
-    user_responses ur ON qa.attempt_id = ur.attempt_id
-GROUP BY
-    u.user_id, u.username, c.category_id, c.category_name;
+FROM users u
+INNER JOIN quiz_attempts qa ON u.user_id = qa.user_id
+INNER JOIN quizzes q ON qa.quiz_id = q.quiz_id
+INNER JOIN categories c ON q.category_id = c.category_id
+INNER JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
+GROUP BY u.user_id, u.username, c.category_id, c.category_name;
 
 /*
     View: leaderboard
@@ -82,10 +69,9 @@ SELECT
     u.username,
     COALESCE(SUM(ur.points_earned), 0) AS total_points
 FROM users u
-JOIN roles r ON u.role_id = r.role_id
 LEFT JOIN quiz_attempts qa ON u.user_id = qa.user_id
 LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
-WHERE r.role_name = 'Quiz Taker'
+WHERE u.role_id = 1
 GROUP BY u.user_id, u.username
 ORDER BY total_points DESC
 LIMIT 10;
@@ -114,12 +100,9 @@ SELECT
     category_id,
     category_name,
     category_description
-FROM
-    categories
-WHERE
-    deactivated_at IS NULL
-ORDER BY
-    category_name ASC;
+FROM categories
+WHERE deactivated_at IS NULL
+ORDER BY category_name ASC;
 
 /*
     View: active_quizzes
@@ -133,9 +116,6 @@ SELECT
     category_id,
     created_by,
     created_at
-FROM
-    quizzes
-WHERE
-    deactivated_at IS NULL
-ORDER BY
-    created_at DESC;
+FROM quizzes
+WHERE deactivated_at IS NULL
+ORDER BY created_at DESC;

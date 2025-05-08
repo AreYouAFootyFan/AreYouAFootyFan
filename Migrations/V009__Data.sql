@@ -1,5 +1,5 @@
 WITH role_id_query AS (
-  SELECT role_id FROM roles WHERE role_name = 'Quiz Master'
+  SELECT role_id FROM roles WHERE role_name = 'Player'
 )
 
 INSERT INTO users (google_id, username, role_id)
