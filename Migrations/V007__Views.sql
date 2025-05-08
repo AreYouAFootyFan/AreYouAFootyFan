@@ -72,9 +72,8 @@ FROM users u
 LEFT JOIN quiz_attempts qa ON u.user_id = qa.user_id
 LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
 WHERE u.role_id = 1
-GROUP BY u.user_id, u.username
-ORDER BY total_points DESC
-LIMIT 10;
+GROUP BY u.username, u.user_id
+ORDER BY total_points DESC;
 
 /*
     View: quiz_statistics

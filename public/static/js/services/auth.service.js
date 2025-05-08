@@ -140,7 +140,8 @@ class AuthService {
         const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
         
         const options = {
-            redirect_uri: 'http://ec2-13-247-101-74.af-south-1.compute.amazonaws.com:3000/',
+            // redirect_uri: 'http://ec2-13-247-101-74.af-south-1.compute.amazonaws.com:3000/',
+            redirect_uri: 'http://localhost:3000/',
             client_id: '919528168572-5i38f4pli5j6a7q7q1s6jibuomlbbdpa.apps.googleusercontent.com',
             access_type: "offline",
             response_type: "code",
