@@ -11,6 +11,7 @@ import leaderboardService from "./services/leaderboard.service.js"
 import quizAttemptService from "./services/quiz-attempt.service.js";
 import quizValidatorService from "./services/quiz-validator.service.js";
 import statsService from "./services/stats.service.js";
+import answerService from "./services/answer.service.js";
 
 import "./services/api.service.js";
 import "./services/category.service.js";
@@ -29,6 +30,7 @@ window.leaderboardService = leaderboardService
 window.quizAttemptService = quizAttemptService;
 window.quizValidatorService = quizValidatorService;
 window.statsService = statsService;
+window.answerService = answerService;
 
 
 let currentView = null;
