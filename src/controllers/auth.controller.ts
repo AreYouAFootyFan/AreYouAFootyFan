@@ -6,13 +6,13 @@ import { ErrorUtils } from '../utils/error.utils';
 export class AuthController {
   static async googleLogin(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const { token } = request.body;
-      
-      if (!token) {
-        throw ErrorUtils.badRequest('Google token is required');
+      const code = request.body.code as string;
+
+      if (!code) {
+        throw ErrorUtils.badRequest('Google code is required');
       }
       
-      const authResult = await AuthService.loginWithGoogle(token);
+      const authResult = await AuthService.loginWithGoogle(code);
       
       response.json(authResult);
     } catch (error) {

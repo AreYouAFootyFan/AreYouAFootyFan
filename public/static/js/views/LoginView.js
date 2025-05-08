@@ -129,7 +129,7 @@ export default class LoginView extends AbstractView {
       
                   <section id="google-signin-button"></section>
       
-                  <form id="username-container">
+                  <form id="username-container" novalidate onsubmit="return false;>
                   <h2>Set Your Username</h2>
                   <p>Please choose a unique username to continue:</p>
                   <label for="username">Username</label>
@@ -163,12 +163,21 @@ export default class LoginView extends AbstractView {
         if (siteHeader) siteHeader.style.display = 'none';
         if (siteFooter) siteFooter.style.display = 'none';
         
+        const urlParams = new URLSearchParams(window.location.search);
+        const googleCode = urlParams.get('code');
+    
+        if (googleCode) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            await this.handleGoogleLogin(googleCode);
+            return;
+        }
+
         this.setupGoogleSignIn();
         
-        const usernameForm = document.getElementById('username-container');
-        if (usernameForm) {
-            usernameForm.addEventListener('submit', this.handleUsernameSubmit.bind(this));
-        }
+        // const usernameForm = document.getElementById('username-container');
+        // if (usernameForm) {
+        //     usernameForm.addEventListener('submit', this.handleUsernameSubmit.bind(this));
+        // }
         
         const isAuthenticated = await authService.checkAuthentication();
         if (isAuthenticated) {
@@ -180,30 +189,22 @@ export default class LoginView extends AbstractView {
         }
     }
 
-    setupGoogleSignIn() {
-        authService.initGoogleSignIn(this.handleGoogleLogin.bind(this));
-        
+    setupGoogleSignIn() {        
         const googleSigninButton = document.getElementById('google-signin-button');
         if (googleSigninButton) {
             googleSigninButton.innerHTML = `
-                <div id="g_id_onload"
-                    data-client_id="${authService.googleClientId}"
-                    data-callback="handleCredentialResponse">
+                <div id="g_id_onload">
+                    <a href="${authService.getAuthURL()}">Sign In</a>
                 </div>
                 <div class="g_id_signin" data-type="standard"></div>
             `;
-            
-            const script = document.createElement('script');
-            script.src = 'https://accounts.google.com/gsi/client';
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
+        
         }
     }
 
-    async handleGoogleLogin(googleToken) {
+    async handleGoogleLogin(googleCode) {
         try {
-            const result = await authService.loginWithGoogle(googleToken);
+            const result = await authService.loginWithGoogle(googleCode);
             
             if (result.requiresUsername) {
                 this.showUsernameForm();
@@ -244,6 +245,7 @@ export default class LoginView extends AbstractView {
             usernameContainer.style.display = 'block';
             googleSigninButton.style.display = 'none';
         }
+        usernameContainer.addEventListener('submit', this.handleUsernameSubmit.bind(this));
     }
 
     showLoginError(message) {

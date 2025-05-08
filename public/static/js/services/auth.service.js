@@ -28,14 +28,14 @@ class AuthService {
         return this.user;
     }
 
-    async loginWithGoogle(googleToken) {
+    async loginWithGoogle(googleCode) {
         try {
             const response = await fetch('/api/auth/google-login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ token: googleToken })
+                body: JSON.stringify({ code: googleCode })
             });
 
             if (!response.ok) {
@@ -134,6 +134,26 @@ class AuthService {
         window.handleCredentialResponse = (response) => {
             callback(response.credential);
         };
+    }
+
+    getAuthURL() {
+        const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+        
+        const options = {
+            redirect_uri: 'http://localhost:3000/',
+            client_id: '919528168572-5i38f4pli5j6a7q7q1s6jibuomlbbdpa.apps.googleusercontent.com',
+            access_type: "offline",
+            response_type: "code",
+            prompt: "consent",
+            scope: [
+                "https://www.googleapis.com/auth/userinfo.profile",
+                "https://www.googleapis.com/auth/userinfo.email",
+            ].join(" "),
+        };
+        
+        const queryString = new URLSearchParams(options);
+        
+        return `${rootUrl}?${queryString.toString()}`;
     }
 }
 
