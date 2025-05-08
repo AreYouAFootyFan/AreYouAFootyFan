@@ -26,7 +26,7 @@ class QuizLeaderboard extends HTMLElement {
                 }
                 
                 .leaderboard-inner {
-                    max-width: var(--container-max-width, 75rem);
+                    max-width: var(--container-max-width);
                     margin: 0 auto;
                 }
                 
@@ -46,7 +46,7 @@ class QuizLeaderboard extends HTMLElement {
                 }
                 
                 .view-all {
-                    color: var(--primary, #3b82f6);
+                    color: var(--primary);
                     text-decoration: none;
                     font-weight: 500;
                     font-size: 0.875rem;
@@ -72,13 +72,13 @@ class QuizLeaderboard extends HTMLElement {
                 th, td {
                     padding: 1rem;
                     text-align: left;
-                    border-bottom: 0.0625rem solid var(--gray-200, #e2e8f0);
+                    border-bottom: 0.0625rem solid var(--gray-200);
                 }
                 
                 th {
                     font-weight: 600;
-                    color: var(--gray-600, #4b5563);
-                    background-color: var(--gray-50, #f8fafc);
+                    color: var(--gray-600);
+                    background-color: var(--gray-50);
                 }
                 
                 .rank {
@@ -88,7 +88,7 @@ class QuizLeaderboard extends HTMLElement {
                     width: 1.5rem;
                     height: 1.5rem;
                     border-radius: 50%;
-                    background-color: var(--gray-200, #e5e7eb);
+                    background-color: var(--gray-200);
                     font-weight: 600;
                     font-size: 0.75rem;
                     margin-right: 0.5rem;
@@ -114,7 +114,7 @@ class QuizLeaderboard extends HTMLElement {
                     align-items: center;
                     justify-content: center;
                     padding: 2rem;
-                    color: var(--gray-500, #64748b);
+                    color: var(--gray-500);
                 }
                 
                 .loading-spinner {
@@ -135,7 +135,7 @@ class QuizLeaderboard extends HTMLElement {
                 .empty-state {
                     text-align: center;
                     padding: 3rem 1rem;
-                    background-color: var(--gray-50, #f8fafc);
+                    background-color: var(--gray-50);
                     border-radius: 0.5rem;
                     margin-bottom: 2rem;
                 }
@@ -144,11 +144,11 @@ class QuizLeaderboard extends HTMLElement {
                     font-size: 1.25rem;
                     font-weight: 600;
                     margin-bottom: 0.5rem;
-                    color: var(--gray-700, #334155);
+                    color: var(--gray-700);
                 }
                 
                 .empty-message {
-                    color: var(--gray-500, #64748b);
+                    color: var(--gray-500);
                     max-width: 24rem;
                     margin: 0 auto;
                 }
@@ -193,7 +193,7 @@ class QuizLeaderboard extends HTMLElement {
                     font-size: 1.5rem;
                     background: none;
                     cursor: pointer;
-                    color: var(--gray-500, #64748b);
+                    color: var(--gray-500);
                     width: 2rem;
                     height: 2rem;
                     display: flex;
@@ -203,8 +203,8 @@ class QuizLeaderboard extends HTMLElement {
                 }
                 
                 .close-btn:hover {
-                    background-color: var(--gray-100, #f1f5f9);
-                    color: var(--gray-900, #0f172a);
+                    background-color: var(--gray-100);
+                    color: var(--gray-900);
                 }
             </style>
             

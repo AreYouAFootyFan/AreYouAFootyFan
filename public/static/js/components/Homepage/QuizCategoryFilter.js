@@ -19,7 +19,7 @@ class QuizCategoryFilter extends HTMLElement {
                 
                 select {
                     padding: 0.5rem 1rem;
-                    border: 0.0625rem solid var(--gray-300, #cbd5e1);
+                    border: 0.0625rem solid var(--gray-300);
                     border-radius: 0.25rem;
                     background-color: white;
                     font-size: 1rem;

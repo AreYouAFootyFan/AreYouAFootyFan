@@ -45,7 +45,7 @@ class QuizCard extends HTMLElement {
                 
                 header {
                     padding: 1rem;
-                    border-bottom: 0.0625rem solid var(--gray-200, #e2e8f0);
+                    border-bottom: 0.0625rem solid var(--gray-200);
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
@@ -68,7 +68,7 @@ class QuizCard extends HTMLElement {
                 }
                 
                 .description {
-                    color: var(--gray-600, #4b5563);
+                    color: var(--gray-600);
                     margin-bottom: 1rem;
                     font-size: 0.875rem;
                 }
@@ -77,19 +77,19 @@ class QuizCard extends HTMLElement {
                     display: flex;
                     gap: 1rem;
                     font-size: 0.75rem;
-                    color: var(--gray-500, #6b7280);
+                    color: var(--gray-500);
                 }
                 
                 footer {
                     padding: 1rem;
-                    border-top: 0.0625rem solid var(--gray-200, #e2e8f0);
+                    border-top: 0.0625rem solid var(--gray-200);
                     text-align: right;
                 }
                 
                 button {
                     display: inline-block;
                     padding: 0.5rem 1rem;
-                    background-color: var(--primary, #3b82f6);
+                    background-color: var(--primary);
                     color: white;
                     border-radius: 0.25rem;
                     font-weight: 500;
@@ -101,7 +101,7 @@ class QuizCard extends HTMLElement {
                 }
                 
                 button:hover {
-                    background-color: var(--primary-dark, #2563eb);
+                    background-color: var(--primary-dark);
                 }
             </style>
             

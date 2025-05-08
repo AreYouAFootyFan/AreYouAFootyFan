@@ -23,7 +23,7 @@ class QuizHome extends HTMLElement {
               }
               
               .hero {
-                  background-color: var(--primary, #3b82f6);
+                  background-color: var(--primary);
                   color: white;
                   text-align: center;
                   padding: 4rem 1rem;
@@ -31,7 +31,7 @@ class QuizHome extends HTMLElement {
               }
               
               .hero-content {
-                  max-width: var(--container-max-width, 75rem);
+                  max-width: var(--container-max-width);
                   margin: 0 auto;
               }
               
@@ -50,7 +50,7 @@ class QuizHome extends HTMLElement {
               }
               
               .content-section {
-                  max-width: var(--container-max-width, 75rem);
+                  max-width: var(--container-max-width);
                   margin: 0 auto 2rem auto;
                   padding: 0 1rem;
               }
@@ -72,7 +72,7 @@ class QuizHome extends HTMLElement {
               
               .notification {
                   width: 100%;
-                  max-width: var(--container-max-width, 75rem);
+                  max-width: var(--container-max-width);
                   margin: 0 auto 2rem auto;
                   background-color: #fff7ed;
                   border-left: 0.25rem solid #f97316;
@@ -102,7 +102,7 @@ class QuizHome extends HTMLElement {
               .empty-state {
                   text-align: center;
                   padding: 3rem 1rem;
-                  background-color: var(--gray-50, #f8fafc);
+                  background-color: var(--gray-50);
                   border-radius: 0.5rem;
                   margin-bottom: 2rem;
               }
@@ -110,18 +110,18 @@ class QuizHome extends HTMLElement {
               .empty-icon {
                   font-size: 3rem;
                   margin-bottom: 1rem;
-                  color: var(--gray-400, #94a3b8);
+                  color: var(--gray-400);
               }
               
               .empty-title {
                   font-size: 1.25rem;
                   font-weight: 600;
                   margin-bottom: 0.5rem;
-                  color: var(--gray-700, #334155);
+                  color: var(--gray-700);
               }
               
               .empty-message {
-                  color: var(--gray-500, #64748b);
+                  color: var(--gray-500);
                   max-width: 24rem;
                   margin: 0 auto;
               }
@@ -131,7 +131,7 @@ class QuizHome extends HTMLElement {
                   align-items: center;
                   justify-content: center;
                   padding: 2rem;
-                  color: var(--gray-500, #64748b);
+                  color: var(--gray-500);
               }
               
               .loading-spinner {
@@ -197,8 +197,8 @@ class QuizHome extends HTMLElement {
               .secondary-btn {
                   padding: 0.5rem 1rem;
                   background-color: white;
-                  color: var(--gray-600, #475569);
-                  border: 0.0625rem solid var(--gray-300, #cbd5e1);
+                  color: var(--gray-600);
+                  border: 0.0625rem solid var(--gray-300);
                   border-radius: 0.25rem;
                   font-weight: 500;
                   cursor: pointer;
@@ -206,12 +206,12 @@ class QuizHome extends HTMLElement {
               }
               
               .secondary-btn:hover {
-                  background-color: var(--gray-50, #f8fafc);
+                  background-color: var(--gray-50);
               }
               
               .primary-btn {
                   padding: 0.5rem 1rem;
-                  background-color: var(--primary, #3b82f6);
+                  background-color: var(--primary);
                   color: white;
                   border: none;
                   border-radius: 0.25rem;
@@ -223,7 +223,7 @@ class QuizHome extends HTMLElement {
               }
               
               .primary-btn:hover {
-                  background-color: var(--primary-dark, #2563eb);
+                  background-color: var(--primary-dark);
               }
               
               .hidden {
