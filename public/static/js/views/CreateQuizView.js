@@ -8,7 +8,7 @@ export default class CreateQuizView extends AbstractView {
     }
 
     async getHtml() {
-        return `<quiz-creator></quiz-creator>`;
+        return document.createElement('quiz-creator');
     }
 
     async mount() {

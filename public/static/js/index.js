@@ -105,7 +105,9 @@ const router = async () => {
     footer.style.display = isLoginPage ? 'none' : 'block';
   }
 
-  document.querySelector("#app").innerHTML = await view.getHtml();
+  const app = document.querySelector("#app");
+  const htmlContent = await view.getHtml();
+  app.replaceChildren(htmlContent);
   
   if (typeof view.mount === 'function') {
     view.mount();

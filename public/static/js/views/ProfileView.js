@@ -8,7 +8,7 @@ export default class ProfileView extends AbstractView {
     }
 
     async getHtml() {
-        return `<user-profile></user-profile>`;
+        document.createElement('user-profile');
     }
 
     async mount() {

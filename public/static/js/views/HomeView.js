@@ -11,9 +11,7 @@ export default class HomeView extends AbstractView {
     }
 
     async getHtml() {
-        return `
-           <quiz-home></quiz-home>
-        `;
+        return document.createElement('quiz-home');
     }
 
     async mount() {

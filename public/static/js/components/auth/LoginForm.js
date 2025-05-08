@@ -239,7 +239,7 @@ class LoginForm extends HTMLElement {
             }
         }
     }
-    
+        
     async handleGoogleLogin(googleCode) {
         try {
             const result = await window.authService.loginWithGoogle(googleCode);

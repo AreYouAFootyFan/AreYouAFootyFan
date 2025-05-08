@@ -8,7 +8,7 @@ export default class LoginView extends AbstractView {
     }
 
     async getHtml() {
-        return `<auth-login></auth-login>`;
+        return document.createElement('auth-login');
     }
 
     async mount() {
