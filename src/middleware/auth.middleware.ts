@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
-import { AuthService } from '../services/auth.service';
-import { ErrorUtils } from '../utils/error.utils';
-import { UserService } from '../services/user.service';
-import { UserRole, ErrorMessage } from '../utils/enums';
+import { Request, Response, NextFunction } from "express";
+import { AuthService } from "../services/auth.service";
+import { ErrorUtils } from "../utils/error.utils";
+import { UserService } from "../services/user.service";
+import { UserRole, ErrorMessage } from "../utils/enums";
 
 declare global {
   namespace Express {
@@ -15,17 +15,21 @@ declare global {
   }
 }
 
-export const authenticate = async (request: Request, _response: Response, next: NextFunction): Promise<void> => {
+export const authenticate = async (
+  request: Request,
+  _response: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const authHeader = request.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw ErrorUtils.unauthorized(ErrorMessage.UNAUTHORIZED);
     }
-    
-    const token = authHeader.split(' ')[1];
+
+    const token = authHeader.split(" ")[1];
     const userData = await AuthService.getUserFromToken(token);
-    
+
     request.user = userData;
     next();
   } catch (error) {
@@ -33,13 +37,17 @@ export const authenticate = async (request: Request, _response: Response, next: 
   }
 };
 
-export const requireUsername = (request: Request, _response: Response, next: NextFunction): void => {
+export const requireUsername = (
+  request: Request,
+  _response: Response,
+  next: NextFunction
+): void => {
   if (!request.user) {
     return next(ErrorUtils.unauthorized(ErrorMessage.USER_NOT_AUTHENTICATED));
   }
-  
+
   UserService.isUsernameSet(request.user.id)
-    .then(hasUsername => {
+    .then((hasUsername) => {
       if (!hasUsername) {
         next(ErrorUtils.forbidden(ErrorMessage.USERNAME_REQUIRED));
       } else {
@@ -54,11 +62,11 @@ export const requireRole = (role: UserRole) => {
     if (!request.user) {
       return next(ErrorUtils.unauthorized(ErrorMessage.USER_NOT_AUTHENTICATED));
     }
-    
+
     if (request.user.role !== role) {
       return next(ErrorUtils.forbidden(`Requires ${role} role`));
     }
-    
+
     next();
   };
 };

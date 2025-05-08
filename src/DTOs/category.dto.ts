@@ -6,4 +6,4 @@ export interface CreateCategoryDto {
 export interface UpdateCategoryDto {
   category_name?: string;
   category_description?: string;
-} 
+}

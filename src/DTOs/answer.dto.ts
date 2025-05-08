@@ -7,4 +7,4 @@ export interface CreateAnswerDto {
 export interface UpdateAnswerDto {
   answer_text?: string;
   is_correct?: boolean;
-} 
+}
