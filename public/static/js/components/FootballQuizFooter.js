@@ -1,98 +1,80 @@
 class FootballQuizFooter extends HTMLElement {
-    constructor() {
-      super();
-    }
-  
-    connectedCallback() {
-      this.addStyles();
-      this.render();
-    }
-    
-    addStyles() {
-      const styleId = 'football-quiz-footer-styles';
-      
-      if (!document.getElementById(styleId)) {
-        const styleElement = document.createElement('style');
-        styleElement.id = styleId;
-        
-        styleElement.textContent = `
-          football-quiz-footer {
-            display: block;
-            width: 100%;
-          }
-          
-          football-quiz-footer .fq-footer {
-            background-color: #1e293b;
-            color: #cbd5e1;
-            padding: 1.5rem 1rem;
-            margin-top: auto;
-            width: 100%;
-          }
-          
-          football-quiz-footer .fq-footer-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            width: 100%;
-            max-width: 75rem;
-            margin: 0 auto;
-          }
-          
-          football-quiz-footer .fq-footer-copyright {
-            margin: 0;
-            font-size: 0.875rem;
-          }
-          
-          football-quiz-footer .fq-footer-nav ul {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            gap: 1.5rem;
-          }
-          
-          football-quiz-footer .fq-footer-link {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.2s;
-          }
-          
-          football-quiz-footer .fq-footer-link:hover {
-            color: white;
-          }
-        `;
-        
-        document.head.appendChild(styleElement);
-      }
-    }
-    
-    render() {
-      this.innerHTML = `
-        <footer class="fq-footer">
-          <div class="fq-footer-inner">
-            <p class="fq-footer-copyright">&copy; 2025 Football Quiz. All rights reserved.</p>
-            <nav class="fq-footer-nav">
-              <ul>
-                <li><a href="#/privacy" class="fq-footer-link">Privacy</a></li>
-                <li><a href="#/terms" class="fq-footer-link">Terms</a></li>
-              </ul>
-            </nav>
-          </div>
-        </footer>
-      `;
-    }
-    
-    disconnectedCallback() {
-      const styleElement = document.getElementById('football-quiz-footer-styles');
-      if (styleElement) {
-        styleElement.remove();
-      }
-    }
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
   }
-  
-  customElements.define('football-quiz-footer', FootballQuizFooter);
-  
-  export default FootballQuizFooter;
+
+  connectedCallback() {
+    this.render();
+  }
+
+  render() {
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: block;
+          width: 100%;
+        }
+        
+        footer {
+          background-color: var(--gray-800);
+          color: var(--gray-300);
+          padding: var(--spacing-6, 1.5rem) var(--spacing-4);
+          margin-top: auto;
+          width: 100%;
+        }
+        
+        .footer-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: var(--spacing-4, 1rem);
+          width: 100%;
+          max-width: var(--container-max-width);
+          margin: 0 auto;
+        }
+        
+        .copyright {
+          margin: 0;
+          font-size: var(--font-size-sm);
+        }
+        
+        nav ul {
+          display: flex;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          gap: var(--spacing-6, 1.5rem);
+        }
+        
+        nav a {
+          color: var(--gray-400);
+          text-decoration: none;
+          font-size: var(--font-size-sm);
+          transition: var(--transition-normal, color 0.2s);
+        }
+        
+        nav a:hover {
+          color: white;
+        }
+      </style>
+      
+      <footer>
+        <section class="footer-container">
+          <p class="copyright">&copy; 2025 Football Quiz. All rights reserved.</p>
+          <nav>
+            <ul>
+              <li><a href="#/privacy">Privacy</a></li>
+              <li><a href="#/terms">Terms</a></li>
+            </ul>
+          </nav>
+        </section>
+      </footer>
+    `;
+  }
+}
+
+customElements.define('football-quiz-footer', FootballQuizFooter);
+
+export default FootballQuizFooter;

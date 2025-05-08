@@ -1,5 +1,8 @@
 import AbstractView from "./AbstractView.js";
-import "../components/FootballQuizHome.js";
+import "../components/QuizHome.js";
+import "../components/QuizCard.js";
+import "../components/QuizLeaderboard.js";
+import "../components/QuizCategoryFilter.js"
 
 export default class HomeView extends AbstractView {
     constructor() {
@@ -9,7 +12,7 @@ export default class HomeView extends AbstractView {
 
     async getHtml() {
         return `
-            <football-quiz-home></football-quiz-home>
+           <quiz-home></quiz-home>
         `;
     }
 
