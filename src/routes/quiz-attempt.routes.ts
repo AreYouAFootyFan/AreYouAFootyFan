@@ -1,12 +1,13 @@
 import express from 'express';
 import { QuizAttemptController } from '../controllers/quiz-attempt.controller';
 import { authenticate, requireUsername, requireRole } from '../middleware/auth.middleware';
+import { UserRole } from '../utils/enums';
 
 const router = express.Router();
 
 router.use(authenticate);
 router.use(requireUsername);
-router.use(requireRole('Player'));
+router.use(requireRole(UserRole.PLAYER));
 
 router.get('/my-attempts', QuizAttemptController.getUserAttempts);
 router.get('/:id', QuizAttemptController.getAttemptById);

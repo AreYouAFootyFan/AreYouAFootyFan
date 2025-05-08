@@ -4,6 +4,7 @@ import { QuizModel } from '../models/quiz.model';
 import { QuestionModel } from '../models/question.model';
 import { ErrorUtils } from '../utils/error.utils';
 import { CreateQuizAttemptDto } from '../DTOs/quiz-attempt.dto';
+import { UserRole } from '../utils/enums';
 
 interface DifficultyScore {
   total: number;
@@ -42,8 +43,8 @@ export class QuizAttemptService {
  
   static async startQuiz(data: CreateQuizAttemptDto, userRole: string): Promise<any> {
     
-    if (userRole !== 'Player') {
-      throw ErrorUtils.forbidden('Only Players can start quizzes');
+    if (userRole !== UserRole.PLAYER) {
+      throw ErrorUtils.forbidden(`Only ${UserRole.PLAYER}s can start quizzes`);
     }
 
     const quiz = await QuizModel.findById(data.quiz_id);

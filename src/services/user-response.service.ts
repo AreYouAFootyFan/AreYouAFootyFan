@@ -4,6 +4,7 @@ import { QuestionModel } from '../models/question.model';
 import { AnswerModel } from '../models/answer.model';
 import { ErrorUtils } from '../utils/error.utils';
 import { CreateUserResponseDto } from '../DTOs/user-response.dto';
+import { UserRole } from '../utils/enums';
 
 export class UserResponseService {
   
@@ -30,8 +31,8 @@ export class UserResponseService {
   static async submitResponse(data: CreateUserResponseDto, userRole: string): Promise<any> {
     const attempt = await QuizAttemptModel.findById(data.attempt_id);
     
-    if (userRole !== "Player") {
-      throw ErrorUtils.forbidden('Only Players can submit responses');
+    if (userRole !== UserRole.PLAYER) {
+      throw ErrorUtils.forbidden(`Only ${UserRole.PLAYER}s can submit responses`);
     }
 
     if (!attempt) {

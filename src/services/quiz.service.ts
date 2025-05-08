@@ -3,6 +3,7 @@ import { QuestionModel } from '../models/question.model';
 import { CategoryModel } from '../models/category.model';
 import { ErrorUtils } from '../utils/error.utils';
 import { CreateQuizDto, UpdateQuizDto } from '../DTOs/quiz.dto';
+import { UserRole } from '../utils/enums';
 
 export class QuizService {
   
@@ -43,8 +44,8 @@ export class QuizService {
   
   static async createQuiz(data: CreateQuizDto, userRole: string): Promise<Quiz> {
     
-    if (userRole !== 'Manager') {
-      throw ErrorUtils.forbidden('Only Managers can create quizzes');
+    if (userRole !== UserRole.MANAGER) {
+      throw ErrorUtils.forbidden(`Only ${UserRole.MANAGER}s can create quizzes`);
     }
     
     if (data.category_id) {

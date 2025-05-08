@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
 import { ErrorUtils } from '../utils/error.utils';
 import { UserService } from '../services/user.service';
+import { UserRole } from '../utils/enums';
 
 declare global {
   namespace Express {
@@ -48,7 +49,7 @@ export const requireUsername = (request: Request, _response: Response, next: Nex
     .catch(next);
 };
 
-export const requireRole = (role: string) => {
+export const requireRole = (role: UserRole) => {
   return (request: Request, _response: Response, next: NextFunction): void => {
     if (!request.user) {
       return next(ErrorUtils.unauthorized('User not authenticated'));
