@@ -74,6 +74,10 @@ class UserProfile extends HTMLElement {
                     animation: spin 0.75s linear infinite;
                 }
                 
+                i {
+                    font-style: normal;
+                }
+                
                 @keyframes spin {
                     to { transform: rotate(360deg); }
                 }
@@ -87,7 +91,7 @@ class UserProfile extends HTMLElement {
                 <section class="profile-grid">
                     <article class="profile-card" id="profile-content">
                         <section class="loading-container">
-                            <em class="loading-spinner" aria-hidden="true"></em>
+                            <i class="loading-spinner" aria-hidden="true"></i>
                             <p>Loading user data...</p>
                         </section>
                     </article>

@@ -156,20 +156,24 @@ class LoginForm extends HTMLElement {
                     margin-right: 0.5rem;
                     vertical-align: middle;
                 }
+
+                i {
+                font-style: normal;
+                }
             </style>
             
             <article class="login-page">
                 <main class="auth-main">
                     <section class="auth-container">
                         <header class="auth-header">
-                            <em class="logo-icon" aria-hidden="true">⚽</em>
+                            <i class="logo-icon" aria-hidden="true">⚽</i>
                             <h1>Welcome to Footy Quiz</h1>
                             <p>Sign in to test your football knowledge</p>
                         </header>
             
                         <section id="google-signin-button">
                             <a href="#" id="google-login-link">
-                                <em class="google-icon">G</em>
+                                <i class="google-icon">G</i>
                                 Sign in with Google
                             </a>
                         </section>

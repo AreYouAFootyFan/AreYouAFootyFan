@@ -77,6 +77,7 @@ class AdminTable extends HTMLElement {
                 }
                 
                 .action-icon {
+                    font-style: normal;
                     font-size: 1rem;
                 }
                 
@@ -155,7 +156,7 @@ class AdminTable extends HTMLElement {
                                     data-title="${item.data.title || ''}" 
                                     data-name="${item.data.name || ''}"
                                 >
-                                    <em class="action-icon">${item.icon}</em>
+                                    <i class="action-icon">${item.icon}</em>
                                 </button>
                             `).join('')}
                         </section>

@@ -8,7 +8,7 @@ export default class AdminDashboardView extends AbstractView {
     }
 
     async getHtml() {
-        document.createElement('admin-dashboard');
+       return document.createElement('admin-dashboard');
     }
 
     async mount() {
