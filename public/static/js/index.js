@@ -9,6 +9,8 @@ import categoryService from "./services/category.service.js";
 import quizService from "./services/quiz.service.js";
 import leaderboardService from "./services/leaderboard.service.js"
 import quizAttemptService from "./services/quiz-attempt.service.js";
+import quizValidatorService from "./services/quiz-validator.service.js";
+import statsService from "./services/stats.service.js";
 
 import "./services/api.service.js";
 import "./services/category.service.js";
@@ -17,12 +19,16 @@ import "./services/quiz.service.js";
 import "./services/question.service.js";
 import "./services/answer.service.js";
 import "./services/quiz-attempt.service.js";
+import "./services/quiz-validator.service.js";
+import "./services/stats.service.js";
 
 window.authService = authService;
 window.categoryService = categoryService;
 window.quizService = quizService;
 window.leaderboardService = leaderboardService
 window.quizAttemptService = quizAttemptService;
+window.quizValidatorService = quizValidatorService;
+window.statsService = statsService;
 
 
 let currentView = null;
