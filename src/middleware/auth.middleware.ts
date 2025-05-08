@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
 import { ErrorUtils } from '../utils/error.utils';
 import { UserService } from '../services/user.service';
-import { UserRole } from '../utils/enums';
+import { UserRole, ErrorMessage } from '../utils/enums';
 
 declare global {
   namespace Express {
@@ -20,7 +20,7 @@ export const authenticate = async (request: Request, _response: Response, next: 
     const authHeader = request.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw ErrorUtils.unauthorized('Authentication token is required');
+      throw ErrorUtils.unauthorized(ErrorMessage.UNAUTHORIZED);
     }
     
     const token = authHeader.split(' ')[1];
@@ -35,13 +35,13 @@ export const authenticate = async (request: Request, _response: Response, next: 
 
 export const requireUsername = (request: Request, _response: Response, next: NextFunction): void => {
   if (!request.user) {
-    return next(ErrorUtils.unauthorized('User not authenticated'));
+    return next(ErrorUtils.unauthorized(ErrorMessage.USER_NOT_AUTHENTICATED));
   }
   
   UserService.isUsernameSet(request.user.id)
     .then(hasUsername => {
       if (!hasUsername) {
-        next(ErrorUtils.forbidden('Username is required to access this resource'));
+        next(ErrorUtils.forbidden(ErrorMessage.USERNAME_REQUIRED));
       } else {
         next();
       }
@@ -52,7 +52,7 @@ export const requireUsername = (request: Request, _response: Response, next: Nex
 export const requireRole = (role: UserRole) => {
   return (request: Request, _response: Response, next: NextFunction): void => {
     if (!request.user) {
-      return next(ErrorUtils.unauthorized('User not authenticated'));
+      return next(ErrorUtils.unauthorized(ErrorMessage.USER_NOT_AUTHENTICATED));
     }
     
     if (request.user.role !== role) {

@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import { UserService } from './user.service';
 import { ErrorUtils } from '../utils/error.utils';
+import { ErrorMessage, TokenError } from '../utils/enums';
 
 interface GoogleTokenPayload {
   iss: string;
@@ -30,7 +31,7 @@ export class AuthService {
         const decoded = jwt.decode(token, { complete: true });
       
         if (!decoded || typeof decoded !== 'object' || !decoded.payload) {
-            throw ErrorUtils.unauthorized('Invalid token format');
+            throw ErrorUtils.unauthorized(TokenError.INVALID_FORMAT);
         }
       
         const payload = decoded.payload as GoogleTokenPayload;
@@ -38,9 +39,9 @@ export class AuthService {
         return payload;
     } catch (error) {
       if (error instanceof Error) {
-        throw ErrorUtils.unauthorized(`Invalid Google token: ${error.message}`);
+        throw ErrorUtils.unauthorized(`${TokenError.INVALID_TOKEN}: ${error.message}`);
       }
-      throw ErrorUtils.unauthorized('Invalid Google token');
+      throw ErrorUtils.unauthorized(TokenError.INVALID_TOKEN);
     }
   }
 
@@ -68,20 +69,12 @@ export class AuthService {
 
         const data = await response.json();
         
-    //   const decoded = jwt.decode(data.id_token, { complete: true });
-      
-    //   if (!decoded || typeof decoded !== 'object' || !decoded.payload) {
-    //     throw ErrorUtils.unauthorized('Invalid google token format');
-    //   }
-
-    //   const payload = decoded.payload as GoogleTokenPayload;
-      
       return data.id_token;
     } catch (error) {
       if (error instanceof Error) {
-        throw ErrorUtils.unauthorized(`Invalid Google token: ${error.message}`);
+        throw ErrorUtils.unauthorized(`${TokenError.INVALID_TOKEN}: ${error.message}`);
       }
-      throw ErrorUtils.unauthorized('Invalid Google token');
+      throw ErrorUtils.unauthorized(TokenError.INVALID_TOKEN);
     }
   }
 
@@ -94,7 +87,7 @@ export class AuthService {
     const googleId = payload.sub;
 
     if (!googleId) {
-      throw ErrorUtils.unauthorized('Invalid Google token: missing user ID');
+      throw ErrorUtils.unauthorized(TokenError.MISSING_USER_ID);
     }
     
     const user = await UserService.findOrCreateUser(googleId);
@@ -117,7 +110,7 @@ export class AuthService {
       const user = await UserService.getUserByGoogleId(payload.sub);
       
       if (!user) {
-        throw ErrorUtils.unauthorized('User not found for this token');
+        throw ErrorUtils.unauthorized(ErrorMessage.USER_NOT_AUTHENTICATED);
       }
       
       const userWithRole = await UserService.getUserWithRoleById(user.user_id);
@@ -127,7 +120,7 @@ export class AuthService {
         role: userWithRole.role_name
       };
     } catch (error) {
-      throw ErrorUtils.unauthorized('Invalid or expired token');
+      throw ErrorUtils.unauthorized(TokenError.EXPIRED);
     }
   }
 }

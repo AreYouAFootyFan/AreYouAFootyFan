@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { LeaderboardService } from '../services/leaderboard.service';
 import { ErrorUtils } from '../utils/error.utils';
+import { ConfigValue } from '../utils/enums';
 
 export class LeaderboardController {
   
@@ -30,7 +31,7 @@ export class LeaderboardController {
 
   static async getTopPlayers(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const limit = request.query.limit ? parseInt(request.query.limit as string) : 5;
+      const limit = request.query.limit ? parseInt(request.query.limit as string) : ConfigValue.DEFAULT_LEADERBOARD_LIMIT;
       
       if (isNaN(limit) || limit < 1) {
         throw ErrorUtils.badRequest('Invalid limit parameter');

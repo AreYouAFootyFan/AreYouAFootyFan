@@ -1,5 +1,6 @@
 import db from '../config/db';
 import { ErrorUtils } from '../utils/error.utils';
+import { ConfigValue, ErrorMessage } from '../utils/enums';
 
 export interface LeaderboardEntry {
   user_id: number;
@@ -25,7 +26,7 @@ export class LeaderboardService {
       }));
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
-      throw ErrorUtils.internal('Failed to fetch leaderboard data');
+      throw ErrorUtils.internal(ErrorMessage.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -55,7 +56,7 @@ export class LeaderboardService {
   /**
    * Get the top N players (with additional statistics)
    */
-  static async getTopPlayers(limit: number = 5): Promise<LeaderboardEntry[]> {
+  static async getTopPlayers(limit: number = ConfigValue.DEFAULT_LEADERBOARD_LIMIT): Promise<LeaderboardEntry[]> {
     try {
       const result = await db.query(`
         SELECT l.user_id, l.username, l.total_points,

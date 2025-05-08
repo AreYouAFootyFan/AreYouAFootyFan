@@ -4,7 +4,7 @@ import { QuestionModel } from '../models/question.model';
 import { AnswerModel } from '../models/answer.model';
 import { ErrorUtils } from '../utils/error.utils';
 import { CreateUserResponseDto } from '../DTOs/user-response.dto';
-import { UserRole } from '../utils/enums';
+import { UserRole, ErrorMessage } from '../utils/enums';
 
 export class UserResponseService {
   
@@ -12,7 +12,7 @@ export class UserResponseService {
     const attempt = await QuizAttemptModel.findById(attemptId);
     
     if (!attempt) {
-      throw ErrorUtils.notFound('Quiz attempt not found');
+      throw ErrorUtils.notFound(ErrorMessage.ATTEMPT_NOT_FOUND);
     }
     
     const responses = await UserResponseModel.findByAttemptId(attemptId);
@@ -32,21 +32,21 @@ export class UserResponseService {
     const attempt = await QuizAttemptModel.findById(data.attempt_id);
     
     if (userRole !== UserRole.PLAYER) {
-      throw ErrorUtils.forbidden(`Only ${UserRole.PLAYER}s can submit responses`);
+      throw ErrorUtils.forbidden(ErrorMessage.FORBIDDEN_PLAYER);
     }
 
     if (!attempt) {
-      throw ErrorUtils.notFound('Quiz attempt not found');
+      throw ErrorUtils.notFound(ErrorMessage.ATTEMPT_NOT_FOUND);
     }
     
     if (attempt.end_time) {
-      throw ErrorUtils.badRequest('Quiz attempt is already completed');
+      throw ErrorUtils.badRequest(ErrorMessage.ATTEMPT_COMPLETED);
     }
     
     const question = await QuestionModel.findById(data.question_id);
     
     if (!question) {
-      throw ErrorUtils.notFound('Question not found');
+      throw ErrorUtils.notFound(ErrorMessage.QUESTION_NOT_FOUND);
     }
     
     if (question.quiz_id !== attempt.quiz_id) {
@@ -56,7 +56,7 @@ export class UserResponseService {
     const answer = await AnswerModel.findById(data.answer_id);
     
     if (!answer) {
-      throw ErrorUtils.notFound('Answer not found');
+      throw ErrorUtils.notFound(ErrorMessage.ANSWER_NOT_FOUND);
     }
     
     if (answer.question_id !== data.question_id) {

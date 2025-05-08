@@ -1,5 +1,6 @@
 import db from '../config/db';
 import { CreateUserDto, UpdateUserDto } from '../DTOs/user.dto';
+import { UserRole, ConfigValue } from '../utils/enums';
 
 export interface User {
   user_id: number;
@@ -59,7 +60,7 @@ export class UserModel {
   static async create(data: CreateUserDto): Promise<User> {
     const result = await db.query(
       'INSERT INTO users (google_id, username, role_id) VALUES ($1, $2, $3) RETURNING *',
-      [data.google_id, data.username || null, data.role_id || 1] // Default role_id 1 = Player
+      [data.google_id, data.username || null, data.role_id || ConfigValue.DEFAULT_ROLE_ID] // Default role_id for Player
     );
     
     return result.rows[0];

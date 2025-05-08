@@ -3,7 +3,7 @@ import { QuestionModel } from '../models/question.model';
 import { CategoryModel } from '../models/category.model';
 import { ErrorUtils } from '../utils/error.utils';
 import { CreateQuizDto, UpdateQuizDto } from '../DTOs/quiz.dto';
-import { UserRole } from '../utils/enums';
+import { UserRole, ErrorMessage } from '../utils/enums';
 
 export class QuizService {
   
@@ -21,7 +21,7 @@ export class QuizService {
     const category = await CategoryModel.findById(categoryId);
     
     if (!category) {
-      throw ErrorUtils.notFound('Category not found');
+      throw ErrorUtils.notFound(ErrorMessage.CATEGORY_NOT_FOUND);
     }
     
     return QuizModel.findByCategory(categoryId);
@@ -32,7 +32,7 @@ export class QuizService {
     const quiz = await QuizModel.findByIdWithCategory(id);
     
     if (!quiz) {
-      throw ErrorUtils.notFound('Quiz not found');
+      throw ErrorUtils.notFound(ErrorMessage.QUIZ_NOT_FOUND);
     }
     
     const questionCount = await QuizModel.countQuestions(id);
@@ -45,14 +45,14 @@ export class QuizService {
   static async createQuiz(data: CreateQuizDto, userRole: string): Promise<Quiz> {
     
     if (userRole !== UserRole.MANAGER) {
-      throw ErrorUtils.forbidden(`Only ${UserRole.MANAGER}s can create quizzes`);
+      throw ErrorUtils.forbidden(ErrorMessage.FORBIDDEN_MANAGER);
     }
     
     if (data.category_id) {
       const category = await CategoryModel.findById(data.category_id);
       
       if (!category) {
-        throw ErrorUtils.badRequest('Invalid category ID');
+        throw ErrorUtils.badRequest(ErrorMessage.INVALID_CATEGORY);
       }
     }
     
@@ -64,14 +64,14 @@ export class QuizService {
     const existingQuiz = await QuizModel.findById(id);
     
     if (!existingQuiz) {
-      throw ErrorUtils.notFound('Quiz not found');
+      throw ErrorUtils.notFound(ErrorMessage.QUIZ_NOT_FOUND);
     }
     
     if (data.category_id !== undefined && data.category_id !== null) {
       const category = await CategoryModel.findById(data.category_id);
       
       if (!category) {
-        throw ErrorUtils.badRequest('Invalid category ID');
+        throw ErrorUtils.badRequest(ErrorMessage.INVALID_CATEGORY);
       }
     }
     
@@ -89,13 +89,13 @@ export class QuizService {
     const existingQuiz = await QuizModel.findById(id);
     
     if (!existingQuiz) {
-      throw ErrorUtils.notFound('Quiz not found');
+      throw ErrorUtils.notFound(ErrorMessage.QUIZ_NOT_FOUND);
     }
     
     const hasAttempts = await QuizModel.hasAttempts(id);
     
     if (hasAttempts) {
-      throw ErrorUtils.badRequest('Cannot delete quiz as it has active attempts');
+      throw ErrorUtils.badRequest(ErrorMessage.QUIZ_HAS_ATTEMPTS);
     }
     
     const deleted = await QuizModel.softDelete(id);

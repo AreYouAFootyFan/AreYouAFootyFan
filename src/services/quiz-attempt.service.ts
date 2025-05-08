@@ -4,7 +4,7 @@ import { QuizModel } from '../models/quiz.model';
 import { QuestionModel } from '../models/question.model';
 import { ErrorUtils } from '../utils/error.utils';
 import { CreateQuizAttemptDto } from '../DTOs/quiz-attempt.dto';
-import { UserRole } from '../utils/enums';
+import { UserRole, ErrorMessage } from '../utils/enums';
 
 interface DifficultyScore {
   total: number;
@@ -28,7 +28,7 @@ export class QuizAttemptService {
     const attempt = await QuizAttemptModel.findByIdWithDetails(id);
     
     if (!attempt) {
-      throw ErrorUtils.notFound('Quiz attempt not found');
+      throw ErrorUtils.notFound(ErrorMessage.ATTEMPT_NOT_FOUND);
     }
     
     if (attempt.user_id !== userId) {
@@ -44,19 +44,19 @@ export class QuizAttemptService {
   static async startQuiz(data: CreateQuizAttemptDto, userRole: string): Promise<any> {
     
     if (userRole !== UserRole.PLAYER) {
-      throw ErrorUtils.forbidden(`Only ${UserRole.PLAYER}s can start quizzes`);
+      throw ErrorUtils.forbidden(ErrorMessage.FORBIDDEN_PLAYER);
     }
 
     const quiz = await QuizModel.findById(data.quiz_id);
     
     if (!quiz) {
-      throw ErrorUtils.notFound('Quiz not found');
+      throw ErrorUtils.notFound(ErrorMessage.QUIZ_NOT_FOUND);
     }
     
     const questionCount = await QuizModel.countQuestions(data.quiz_id);
     
     if (questionCount < 5) {
-      throw ErrorUtils.badRequest('Quiz does not have enough questions (minimum 5 required)');
+      throw ErrorUtils.badRequest(ErrorMessage.INSUFFICIENT_QUESTIONS);
     }
 
     const questions = await QuestionModel.findByQuizIdWithDetails(data.quiz_id);
@@ -66,7 +66,7 @@ export class QuizAttemptService {
     );
     
     if (invalidQuestions.length > 0) {
-      throw ErrorUtils.badRequest('Quiz has invalid questions (each question must have exactly 4 answers with 1 correct)');
+      throw ErrorUtils.badRequest(ErrorMessage.INVALID_QUESTIONS);
     }
     
     const attempt = await QuizAttemptModel.create(data);
