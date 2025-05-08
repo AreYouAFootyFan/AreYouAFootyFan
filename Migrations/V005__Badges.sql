@@ -1,4 +1,6 @@
-INSERT INTO badges (badge_name, minimum_points) VALUES
+INSERT INTO
+  badges (badge_name, minimum_points)
+VALUES
   ('Rookie', 50),
   ('Amateur', 200),
   ('Semi-Pro', 500),

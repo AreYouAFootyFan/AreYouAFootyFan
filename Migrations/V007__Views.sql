@@ -1,113 +1,140 @@
 /*
-    View: user_quiz_scores
-    Shows the total accumulated score for each user on each quiz they have attempted.
-    Columns: user_id, username, quiz_id, quiz_title, total_points
-    Ordered by total_points descending (highest first).
-*/
-CREATE OR REPLACE VIEW user_quiz_scores AS
-SELECT 
+View: user_quiz_scores
+Shows the total accumulated score for each user on each quiz they have attempted.
+Columns: user_id, username, quiz_id, quiz_title, total_points
+Ordered by total_points descending (highest first).
+ */
+CREATE
+OR REPLACE VIEW user_quiz_scores AS
+SELECT
     qa.user_id,
     u.username,
     qa.quiz_id,
     q.quiz_title,
     SUM(ur.points_earned) AS total_points
-FROM 
+FROM
     quiz_attempts qa
-INNER JOIN 
-    user_responses ur ON qa.attempt_id = ur.attempt_id
-INNER JOIN 
-    users u ON qa.user_id = u.user_id
-INNER JOIN 
-    quizzes q ON qa.quiz_id = q.quiz_id
-GROUP BY 
-    qa.user_id, u.username, qa.quiz_id, q.quiz_title
+    INNER JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
+    INNER JOIN users u ON qa.user_id = u.user_id
+    INNER JOIN quizzes q ON qa.quiz_id = q.quiz_id
+GROUP BY
+    qa.user_id,
+    u.username,
+    qa.quiz_id,
+    q.quiz_title
 ORDER BY
     total_points DESC;
 
 /*
-    View: user_total_points
-    Shows the total accumulated points for each user with the 'Quiz Taker' role.
-    Columns: user_id, username, total_points
-*/
-CREATE OR REPLACE VIEW user_total_points AS
-SELECT 
+View: user_total_points
+Shows the total accumulated points for each user with the 'Quiz Taker' role.
+Columns: user_id, username, total_points
+ */
+CREATE
+OR REPLACE VIEW user_total_points AS
+SELECT
     u.user_id,
     u.username,
     COALESCE(SUM(ur.points_earned), 0) AS total_points
-FROM users u
-LEFT JOIN quiz_attempts qa ON u.user_id = qa.user_id
-LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
-WHERE u.role_id = 1
-GROUP BY u.user_id, u.username;
+FROM
+    users u
+    LEFT JOIN quiz_attempts qa ON u.user_id = qa.user_id
+    LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
+WHERE
+    u.role_id = 1
+GROUP BY
+    u.user_id,
+    u.username;
 
 /*
-    View: user_category_scores
-    Shows each user's accumulated score for quizzes in each category.
-    Columns: user_id, username, category_id, category_name, total_points
-*/
-CREATE OR REPLACE VIEW user_category_scores AS
+View: user_category_scores
+Shows each user's accumulated score for quizzes in each category.
+Columns: user_id, username, category_id, category_name, total_points
+ */
+CREATE
+OR REPLACE VIEW user_category_scores AS
 SELECT
     u.user_id,
     u.username,
     c.category_id,
     c.category_name,
     SUM(ur.points_earned) AS total_points
-FROM users u
-INNER JOIN quiz_attempts qa ON u.user_id = qa.user_id
-INNER JOIN quizzes q ON qa.quiz_id = q.quiz_id
-INNER JOIN categories c ON q.category_id = c.category_id
-INNER JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
-GROUP BY u.user_id, u.username, c.category_id, c.category_name;
+FROM
+    users u
+    INNER JOIN quiz_attempts qa ON u.user_id = qa.user_id
+    INNER JOIN quizzes q ON qa.quiz_id = q.quiz_id
+    INNER JOIN categories c ON q.category_id = c.category_id
+    INNER JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
+GROUP BY
+    u.user_id,
+    u.username,
+    c.category_id,
+    c.category_name;
 
 /*
-    View: leaderboard
-    Shows the top users by total points (only Quiz Takers)
-*/
-CREATE OR REPLACE VIEW leaderboard AS
+View: leaderboard
+Shows the top users by total points (only Quiz Takers)
+ */
+CREATE
+OR REPLACE VIEW leaderboard AS
 SELECT
     u.user_id,
     u.username,
     COALESCE(SUM(ur.points_earned), 0) AS total_points
-FROM users u
-LEFT JOIN quiz_attempts qa ON u.user_id = qa.user_id
-LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
-WHERE u.role_id = 1
-GROUP BY u.username, u.user_id
-ORDER BY total_points DESC;
+FROM
+    users u
+    LEFT JOIN quiz_attempts qa ON u.user_id = qa.user_id
+    LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
+WHERE
+    u.role_id = 1
+GROUP BY
+    u.username,
+    u.user_id
+ORDER BY
+    total_points DESC;
 
 /*
-    View: quiz_statistics
-    Shows number of attempts and average score for each quiz
-*/
-CREATE OR REPLACE VIEW quiz_statistics AS
+View: quiz_statistics
+Shows number of attempts and average score for each quiz
+ */
+CREATE
+OR REPLACE VIEW quiz_statistics AS
 SELECT
     q.quiz_id,
     q.quiz_title,
     COUNT(DISTINCT qa.attempt_id) AS num_attempts,
     AVG(ur.points_earned) AS avg_points_per_response
-FROM quizzes q
-LEFT JOIN quiz_attempts qa ON q.quiz_id = qa.quiz_id
-LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
-GROUP BY q.quiz_id, q.quiz_title;
+FROM
+    quizzes q
+    LEFT JOIN quiz_attempts qa ON q.quiz_id = qa.quiz_id
+    LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
+GROUP BY
+    q.quiz_id,
+    q.quiz_title;
 
 /*
-    View: active_categories
-    Shows all active categories (not deactivated) ordered alphabetically by name
-*/
-CREATE OR REPLACE VIEW active_categories AS
+View: active_categories
+Shows all active categories (not deactivated) ordered alphabetically by name
+ */
+CREATE
+OR REPLACE VIEW active_categories AS
 SELECT
     category_id,
     category_name,
     category_description
-FROM categories
-WHERE deactivated_at IS NULL
-ORDER BY category_name ASC;
+FROM
+    categories
+WHERE
+    deactivated_at IS NULL
+ORDER BY
+    category_name ASC;
 
 /*
-    View: active_quizzes
-    Shows all active quizzes (not deactivated) ordered by creation date descending
-*/
-CREATE OR REPLACE VIEW active_quizzes AS
+View: active_quizzes
+Shows all active quizzes (not deactivated) ordered by creation date descending
+ */
+CREATE
+OR REPLACE VIEW active_quizzes AS
 SELECT
     quiz_id,
     quiz_title,
@@ -115,6 +142,9 @@ SELECT
     category_id,
     created_by,
     created_at
-FROM quizzes
-WHERE deactivated_at IS NULL
-ORDER BY created_at DESC;
+FROM
+    quizzes
+WHERE
+    deactivated_at IS NULL
+ORDER BY
+    created_at DESC;

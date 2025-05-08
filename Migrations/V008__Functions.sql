@@ -1,6 +1,10 @@
 -- Returns all answers (id, text, correctness) for a specific question
-CREATE OR REPLACE FUNCTION get_answers(p_question_id INT)
-RETURNS TABLE(answer_id INT, answer_text VARCHAR, is_correct BOOL) AS $$
+CREATE
+OR REPLACE FUNCTION get_answers (p_question_id INT) RETURNS TABLE (
+    answer_id INT,
+    answer_text VARCHAR,
+    is_correct BOOL
+) AS $$
 BEGIN
     RETURN QUERY
     SELECT a.answer_id, a.answer_text, a.is_correct
@@ -10,15 +14,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns all questions for a specific quiz
-CREATE OR REPLACE FUNCTION get_questions(p_quiz_id INT)
-RETURNS 
-    TABLE(
-        question_id INT,
-        question_text VARCHAR,
-        difficulty_id INT,
-        difficulty_level VARCHAR
-        )
-AS $$
+CREATE
+OR REPLACE FUNCTION get_questions (p_quiz_id INT) RETURNS TABLE (
+    question_id INT,
+    question_text VARCHAR,
+    difficulty_id INT,
+    difficulty_level VARCHAR
+) AS $$
 BEGIN
     RETURN QUERY
     SELECT q.question_id, q.question_text, q.difficulty_id, d.difficulty_level
@@ -29,8 +31,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns the total points for a specific user (only if user is a Quiz Taker)
-CREATE OR REPLACE FUNCTION get_total_points(p_user_id INT)
-RETURNS INT AS $$
+CREATE
+OR REPLACE FUNCTION get_total_points (p_user_id INT) RETURNS INT AS $$
 DECLARE
     total_points INT;
 BEGIN
@@ -44,8 +46,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns the correct answer (id, text) for a specific question
-CREATE OR REPLACE FUNCTION get_correct_answer(p_question_id INT)
-RETURNS TABLE(answer_id INT, answer_text VARCHAR) AS $$
+CREATE
+OR REPLACE FUNCTION get_correct_answer (p_question_id INT) RETURNS TABLE (answer_id INT, answer_text VARCHAR) AS $$
 BEGIN
     RETURN QUERY
     SELECT a.answer_id, a.answer_text
@@ -55,8 +57,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns all badges earned by a specific user
-CREATE OR REPLACE FUNCTION get_badges(p_user_id INT)
-RETURNS TABLE(badge_name VARCHAR, achieved_at TIMESTAMP) AS $$
+CREATE
+OR REPLACE FUNCTION get_badges (p_user_id INT) RETURNS TABLE (badge_name VARCHAR, achieved_at TIMESTAMP) AS $$
 BEGIN
     RETURN QUERY
     SELECT b.badge_name, bh.achieved_at
@@ -67,15 +69,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns all quiz attempts for a user, with quiz title and total score
-CREATE OR REPLACE FUNCTION get_quiz_attempts(p_user_id INT)
-RETURNS
-    TABLE(
-        quiz_title VARCHAR,
-        start_time TIMESTAMP,
-        end_time TIMESTAMP,
-        total_points INT
-        )
-AS $$
+CREATE
+OR REPLACE FUNCTION get_quiz_attempts (p_user_id INT) RETURNS TABLE (
+    quiz_title VARCHAR,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    total_points INT
+) AS $$
 BEGIN
     RETURN QUERY
     SELECT
@@ -93,14 +93,13 @@ $$ LANGUAGE plpgsql;
 
 -- Returns all quizzes with an additional column for the user's quiz end 
 -- timestamp
-CREATE OR REPLACE FUNCTION get_quizzes_for_user(p_user_id INT)
-RETURNS
-    TABLE(
-        quiz_id INT,
-        quiz_title VARCHAR,
-        quiz_description TEXT,
-        end_timestamp TIMESTAMP)
-AS $$
+CREATE
+OR REPLACE FUNCTION get_quizzes_for_user (p_user_id INT) RETURNS TABLE (
+    quiz_id INT,
+    quiz_title VARCHAR,
+    quiz_description TEXT,
+    end_timestamp TIMESTAMP
+) AS $$
 BEGIN
     RETURN QUERY
     SELECT
@@ -120,8 +119,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns the number of quizzes a specific user has done
-CREATE OR REPLACE FUNCTION get_num_quizzes_done(p_user_id INT)
-RETURNS INT AS $$
+CREATE
+OR REPLACE FUNCTION get_num_quizzes_done (p_user_id INT) RETURNS INT AS $$
 DECLARE
     num_quizzes INT;
 BEGIN
@@ -134,8 +133,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns the number of questions a specific user has answered
-CREATE OR REPLACE FUNCTION get_num_questions_answered(p_user_id INT)
-RETURNS INT AS $$
+CREATE
+OR REPLACE FUNCTION get_num_questions_answered (p_user_id INT) RETURNS INT AS $$
 DECLARE
     num_questions INT;
 BEGIN
@@ -149,8 +148,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns the accuracy rate (correct/total) of a specific user
-CREATE OR REPLACE FUNCTION get_accuracy_rate(p_user_id INT)
-RETURNS NUMERIC AS $$
+CREATE
+OR REPLACE FUNCTION get_accuracy_rate (p_user_id INT) RETURNS NUMERIC AS $$
 DECLARE
     num_correct INT;
     num_total INT;
@@ -177,8 +176,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns the user's rank on the leaderboard (by total points, 1 = highest)
-CREATE OR REPLACE FUNCTION get_user_rank(p_user_id INT)
-RETURNS INT AS $$
+CREATE
+OR REPLACE FUNCTION get_user_rank (p_user_id INT) RETURNS INT AS $$
 DECLARE
     user_rank INT;
 BEGIN
