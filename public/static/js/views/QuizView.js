@@ -1,5 +1,7 @@
 import AbstractView from "./AbstractView.js";
-import "../components/FootballQuizView.js";
+import "../components/quizTaking/QuizTaking.js";
+import "../components/quizTaking/QuizResults.js";
+import "../components/quizTaking/QuizQuestion.js"
 
 export default class QuizView extends AbstractView {
     constructor() {
@@ -8,13 +10,10 @@ export default class QuizView extends AbstractView {
     }
 
     async getHtml() {
-        return `
-            <football-quiz-view></football-quiz-view>
-        `;
+       return document.createElement('quiz-taking');
     }
 
     async mount() {
-        
     }
     
     cleanup() {

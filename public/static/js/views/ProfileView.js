@@ -1,5 +1,5 @@
 import AbstractView from "./AbstractView.js";
-import "../components/FootballQuizProfile.js";
+import "../components/profile/UserProfile.js";
 
 export default class ProfileView extends AbstractView {
     constructor() {
@@ -8,9 +8,7 @@ export default class ProfileView extends AbstractView {
     }
 
     async getHtml() {
-        return `
-            <football-quiz-profile></football-quiz-profile>
-        `;
+       return document.createElement('user-profile');
     }
 
     async mount() {
