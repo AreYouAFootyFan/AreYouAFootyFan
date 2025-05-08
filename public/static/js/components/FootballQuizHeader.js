@@ -256,6 +256,7 @@ class FootballQuizHeader extends HTMLElement {
                   <nav class="fq-dropdown-menu" aria-label="User menu">
                     <ul class="fq-dropdown-list">
                       <li><button id="logout-button" type="button" class="fq-logout-btn">Log Out</button></li>
+                      <li><button id="profile-button" onclick = "location.href='/profile'" type="button" class="fq-logout-btn">Profile</button></li>
                     </ul>
                   </nav>
                 </div>
@@ -267,7 +268,6 @@ class FootballQuizHeader extends HTMLElement {
             <nav class="fq-nav-inner">
               <ul class="fq-nav-list">
                 <li class="fq-nav-item"><a href="/home" class="fq-nav-link nav-link" data-link>Home</a></li>
-                <li class="fq-nav-item"><a href="/profile" class="fq-nav-link nav-link" data-link>Profile</a></li>
                 <li class="fq-nav-item admin-item fq-hidden"><a href="/admin" class="fq-nav-link nav-link admin-link" data-link>Admin</a></li>
               </ul>
             </nav>
@@ -304,6 +304,14 @@ class FootballQuizHeader extends HTMLElement {
         }
       });
     }
+
+    navigateTo(path) {
+      history.pushState(null, null, path);
+      if (window.routeHandler) {
+        window.routeHandler(path);
+      }
+    }
+    
     
     updateActiveNavLink() {
       const currentPath = window.location.pathname;
