@@ -67,7 +67,7 @@ class QuizHome extends HTMLElement {
     
         const noteMessage = document.createElement('p');
         noteMessage.className = 'notification-message';
-        noteMessage.textContent = 'As a Quiz Master, you can create and manage quizzes but cannot participate in them. Use a Quiz Taker account to play quizzes.';
+        noteMessage.textContent = `As a Quiz Master, you can take quizzes, but won't be ranked. Use a Quiz Taker account to compete.`;
     
         notification.appendChild(noteTitle);
         notification.appendChild(noteMessage);

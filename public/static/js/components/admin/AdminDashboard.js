@@ -517,7 +517,7 @@ class AdminDashboard extends HTMLElement {
                     
                     quiz.valid_questions = validation.valid_questions;
                     quiz.question_count = validation.total_questions;
-                    quiz.is_valid = validation.is_valid;
+                    quiz.is_valid = quiz.valid_questions >= 5 && quiz.valid_questions == quiz.question_count;
                     quiz.validation_message = validation.validation_message;
                 } catch (error) {
                     console.error(`Error validating quiz ${quiz.quiz_id}:`, error);
@@ -550,7 +550,7 @@ class AdminDashboard extends HTMLElement {
             table.data = this.quizzes.map(quiz => {
                 const isValid = quiz.is_valid;
                 const statusClass = isValid ? 'valid-status' : 'invalid-status';
-                const statusText = isValid ? 'Ready' : `Not Ready (${quiz.valid_questions}/5)`;
+                const statusText = isValid ? 'Ready' : `Not Live`;
                 
                 return {
                     quiz_title: quiz.quiz_title,
@@ -652,14 +652,16 @@ class AdminDashboard extends HTMLElement {
             ];
             
             table.data = recentQuizzes.map(quiz => {
-                const hasEnoughQuestions = (quiz.question_count || 0) >= 5;
+                console.log(quiz.valid_questions);
+                console.log(quiz.question_count);
+                const isReady = (quiz.valid_questions || 0) >= 5 && quiz.valid_questions == quiz.question_count;
                 
                 return {
                     quiz_title: quiz.quiz_title,
                     status: {
                         type: 'badge',
-                        value: hasEnoughQuestions ? 'Ready' : 'Not Ready',
-                        class: hasEnoughQuestions ? 'valid-status' : 'invalid-status'
+                        value: isReady ? 'Live' : 'Not Live',
+                        class: isReady ? 'valid-status' : 'invalid-status'
                     },
                     actions: {
                         type: 'actions',
