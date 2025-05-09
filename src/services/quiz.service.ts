@@ -3,7 +3,7 @@ import { QuestionModel } from "../models/question.model";
 import { CategoryModel } from "../models/category.model";
 import { ErrorUtils } from "../utils/error.utils";
 import { CreateQuizDto, UpdateQuizDto } from "../DTOs/quiz.dto";
-import { User, Message } from "../utils/enums";
+import { User, Message, Config } from "../utils/enums";
 
 export class QuizService {
   static async getAllQuizzes(): Promise<any[]> {
@@ -74,7 +74,7 @@ export class QuizService {
     const updatedQuiz = await QuizModel.update(id, data);
 
     if (!updatedQuiz) {
-      throw ErrorUtils.internal("Failed to update quiz");
+      throw ErrorUtils.internal(Message.Error.QuizError.UPDATE_FAILED);
     }
 
     return updatedQuiz;
@@ -96,13 +96,13 @@ export class QuizService {
     const deleted = await QuizModel.softDelete(id);
 
     if (!deleted) {
-      throw ErrorUtils.internal("Failed to delete quiz");
+      throw ErrorUtils.internal(Message.Error.QuizError.DELETE_FAILED);
     }
   }
 
   static async checkQuizQuestionCount(quizId: number): Promise<boolean> {
     const count = await QuizModel.countQuestions(quizId);
-    return count >= 5;
+    return count >= Config.Value.MIN_QUESTIONS_PER_QUIZ;
   }
 
   static async getValidQuizzes(): Promise<any[]> {
@@ -111,14 +111,14 @@ export class QuizService {
 
     for (const quiz of allQuizzes) {
       const questionCount = await QuizModel.countQuestions(quiz.quiz_id);
-      if (questionCount < 5) continue;
+      if (questionCount < Config.Value.MIN_QUESTIONS_PER_QUIZ) continue;
 
       const questions = await QuestionModel.findByQuizIdWithDetails(
         quiz.quiz_id
       );
 
       const allQuestionsValid = questions.every(
-        (question) => question.answer_count == 4 && question.correct_answer_count == 1
+        (question) => question.answer_count == Config.Value.DEFAULT_ANSWERS_PER_QUESTION && question.correct_answer_count == 1
       );
 
       if (allQuestionsValid) {

@@ -5,6 +5,7 @@ import {
   UpdateDifficultyLevelDto,
 } from "../DTOs/difficulty.dto";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message, Http } from "../utils/enums";
 
 export class DifficultyController {
   static async getAllDifficultyLevels(
@@ -29,7 +30,7 @@ export class DifficultyController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid difficulty level ID");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
       }
 
       const difficultyLevel = await DifficultyService.getDifficultyLevelById(
@@ -56,25 +57,23 @@ export class DifficultyController {
 
       // Validate required fields
       if (!difficulty_level) {
-        throw ErrorUtils.badRequest("Difficulty level name is required");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.LEVEL_REQUIRED);
       }
 
       if (difficulty_level.length > 16) {
-        throw ErrorUtils.badRequest(
-          "Difficulty level name cannot exceed 16 characters"
-        );
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.LEVEL_TOO_LONG);
       }
 
       if (time_limit_seconds === undefined) {
-        throw ErrorUtils.badRequest("Time limit is required");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.TIME_LIMIT_REQUIRED);
       }
 
       if (points_on_correct === undefined) {
-        throw ErrorUtils.badRequest("Points on correct is required");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_CORRECT_REQUIRED);
       }
 
       if (points_on_incorrect === undefined) {
-        throw ErrorUtils.badRequest("Points on incorrect is required");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_INCORRECT_REQUIRED);
       }
 
       const data: CreateDifficultyLevelDto = {
@@ -85,21 +84,21 @@ export class DifficultyController {
       };
 
       if (isNaN(data.time_limit_seconds) || data.time_limit_seconds <= 0) {
-        throw ErrorUtils.badRequest("Time limit must be a positive number");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.TIME_LIMIT_POSITIVE);
       }
 
       if (isNaN(data.points_on_correct)) {
-        throw ErrorUtils.badRequest("Points on correct must be a number");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_CORRECT_NUMBER);
       }
 
       if (isNaN(data.points_on_incorrect)) {
-        throw ErrorUtils.badRequest("Points on incorrect must be a number");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_INCORRECT_NUMBER);
       }
 
       const difficultyLevel = await DifficultyService.createDifficultyLevel(
         data
       );
-      response.status(201).json(difficultyLevel);
+      response.status(Http.HttpStatus.CREATED).json(difficultyLevel);
     } catch (error) {
       next(error);
     }
@@ -114,7 +113,7 @@ export class DifficultyController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid difficulty level ID");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
       }
 
       const {
@@ -130,13 +129,11 @@ export class DifficultyController {
         points_on_correct === undefined &&
         points_on_incorrect === undefined
       ) {
-        throw ErrorUtils.badRequest("At least one field to update is required");
+        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
       }
 
       if (difficulty_level !== undefined && difficulty_level.length > 16) {
-        throw ErrorUtils.badRequest(
-          "Difficulty level name cannot exceed 16 characters"
-        );
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.LEVEL_TOO_LONG);
       }
 
       const data: UpdateDifficultyLevelDto = {};
@@ -148,7 +145,7 @@ export class DifficultyController {
       if (time_limit_seconds !== undefined) {
         const parsedTimeLimit = parseInt(time_limit_seconds.toString());
         if (isNaN(parsedTimeLimit) || parsedTimeLimit <= 0) {
-          throw ErrorUtils.badRequest("Time limit must be a positive number");
+          throw ErrorUtils.badRequest(Message.Error.DifficultyError.TIME_LIMIT_POSITIVE);
         }
         data.time_limit_seconds = parsedTimeLimit;
       }
@@ -156,7 +153,7 @@ export class DifficultyController {
       if (points_on_correct !== undefined) {
         const parsedPointsOnCorrect = parseInt(points_on_correct.toString());
         if (isNaN(parsedPointsOnCorrect)) {
-          throw ErrorUtils.badRequest("Points on correct must be a number");
+          throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_CORRECT_NUMBER);
         }
         data.points_on_correct = parsedPointsOnCorrect;
       }
@@ -166,7 +163,7 @@ export class DifficultyController {
           points_on_incorrect.toString()
         );
         if (isNaN(parsedPointsOnIncorrect)) {
-          throw ErrorUtils.badRequest("Points on incorrect must be a number");
+          throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_INCORRECT_NUMBER);
         }
         data.points_on_incorrect = parsedPointsOnIncorrect;
       }
@@ -190,11 +187,11 @@ export class DifficultyController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid difficulty level ID");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
       }
 
       await DifficultyService.deleteDifficultyLevel(id);
-      response.json({ message: "Difficulty level deleted successfully" });
+      response.json({ message: Message.Success.DifficultySuccess.DELETE });
     } catch (error) {
       next(error);
     }

@@ -7,6 +7,7 @@ import {
   UpdateDifficultyLevelDto,
 } from "../DTOs/difficulty.dto";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message } from "../utils/enums";
 
 export class DifficultyService {
   static async getAllDifficultyLevels(): Promise<DifficultyLevel[]> {
@@ -17,7 +18,7 @@ export class DifficultyService {
     const difficultyLevel = await DifficultyLevelModel.findById(id);
 
     if (!difficultyLevel) {
-      throw ErrorUtils.notFound("Difficulty level not found");
+      throw ErrorUtils.notFound(Message.Error.DifficultyError.NOT_FOUND);
     }
 
     return difficultyLevel;
@@ -27,7 +28,7 @@ export class DifficultyService {
     data: CreateDifficultyLevelDto
   ): Promise<DifficultyLevel> {
     if (data.time_limit_seconds <= 0) {
-      throw ErrorUtils.badRequest("Time limit must be a positive number");
+      throw ErrorUtils.badRequest(Message.Error.DifficultyError.TIME_LIMIT_POSITIVE);
     }
 
     const existingLevel = await DifficultyLevelModel.findByName(
@@ -35,9 +36,7 @@ export class DifficultyService {
     );
 
     if (existingLevel) {
-      throw ErrorUtils.conflict(
-        "A difficulty level with this name already exists"
-      );
+      throw ErrorUtils.conflict(Message.Error.DifficultyError.NAME_EXISTS);
     }
 
     return DifficultyLevelModel.create(data);
@@ -49,13 +48,13 @@ export class DifficultyService {
   ): Promise<DifficultyLevel> {
     // Validate data
     if (data.time_limit_seconds !== undefined && data.time_limit_seconds <= 0) {
-      throw ErrorUtils.badRequest("Time limit must be a positive number");
+      throw ErrorUtils.badRequest(Message.Error.DifficultyError.TIME_LIMIT_POSITIVE);
     }
 
     const existingLevel = await DifficultyLevelModel.findById(id);
 
     if (!existingLevel) {
-      throw ErrorUtils.notFound("Difficulty level not found");
+      throw ErrorUtils.notFound(Message.Error.DifficultyError.NOT_FOUND);
     }
 
     if (
@@ -67,16 +66,14 @@ export class DifficultyService {
       );
 
       if (levelWithSameName) {
-        throw ErrorUtils.conflict(
-          "Another difficulty level with this name already exists"
-        );
+        throw ErrorUtils.conflict(Message.Error.DifficultyError.NAME_EXISTS_OTHER);
       }
     }
 
     const updatedLevel = await DifficultyLevelModel.update(id, data);
 
     if (!updatedLevel) {
-      throw ErrorUtils.internal("Failed to update difficulty level");
+      throw ErrorUtils.internal(Message.Error.DifficultyError.UPDATE_FAILED);
     }
 
     return updatedLevel;
@@ -86,21 +83,19 @@ export class DifficultyService {
     const existingLevel = await DifficultyLevelModel.findById(id);
 
     if (!existingLevel) {
-      throw ErrorUtils.notFound("Difficulty level not found");
+      throw ErrorUtils.notFound(Message.Error.DifficultyError.NOT_FOUND);
     }
 
     const isUsed = await DifficultyLevelModel.isUsedByQuestions(id);
 
     if (isUsed) {
-      throw ErrorUtils.badRequest(
-        "Cannot delete difficulty level as it is used by existing questions"
-      );
+      throw ErrorUtils.badRequest(Message.Error.DifficultyError.USED_BY_QUESTIONS);
     }
 
     const deleted = await DifficultyLevelModel.delete(id);
 
     if (!deleted) {
-      throw ErrorUtils.internal("Failed to delete difficulty level");
+      throw ErrorUtils.internal(Message.Error.DifficultyError.DELETE_FAILED);
     }
   }
 }

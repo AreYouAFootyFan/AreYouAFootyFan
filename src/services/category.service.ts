@@ -1,6 +1,7 @@
 import { CategoryModel, Category } from "../models/category.model";
 import { CreateCategoryDto, UpdateCategoryDto } from "../DTOs/category.dto";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message } from "../utils/enums";
 
 export class CategoryService {
   static async getAllCategories(): Promise<Category[]> {
@@ -11,7 +12,7 @@ export class CategoryService {
     const category = await CategoryModel.findById(id);
 
     if (!category) {
-      throw ErrorUtils.notFound("Category not found");
+      throw ErrorUtils.notFound(Message.Error.CategoryError.NOT_FOUND);
     }
 
     return category;
@@ -21,7 +22,7 @@ export class CategoryService {
     const existingCategory = await CategoryModel.findByName(data.category_name);
 
     if (existingCategory) {
-      throw ErrorUtils.conflict("A category with this name already exists");
+      throw ErrorUtils.conflict(Message.Error.CategoryError.NAME_EXISTS);
     }
 
     return CategoryModel.create(data);
@@ -34,7 +35,7 @@ export class CategoryService {
     const existingCategory = await CategoryModel.findById(id);
 
     if (!existingCategory) {
-      throw ErrorUtils.notFound("Category not found");
+      throw ErrorUtils.notFound(Message.Error.CategoryError.NOT_FOUND);
     }
 
     if (
@@ -47,7 +48,7 @@ export class CategoryService {
 
       if (categoryWithSameName) {
         throw ErrorUtils.conflict(
-          "Another category with this name already exists"
+          Message.Error.CategoryError.NAME_EXISTS_OTHER
         );
       }
     }
@@ -55,7 +56,7 @@ export class CategoryService {
     const updatedCategory = await CategoryModel.update(id, data);
 
     if (!updatedCategory) {
-      throw ErrorUtils.internal("Failed to update category");
+      throw ErrorUtils.internal(Message.Error.CategoryError.UPDATE_FAILED);
     }
 
     return updatedCategory;
@@ -65,21 +66,21 @@ export class CategoryService {
     const existingCategory = await CategoryModel.findById(id);
 
     if (!existingCategory) {
-      throw ErrorUtils.notFound("Category not found");
+      throw ErrorUtils.notFound(Message.Error.CategoryError.NOT_FOUND);
     }
 
     const isUsed = await CategoryModel.isUsedByQuizzes(id);
 
     if (isUsed) {
       throw ErrorUtils.badRequest(
-        "Cannot delete category as it is used by existing quizzes"
+        Message.Error.CategoryError.USED_BY_QUIZZES
       );
     }
 
     const deleted = await CategoryModel.softDelete(id);
 
     if (!deleted) {
-      throw ErrorUtils.internal("Failed to delete category");
+      throw ErrorUtils.internal(Message.Error.CategoryError.DELETE_FAILED);
     }
   }
 }

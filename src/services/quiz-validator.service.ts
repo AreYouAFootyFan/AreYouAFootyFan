@@ -2,6 +2,7 @@ import { QuizModel } from "../models/quiz.model";
 import { QuestionModel } from "../models/question.model";
 import { AnswerModel } from "../models/answer.model";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message } from "../utils/enums";
 
 export interface QuestionValidationResult {
   question_id: number;
@@ -29,7 +30,7 @@ export class QuizValidatorService {
     const quiz = await QuizModel.findById(quizId);
 
     if (!quiz) {
-      throw ErrorUtils.notFound("Quiz not found");
+      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
     }
 
     const questions = await QuestionModel.findByQuizId(quizId);
@@ -64,7 +65,7 @@ export class QuizValidatorService {
     const question = await QuestionModel.findByIdWithDifficulty(questionId);
 
     if (!question) {
-      throw ErrorUtils.notFound("Question not found");
+      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
     }
 
     const answers = await AnswerModel.findByQuestionId(questionId);

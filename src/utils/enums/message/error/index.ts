@@ -36,6 +36,7 @@ export enum QuizError {
   QUESTION_NOT_BELONG = "Question does not belong to the current quiz",
   UPDATE_FAILED = "Failed to update quiz",
   DELETE_FAILED = "Failed to delete quiz",
+  INVALID_ID = "Invalid quiz ID",
 }
 
 /**
@@ -48,6 +49,14 @@ export enum QuestionError {
   INVALID_ID = "Invalid Question ID",
   UPDATE_FAILED = "Failed to update question",
   DELETE_FAILED = "Failed to delete question",
+  QUIZ_ID_REQUIRED = "Quiz ID is required",
+  TEXT_REQUIRED = "Question text is required",
+  TEXT_TOO_LONG = "Question text cannot exceed 256 characters",
+  QUIZ_ID_NAN = "Quiz ID must be a number",
+  DIFFICULTY_ID_REQUIRED = "Difficulty level ID is required",
+  DIFFICULTY_ID_NAN = "Difficulty ID must be a number",
+  HAS_ANSWERS = "Cannot delete question as it has associated answers",
+  DELETE_SUCCESS = "Question deleted successfully",
 }
 
 /**
@@ -61,6 +70,9 @@ export enum AnswerError {
   NOT_BELONG_TO_QUESTION = "Answer does not belong to the question",
   UPDATE_FAILED = "Failed to update answer",
   DELETE_FAILED = "Failed to delete answer",
+  MAX_ANSWERS_REACHED = "Question already has the maximum of 4 answers",
+  CANNOT_REMOVE_ONLY_CORRECT = "Cannot remove the only correct answer. Mark another answer as correct first.",
+  CANNOT_DELETE_ONLY_CORRECT = "Cannot delete the only correct answer. Mark another answer as correct first.",
 }
 
 /**
@@ -80,8 +92,10 @@ export enum CategoryError {
   INVALID = "Invalid category ID",
   NAME_REQUIRED = "Category name is required",
   NAME_EXISTS = "A category with this name already exists",
+  NAME_EXISTS_OTHER = "Another category with this name already exists",
   UPDATE_FAILED = "Failed to update category",
   DELETE_FAILED = "Failed to delete category",
+  USED_BY_QUIZZES = "Cannot delete category as it is used by existing quizzes",
 }
 
 /**
@@ -140,6 +154,19 @@ export enum LeaderboardError {
  * Difficulty-related error messages
  */
 export enum DifficultyError {
+  INVALID_ID = "Invalid difficulty level ID",
+  LEVEL_REQUIRED = "Difficulty level name is required",
+  LEVEL_TOO_LONG = "Difficulty level name cannot exceed 16 characters",
+  TIME_LIMIT_REQUIRED = "Time limit is required",
+  POINTS_CORRECT_REQUIRED = "Points on correct is required",
+  POINTS_INCORRECT_REQUIRED = "Points on incorrect is required",
+  TIME_LIMIT_POSITIVE = "Time limit must be a positive number",
+  POINTS_CORRECT_NUMBER = "Points on correct must be a number",
+  POINTS_INCORRECT_NUMBER = "Points on incorrect must be a number",
   UPDATE_FAILED = "Failed to update difficulty level",
   DELETE_FAILED = "Failed to delete difficulty level",
+  NOT_FOUND = "Difficulty level not found",
+  NAME_EXISTS = "A difficulty level with this name already exists",
+  NAME_EXISTS_OTHER = "Another difficulty level with this name already exists",
+  USED_BY_QUESTIONS = "Cannot delete difficulty level as it is used by existing questions",
 } 

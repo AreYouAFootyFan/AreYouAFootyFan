@@ -3,13 +3,14 @@ import { QuizModel } from "../models/quiz.model";
 import { DifficultyLevelModel } from "../models/difficulty.model";
 import { ErrorUtils } from "../utils/error.utils";
 import { CreateQuestionDto, UpdateQuestionDto } from "../DTOs/question.dto";
+import { Message } from "../utils/enums";
 
 export class QuestionService {
   static async getQuestionsByQuizId(quizId: number): Promise<any[]> {
     const quiz = await QuizModel.findById(quizId);
 
     if (!quiz) {
-      throw ErrorUtils.notFound("Quiz not found");
+      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
     }
 
     return QuestionModel.findByQuizIdWithDetails(quizId);
@@ -19,7 +20,7 @@ export class QuestionService {
     const question = await QuestionModel.findByIdWithDifficulty(id);
 
     if (!question) {
-      throw ErrorUtils.notFound("Question not found");
+      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
     }
 
     const answerCount = await QuestionModel.countAnswers(id);
@@ -35,7 +36,7 @@ export class QuestionService {
     const quiz = await QuizModel.findById(data.quiz_id);
 
     if (!quiz) {
-      throw ErrorUtils.badRequest("Invalid quiz ID");
+      throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
     }
 
     const difficultyLevel = await DifficultyLevelModel.findById(
@@ -43,7 +44,7 @@ export class QuestionService {
     );
 
     if (!difficultyLevel) {
-      throw ErrorUtils.badRequest("Invalid difficulty level ID");
+      throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
     }
 
     return QuestionModel.create(data);
@@ -56,7 +57,7 @@ export class QuestionService {
     const existingQuestion = await QuestionModel.findById(id);
 
     if (!existingQuestion) {
-      throw ErrorUtils.notFound("Question not found");
+      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
     }
 
     if (data.difficulty_id !== undefined) {
@@ -65,14 +66,14 @@ export class QuestionService {
       );
 
       if (!difficultyLevel) {
-        throw ErrorUtils.badRequest("Invalid difficulty level ID");
+        throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
       }
     }
 
     const updatedQuestion = await QuestionModel.update(id, data);
 
     if (!updatedQuestion) {
-      throw ErrorUtils.internal("Failed to update question");
+      throw ErrorUtils.internal(Message.Error.QuestionError.UPDATE_FAILED);
     }
 
     return updatedQuestion;
@@ -82,13 +83,13 @@ export class QuestionService {
     const existingQuestion = await QuestionModel.findById(id);
 
     if (!existingQuestion) {
-      throw ErrorUtils.notFound("Question not found");
+      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
     }
 
     const deleted = await QuestionModel.delete(id);
 
     if (!deleted) {
-      throw ErrorUtils.internal("Failed to delete question");
+      throw ErrorUtils.internal(Message.Error.QuestionError.DELETE_FAILED);
     }
   }
 

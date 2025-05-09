@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { QuestionService } from "../services/question.service";
 import { CreateQuestionDto, UpdateQuestionDto } from "../DTOs/question.dto";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message, Http } from "../utils/enums";
 
 export class QuestionController {
   static async getQuestionsByQuizId(
@@ -13,7 +14,7 @@ export class QuestionController {
       const quizId = parseInt(request.params.quizId);
 
       if (isNaN(quizId)) {
-        throw ErrorUtils.badRequest("Invalid quiz ID");
+        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
       }
 
       const questions = await QuestionService.getQuestionsByQuizId(quizId);
@@ -32,7 +33,7 @@ export class QuestionController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid question ID");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
       }
 
       const question = await QuestionService.getQuestionById(id);
@@ -52,21 +53,19 @@ export class QuestionController {
         request.body as CreateQuestionDto;
 
       if (!quiz_id) {
-        throw ErrorUtils.badRequest("Quiz ID is required");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.QUIZ_ID_REQUIRED);
       }
 
       if (!question_text) {
-        throw ErrorUtils.badRequest("Question text is required");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_REQUIRED);
       }
 
       if (question_text.length > 256) {
-        throw ErrorUtils.badRequest(
-          "Question text cannot exceed 256 characters"
-        );
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_TOO_LONG);
       }
 
       if (!difficulty_id) {
-        throw ErrorUtils.badRequest("Difficulty level ID is required");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.DIFFICULTY_ID_REQUIRED);
       }
 
       const data: CreateQuestionDto = {
@@ -76,15 +75,15 @@ export class QuestionController {
       };
 
       if (isNaN(data.quiz_id)) {
-        throw ErrorUtils.badRequest("Quiz ID must be a number");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.QUIZ_ID_NAN);
       }
 
       if (isNaN(data.difficulty_id)) {
-        throw ErrorUtils.badRequest("Difficulty ID must be a number");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.DIFFICULTY_ID_NAN);
       }
 
       const question = await QuestionService.createQuestion(data);
-      response.status(201).json(question);
+      response.status(Http.HttpStatus.CREATED).json(question);
     } catch (error) {
       next(error);
     }
@@ -99,20 +98,18 @@ export class QuestionController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid question ID");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
       }
 
       const { question_text, difficulty_id } =
         request.body as UpdateQuestionDto;
 
       if (question_text === undefined && difficulty_id === undefined) {
-        throw ErrorUtils.badRequest("At least one field to update is required");
+        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
       }
 
       if (question_text !== undefined && question_text.length > 256) {
-        throw ErrorUtils.badRequest(
-          "Question text cannot exceed 256 characters"
-        );
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_TOO_LONG);
       }
 
       const data: UpdateQuestionDto = {};
@@ -124,7 +121,7 @@ export class QuestionController {
       if (difficulty_id !== undefined) {
         const parsedDifficultyId = parseInt(difficulty_id.toString());
         if (isNaN(parsedDifficultyId)) {
-          throw ErrorUtils.badRequest("Difficulty ID must be a number");
+          throw ErrorUtils.badRequest(Message.Error.QuestionError.DIFFICULTY_ID_NAN);
         }
         data.difficulty_id = parsedDifficultyId;
       }
@@ -145,11 +142,11 @@ export class QuestionController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid question ID");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
       }
 
       await QuestionService.deleteQuestion(id);
-      response.json({ message: "Question deleted successfully" });
+      response.json({ message: Message.Success.QuestionSuccess.DELETE });
     } catch (error) {
       next(error);
     }
@@ -164,7 +161,7 @@ export class QuestionController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid question ID");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
       }
 
       const question = await QuestionService.getQuestionById(id);
@@ -174,6 +171,7 @@ export class QuestionController {
       response.json({
         question,
         validation,
+        message: Message.Success.QuestionSuccess.VALIDATE
       });
     } catch (error) {
       next(error);
