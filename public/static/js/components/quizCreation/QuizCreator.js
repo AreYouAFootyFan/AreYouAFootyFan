@@ -56,6 +56,11 @@ class QuizCreator extends HTMLElement {
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.firstChild);
         }
+
+        this.quizId = localStorage.getItem('selected_quiz_id');
+        console.log(this.quizId);
+        this.quizTitle = localStorage.getItem('selected_quiz_title');
+        this.isEditing = !!this.quizId;
         
         const main = document.createElement('main');
         main.className = 'quiz-creator';
@@ -91,6 +96,15 @@ class QuizCreator extends HTMLElement {
         const sidebar = document.createElement('aside');
         sidebar.className = 'creator-sidebar';
         
+        // Create navigation container that holds both steps and button
+        const navigationContainer = document.createElement('section');
+        navigationContainer.className = 'creator-navigation';
+        
+        // Create steps container
+        const stepsContainer = document.createElement('section');
+        stepsContainer.className = 'sidebar-steps';
+        
+        // Step 1
         const step1 = document.createElement('section');
         step1.className = `step-indicator ${this.viewMode === 'quiz' ? 'active' : this.isEditing ? 'completed' : ''}`;
         
@@ -104,12 +118,9 @@ class QuizCreator extends HTMLElement {
         
         step1.appendChild(step1Number);
         step1.appendChild(step1Label);
-        sidebar.appendChild(step1);
+        stepsContainer.appendChild(step1);
         
-        const connector1 = document.createElement('section');
-        connector1.className = 'step-connector';
-        sidebar.appendChild(connector1);
-        
+        // Step 2
         const step2 = document.createElement('section');
         step2.className = `step-indicator ${this.viewMode === 'questions' ? 'active' : ''}`;
         
@@ -123,12 +134,9 @@ class QuizCreator extends HTMLElement {
         
         step2.appendChild(step2Number);
         step2.appendChild(step2Label);
-        sidebar.appendChild(step2);
+        stepsContainer.appendChild(step2);
         
-        const connector2 = document.createElement('section');
-        connector2.className = 'step-connector';
-        sidebar.appendChild(connector2);
-        
+        // Step 3
         const step3 = document.createElement('section');
         step3.className = `step-indicator ${this.viewMode === 'question-form' || this.viewMode === 'answers' ? 'active' : ''}`;
         
@@ -142,19 +150,18 @@ class QuizCreator extends HTMLElement {
         
         step3.appendChild(step3Number);
         step3.appendChild(step3Label);
-        sidebar.appendChild(step3);
+        stepsContainer.appendChild(step3);
         
+        // Back to Dashboard button now in the navigation container
         const sidebarActions = document.createElement('section');
         sidebarActions.className = 'sidebar-actions';
+                
+        // Append both steps and actions to the navigation container
+        navigationContainer.appendChild(stepsContainer);
+        navigationContainer.appendChild(sidebarActions);
         
-        const backButton = document.createElement('a');
-        backButton.href = '/admin';
-        backButton.className = 'creator-btn secondary-btn';
-        backButton.dataset.link = '';
-        backButton.textContent = 'Back to Dashboard';
-        
-        sidebarActions.appendChild(backButton);
-        sidebar.appendChild(sidebarActions);
+        // Append navigation container to sidebar
+        sidebar.appendChild(navigationContainer);
         
         return sidebar;
     }
@@ -176,6 +183,7 @@ class QuizCreator extends HTMLElement {
         const quizForm = document.createElement('quiz-form');
         quizForm.id = 'quiz-form';
         quizForm.setAttribute('editing', this.isEditing.toString());
+        console.log(this.quizId)
         quizForm.setAttribute('quiz-id', this.quizId || '');
         quizForm.setAttribute('quiz-title', this.quizTitle || '');
         
@@ -232,19 +240,20 @@ class QuizCreator extends HTMLElement {
         const navActions = document.createElement('section');
         navActions.className = 'navigation-actions';
         
-        const backBtn = document.createElement('button');
-        backBtn.id = 'back-to-quiz-btn';
-        backBtn.className = 'creator-btn secondary-btn';
-        backBtn.textContent = 'Back to Quiz Details';
-        backBtn.addEventListener('click', () => this.showQuizForm());
+        if(this.isEditing){
+            const backBtn = document.createElement('button');
+            backBtn.id = 'back-to-quiz-btn';
+            backBtn.className = 'creator-btn secondary-btn';
+            backBtn.textContent = 'Back to Quiz Details';
+            backBtn.addEventListener('click', () => this.showQuizForm());
+            navActions.appendChild(backBtn);
+        }
         
         const dashboardLink = document.createElement('a');
         dashboardLink.href = '/admin';
         dashboardLink.className = 'creator-btn primary-btn';
         dashboardLink.dataset.link = '';
         dashboardLink.textContent = 'Back to Dashboard';
-        
-        navActions.appendChild(backBtn);
         navActions.appendChild(dashboardLink);
         questionsContainer.appendChild(navActions);
         
