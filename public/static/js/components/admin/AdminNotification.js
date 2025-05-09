@@ -5,76 +5,63 @@ class AdminNotification extends HTMLElement {
         this.message = '';
         this.type = 'success';
         this.timeout = null;
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
     }
     
-    render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    position: fixed;
-                    bottom: 2rem;
-                    right: 2rem;
-                    z-index: 1001;
-                }
-                
-                .toast {
-                    padding: 1rem 1.5rem;
-                    border-radius: 0.25rem;
-                    color: white;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
-                    min-width: 20rem;
-                    max-width: 25rem;
-                    transition: opacity 0.3s, transform 0.3s;
-                    transform: translateY(0);
-                    opacity: 1;
-                }
-                
-                .toast.hidden {
-                    transform: translateY(2rem);
-                    opacity: 0;
-                    pointer-events: none;
-                }
-                
-                .toast.success {
-                    background-color: var(--success);
-                }
-                
-                .toast.error {
-                    background-color: var(--error);
-                }
-                
-                .toast.info {
-                    background-color: var(--info);
-                }
-                
-                .close-toast {
-                    background: none;
-                    border: none;
-                    color: white;
-                    font-size: 1.25rem;
-                    cursor: pointer;
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin-left: 1rem;
-                }
-            </style>
+    async loadStyles() {
+         try {
+            const globalStylesResponse = await fetch('./static/css/styles.css');
+            const globalStyles = await globalStylesResponse.text();
+            const globalStyleSheet = new CSSStyleSheet();
+            globalStyleSheet.replaceSync(globalStyles);
             
-            <article class="toast hidden ${this.type}" id="toast">
-                <p id="message">${this.message}</p>
-                <button class="close-toast" id="close-btn">&times;</button>
-            </article>
-        `;
+            const adminSharedStylesResponse = await fetch('./static/css/admin/shared.css');
+            const adminSharedStyles = await adminSharedStylesResponse.text();
+            const adminSharedStyleSheet = new CSSStyleSheet();
+            adminSharedStyleSheet.replaceSync(adminSharedStyles);
+            
+            const componentStylesResponse = await fetch('./static/css/admin/adminnotification.css');
+            const componentStyles = await componentStylesResponse.text();
+            const componentStyleSheet = new CSSStyleSheet();
+            componentStyleSheet.replaceSync(componentStyles);
+            
+            this.shadowRoot.adoptedStyleSheets = [
+                globalStyleSheet, 
+                adminSharedStyleSheet, 
+                componentStyleSheet
+            ];
+        } catch (error) {
+            console.error('Error loading styles:', error);
+        }
+    }
+    
+    render() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
+        const toast = document.createElement('article');
+        toast.className = `toast hidden ${this.type}`;
+        toast.id = 'toast';
+        
+        const message = document.createElement('p');
+        message.id = 'message';
+        message.textContent = this.message;
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-toast';
+        closeBtn.id = 'close-btn';
+        closeBtn.innerHTML = '&times;';
+        
+        toast.appendChild(message);
+        toast.appendChild(closeBtn);
+        
+        this.shadowRoot.appendChild(toast);
         
         this.setupEventListeners();
     }

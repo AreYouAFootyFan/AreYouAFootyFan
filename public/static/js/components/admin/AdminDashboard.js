@@ -19,232 +19,362 @@ class AdminDashboard extends HTMLElement {
         this.handleCategorySubmit = this.handleCategorySubmit.bind(this);
         this.confirmDeleteCategory = this.confirmDeleteCategory.bind(this);
         this.confirmDeleteQuiz = this.confirmDeleteQuiz.bind(this);
+        
+        this.styleSheet = new CSSStyleSheet();
     }
 
     connectedCallback() {
+        this.loadStyles();
         this.render();
         this.setupEventListeners();
         
         this.checkAuthorization();
     }
     
-    async checkAuthorization() {
-        const authService = window.authService;
-        
-        try {
-            const isAuthenticated = await authService.checkAuthentication();
-            if (!isAuthenticated) {
-                window.location.href = '/login';
-                return;
-            }
-
-            if (!authService.isQuizMaster()) {
-                window.location.href = '/home';
-                return;
-            }
+    async loadStyles() {
+         try {
+            const globalStylesResponse = await fetch('./static/css/styles.css');
+            const globalStyles = await globalStylesResponse.text();
+            const globalStyleSheet = new CSSStyleSheet();
+            globalStyleSheet.replaceSync(globalStyles);
             
-            this.loadInitialData();
+            const adminSharedStylesResponse = await fetch('./static/css/admin/shared.css');
+            const adminSharedStyles = await adminSharedStylesResponse.text();
+            const adminSharedStyleSheet = new CSSStyleSheet();
+            adminSharedStyleSheet.replaceSync(adminSharedStyles);
             
+            const componentStylesResponse = await fetch('./static/css/admin/admindashboard.css');
+            const componentStyles = await componentStylesResponse.text();
+            const componentStyleSheet = new CSSStyleSheet();
+            componentStyleSheet.replaceSync(componentStyles);
+            
+            this.shadowRoot.adoptedStyleSheets = [
+                globalStyleSheet, 
+                adminSharedStyleSheet, 
+                componentStyleSheet
+            ];
         } catch (error) {
-            console.error('Error checking authentication:', error);
-            window.location.href = '/login';
+            console.error('Error loading styles:', error);
         }
     }
     
     render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .admin-page {
-                    width: 100%;
-                    min-height: calc(100vh - 8rem);
-                    background-color: var(--gray-100);
-                }
-                
-                .admin-container {
-                    display: flex;
-                    width: 100%;
-                    height: 100%;
-                }
-                
-                .admin-content {
-                    flex: 1;
-                    padding: 2rem;
-                    overflow-x: auto;
-                }
-                
-                .admin-view {
-                    width: 100%;
-                }
-                
-                .admin-view.hidden {
-                    display: none;
-                }
-                
-                .admin-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 2rem;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                }
-                
-                .admin-header h1 {
-                    margin: 0;
-                    font-size: 1.75rem;
-                }
-                
-                .admin-btn {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0.5rem 1rem;
-                    border-radius: 0.25rem;
-                    font-weight: 500;
-                    font-size: 0.875rem;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    border: none;
-                    text-decoration: none;
-                    font-family: inherit;
-                }
-                
-                .primary-btn {
-                    background-color: var(--primary);
-                    color: white;
-                }
-                
-                .primary-btn:hover {
-                    background-color: var(--primary-dark);
-                }
-                
-                .secondary-btn {
-                    background-color: var(--gray-200);
-                    color: var(--gray-700);
-                }
-                
-                .secondary-btn:hover {
-                    background-color: var(--gray-300);
-                }
-                
-                .danger-btn {
-                    background-color: var(--error);
-                    color: white;
-                }
-                
-                .danger-btn:hover {
-                    background-color: var(--error-dark);
-                }
-                
-                .loading-text {
-                    color: var(--gray-500);
-                    text-align: center;
-                    margin: 1rem 0;
-                }
-                
-                .empty-message {
-                    color: var(--gray-600);
-                    text-align: center;
-                    margin: 2rem 0;
-                }
-                
-                .error-message {
-                    color: var(--error);
-                    text-align: center;
-                    margin: 2rem 0;
-                }
-            </style>
-            
-            <main class="admin-page">
-                <section class="admin-container">
-                    <admin-sidebar active-view="${this.viewMode}" @change-view="${this.changeView}"></admin-sidebar>
-                    
-                    <section class="admin-content">
-                        <section id="dashboard-view" class="admin-view ${this.viewMode === 'dashboard' ? '' : 'hidden'}">
-                            <header class="admin-header">
-                                <h1>Admin Dashboard</h1>
-                                <section class="admin-actions">
-                                    <a href="/create-quiz" class="admin-btn primary-btn" data-link>Create New Quiz</a>
-                                </section>
-                            </header>
-                            
-                            <admin-stats id="admin-stats"></admin-stats>
-                            
-                            <section class="admin-cards">
-                                <admin-card title="Recently Created Quizzes" action="View All" action-view="quizzes">
-                                    <p class="loading-text" slot="content">Loading quizzes...</p>
-                                </admin-card>
-                                
-                                <admin-card title="Categories" action="View All" action-view="categories">
-                                    <p class="loading-text" slot="content">Loading categories...</p>
-                                </admin-card>
-                            </section>
-                        </section>
-                        
-                        <section id="quizzes-view" class="admin-view ${this.viewMode === 'quizzes' ? '' : 'hidden'}">
-                            <header class="admin-header">
-                                <h1>Quiz Management</h1>
-                                <section class="admin-actions">
-                                    <a href="/create-quiz" class="admin-btn primary-btn" data-link>Create New Quiz</a>
-                                </section>
-                            </header>
-                            
-                            <admin-card full-width>
-                                <p class="loading-text" slot="content" id="quizzes-list">Loading quizzes...</p>
-                            </admin-card>
-                        </section>
-                        
-                        <section id="categories-view" class="admin-view ${this.viewMode === 'categories' ? '' : 'hidden'}">
-                            <header class="admin-header">
-                                <h1>Category Management</h1>
-                                <section class="admin-actions">
-                                    <button id="add-category-btn" class="admin-btn primary-btn">Add Category</button>
-                                </section>
-                            </header>
-                            
-                            <admin-card full-width>
-                                <p class="loading-text" slot="content" id="categories-list">Loading categories...</p>
-                            </admin-card>
-                        </section>
-                    </section>
-                </section>
-            </main>
-            
-            <admin-modal id="category-modal" title="Add New Category">
-                <form id="category-form" slot="content">
-                    <input type="hidden" id="category-id" value="">
-                    <section class="form-group">
-                        <label for="category-name">Category Name</label>
-                        <input type="text" id="category-name" required maxlength="32">
-                    </section>
-                    <section class="form-group">
-                        <label for="category-description">Description</label>
-                        <input type="text" id="category-description" maxlength="64">
-                    </section>
-                    <section class="form-actions">
-                        <button type="button" class="admin-btn secondary-btn" id="cancel-category">Cancel</button>
-                        <button type="submit" class="admin-btn primary-btn">Save Category</button>
-                    </section>
-                </form>
-            </admin-modal>
-            
-            <admin-modal id="confirm-modal" title="Confirm Action">
-                <section slot="content">
-                    <p id="confirm-message">Are you sure you want to proceed?</p>
-                    <section class="form-actions">
-                        <button class="admin-btn secondary-btn" id="cancel-confirm">Cancel</button>
-                        <button class="admin-btn primary-btn danger-btn" id="confirm-action">Confirm</button>
-                    </section>
-                </section>
-            </admin-modal>
-            
-            <admin-notification id="notification-toast"></admin-notification>
-        `;
+        // Clear existing content
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
+        // Create main container
+        const main = document.createElement('main');
+        main.className = 'admin-page';
+        
+        // Create admin container
+        const adminContainer = document.createElement('section');
+        adminContainer.className = 'admin-container';
+        
+        // Create sidebar
+        const sidebar = document.createElement('admin-sidebar');
+        sidebar.setAttribute('active-view', this.viewMode);
+        
+        adminContainer.appendChild(sidebar);
+        
+        // Create content section
+        const adminContent = document.createElement('section');
+        adminContent.className = 'admin-content';
+        
+        // Dashboard View
+        const dashboardView = this.createDashboardView();
+        adminContent.appendChild(dashboardView);
+        
+        // Quizzes View
+        const quizzesView = this.createQuizzesView();
+        adminContent.appendChild(quizzesView);
+        
+        // Categories View
+        const categoriesView = this.createCategoriesView();
+        adminContent.appendChild(categoriesView);
+        
+        adminContainer.appendChild(adminContent);
+        main.appendChild(adminContainer);
+        
+        // Create modals
+        const categoryModal = this.createCategoryModal();
+        const confirmModal = this.createConfirmModal();
+        
+        // Create notification toast
+        const notification = document.createElement('admin-notification');
+        notification.id = 'notification-toast';
+        
+        // Add everything to shadow DOM
+        this.shadowRoot.appendChild(main);
+        this.shadowRoot.appendChild(categoryModal);
+        this.shadowRoot.appendChild(confirmModal);
+        this.shadowRoot.appendChild(notification);
+    }
+    
+    createDashboardView() {
+        const dashboardView = document.createElement('section');
+        dashboardView.id = 'dashboard-view';
+        dashboardView.className = `admin-view ${this.viewMode === 'dashboard' ? '' : 'hidden'}`;
+        
+        // Dashboard Header
+        const dashboardHeader = document.createElement('header');
+        dashboardHeader.className = 'admin-header';
+        
+        const dashboardTitle = document.createElement('h1');
+        dashboardTitle.textContent = 'Admin Dashboard';
+        
+        const adminActions = document.createElement('section');
+        adminActions.className = 'admin-actions';
+        
+        const createQuizLink = document.createElement('a');
+        createQuizLink.href = '/create-quiz';
+        createQuizLink.className = 'admin-btn primary-btn';
+        createQuizLink.dataset.link = '';
+        createQuizLink.textContent = 'Create New Quiz';
+        
+        adminActions.appendChild(createQuizLink);
+        dashboardHeader.appendChild(dashboardTitle);
+        dashboardHeader.appendChild(adminActions);
+        
+        dashboardView.appendChild(dashboardHeader);
+        
+        // Dashboard Stats
+        const adminStats = document.createElement('admin-stats');
+        adminStats.id = 'admin-stats';
+        dashboardView.appendChild(adminStats);
+        
+        // Dashboard Cards
+        const adminCards = document.createElement('section');
+        adminCards.className = 'admin-cards';
+        
+        // Recent Quizzes Card
+        const recentQuizzesCard = document.createElement('admin-card');
+        recentQuizzesCard.setAttribute('title', 'Recently Created Quizzes');
+        recentQuizzesCard.setAttribute('action', 'View All');
+        recentQuizzesCard.setAttribute('action-view', 'quizzes');
+        
+        const quizzesLoading = document.createElement('p');
+        quizzesLoading.className = 'loading-text';
+        quizzesLoading.setAttribute('slot', 'content');
+        quizzesLoading.textContent = 'Loading quizzes...';
+        
+        recentQuizzesCard.appendChild(quizzesLoading);
+        
+        // Categories Card
+        const categoriesCard = document.createElement('admin-card');
+        categoriesCard.setAttribute('title', 'Categories');
+        categoriesCard.setAttribute('action', 'View All');
+        categoriesCard.setAttribute('action-view', 'categories');
+        
+        const categoriesLoading = document.createElement('p');
+        categoriesLoading.className = 'loading-text';
+        categoriesLoading.setAttribute('slot', 'content');
+        categoriesLoading.textContent = 'Loading categories...';
+        
+        categoriesCard.appendChild(categoriesLoading);
+        
+        adminCards.appendChild(recentQuizzesCard);
+        adminCards.appendChild(categoriesCard);
+        
+        dashboardView.appendChild(adminCards);
+        
+        return dashboardView;
+    }
+    
+    createQuizzesView() {
+        const quizzesView = document.createElement('section');
+        quizzesView.id = 'quizzes-view';
+        quizzesView.className = `admin-view ${this.viewMode === 'quizzes' ? '' : 'hidden'}`;
+        
+        // Quizzes Header
+        const quizzesHeader = document.createElement('header');
+        quizzesHeader.className = 'admin-header';
+        
+        const quizzesTitle = document.createElement('h1');
+        quizzesTitle.textContent = 'Quiz Management';
+        
+        const quizzesActions = document.createElement('section');
+        quizzesActions.className = 'admin-actions';
+        
+        const createQuizLink = document.createElement('a');
+        createQuizLink.href = '/create-quiz';
+        createQuizLink.className = 'admin-btn primary-btn';
+        createQuizLink.dataset.link = '';
+        createQuizLink.textContent = 'Create New Quiz';
+        
+        quizzesActions.appendChild(createQuizLink);
+        quizzesHeader.appendChild(quizzesTitle);
+        quizzesHeader.appendChild(quizzesActions);
+        
+        quizzesView.appendChild(quizzesHeader);
+        
+        // Quizzes Card
+        const quizzesCard = document.createElement('admin-card');
+        quizzesCard.setAttribute('full-width', '');
+        
+        const quizzesList = document.createElement('p');
+        quizzesList.id = 'quizzes-list';
+        quizzesList.className = 'loading-text';
+        quizzesList.setAttribute('slot', 'content');
+        quizzesList.textContent = 'Loading quizzes...';
+        
+        quizzesCard.appendChild(quizzesList);
+        
+        quizzesView.appendChild(quizzesCard);
+        
+        return quizzesView;
+    }
+    
+    createCategoriesView() {
+        const categoriesView = document.createElement('section');
+        categoriesView.id = 'categories-view';
+        categoriesView.className = `admin-view ${this.viewMode === 'categories' ? '' : 'hidden'}`;
+        
+        // Categories Header
+        const categoriesHeader = document.createElement('header');
+        categoriesHeader.className = 'admin-header';
+        
+        const categoriesTitle = document.createElement('h1');
+        categoriesTitle.textContent = 'Category Management';
+        
+        const categoriesActions = document.createElement('section');
+        categoriesActions.className = 'admin-actions';
+        
+        const addCategoryBtn = document.createElement('button');
+        addCategoryBtn.id = 'add-category-btn';
+        addCategoryBtn.className = 'admin-btn primary-btn';
+        addCategoryBtn.textContent = 'Add Category';
+        
+        categoriesActions.appendChild(addCategoryBtn);
+        categoriesHeader.appendChild(categoriesTitle);
+        categoriesHeader.appendChild(categoriesActions);
+        
+        categoriesView.appendChild(categoriesHeader);
+        
+        // Categories Card
+        const categoriesCard = document.createElement('admin-card');
+        categoriesCard.setAttribute('full-width', '');
+        
+        const categoriesList = document.createElement('p');
+        categoriesList.id = 'categories-list';
+        categoriesList.className = 'loading-text';
+        categoriesList.setAttribute('slot', 'content');
+        categoriesList.textContent = 'Loading categories...';
+        
+        categoriesCard.appendChild(categoriesList);
+        
+        categoriesView.appendChild(categoriesCard);
+        
+        return categoriesView;
+    }
+    
+    createCategoryModal() {
+        const categoryModal = document.createElement('admin-modal');
+        categoryModal.id = 'category-modal';
+        categoryModal.setAttribute('title', 'Add New Category');
+        
+        const form = document.createElement('form');
+        form.id = 'category-form';
+        form.setAttribute('slot', 'content');
+        
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.id = 'category-id';
+        hiddenInput.value = '';
+        
+        const nameGroup = document.createElement('section');
+        nameGroup.className = 'form-group';
+        
+        const nameLabel = document.createElement('label');
+        nameLabel.setAttribute('for', 'category-name');
+        nameLabel.textContent = 'Category Name';
+        
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = 'category-name';
+        nameInput.required = true;
+        nameInput.maxLength = 32;
+        
+        nameGroup.appendChild(nameLabel);
+        nameGroup.appendChild(nameInput);
+        
+        const descGroup = document.createElement('section');
+        descGroup.className = 'form-group';
+        
+        const descLabel = document.createElement('label');
+        descLabel.setAttribute('for', 'category-description');
+        descLabel.textContent = 'Description';
+        
+        const descInput = document.createElement('input');
+        descInput.type = 'text';
+        descInput.id = 'category-description';
+        descInput.maxLength = 64;
+        
+        descGroup.appendChild(descLabel);
+        descGroup.appendChild(descInput);
+        
+        const formActions = document.createElement('section');
+        formActions.className = 'form-actions';
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.id = 'cancel-category';
+        cancelBtn.className = 'admin-btn secondary-btn';
+        cancelBtn.textContent = 'Cancel';
+        
+        const submitBtn = document.createElement('button');
+        submitBtn.type = 'submit';
+        submitBtn.className = 'admin-btn primary-btn';
+        submitBtn.textContent = 'Save Category';
+        
+        formActions.appendChild(cancelBtn);
+        formActions.appendChild(submitBtn);
+        
+        form.appendChild(hiddenInput);
+        form.appendChild(nameGroup);
+        form.appendChild(descGroup);
+        form.appendChild(formActions);
+        
+        categoryModal.appendChild(form);
+        
+        return categoryModal;
+    }
+    
+    createConfirmModal() {
+        const confirmModal = document.createElement('admin-modal');
+        confirmModal.id = 'confirm-modal';
+        confirmModal.setAttribute('title', 'Confirm Action');
+        
+        const content = document.createElement('section');
+        content.setAttribute('slot', 'content');
+        
+        const message = document.createElement('p');
+        message.id = 'confirm-message';
+        message.textContent = 'Are you sure you want to proceed?';
+        
+        const actions = document.createElement('section');
+        actions.className = 'form-actions';
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.id = 'cancel-confirm';
+        cancelBtn.className = 'admin-btn secondary-btn';
+        cancelBtn.textContent = 'Cancel';
+        
+        const confirmBtn = document.createElement('button');
+        confirmBtn.id = 'confirm-action';
+        confirmBtn.className = 'admin-btn primary-btn danger-btn';
+        confirmBtn.textContent = 'Confirm';
+        
+        actions.appendChild(cancelBtn);
+        actions.appendChild(confirmBtn);
+        
+        content.appendChild(message);
+        content.appendChild(actions);
+        
+        confirmModal.appendChild(content);
+        
+        return confirmModal;
     }
     
     setupEventListeners() {
@@ -299,6 +429,29 @@ class AdminDashboard extends HTMLElement {
                 window.dispatchEvent(new PopStateEvent('popstate'));
             });
         });
+    }
+    
+    async checkAuthorization() {
+        const authService = window.authService;
+        
+        try {
+            const isAuthenticated = await authService.checkAuthentication();
+            if (!isAuthenticated) {
+                window.location.href = '/login';
+                return;
+            }
+
+            if (!authService.isQuizMaster()) {
+                window.location.href = '/home';
+                return;
+            }
+            
+            this.loadInitialData();
+            
+        } catch (error) {
+            console.error('Error checking authentication:', error);
+            window.location.href = '/login';
+        }
     }
     
     loadInitialData() {
@@ -363,7 +516,11 @@ class AdminDashboard extends HTMLElement {
             const quizzesContainer = this.shadowRoot.querySelector('#quizzes-list');
             if (!quizzesContainer) return;
             
-            quizzesContainer.innerHTML = '<p class="loading-text">Loading quizzes...</p>';
+            quizzesContainer.innerHTML = '';
+            const loadingText = document.createElement('p');
+            loadingText.className = 'loading-text';
+            loadingText.textContent = 'Loading quizzes...';
+            quizzesContainer.appendChild(loadingText);
             
             if (!window.quizService || !window.quizValidatorService) {
                 throw new Error('Quiz services not available');
@@ -388,8 +545,13 @@ class AdminDashboard extends HTMLElement {
                 }
             }
             
+            quizzesContainer.innerHTML = '';
+            
             if (this.quizzes.length === 0) {
-                quizzesContainer.innerHTML = '<p class="empty-message">No quizzes found. Create your first quiz!</p>';
+                const emptyMessage = document.createElement('p');
+                emptyMessage.className = 'empty-message';
+                emptyMessage.textContent = 'No quizzes found. Create your first quiz!';
+                quizzesContainer.appendChild(emptyMessage);
                 return;
             }
             
@@ -450,18 +612,21 @@ class AdminDashboard extends HTMLElement {
                 if (action === 'manage-questions') {
                     this.handleManageQuestions(data.id, data.title);
                 } else if (action === 'delete-quiz') {
-                    this.confirmDeleteQuiz(data.id, data.title);
+                this.confirmDeleteQuiz(data.id, data.title);
                 }
             });
             
-            quizzesContainer.innerHTML = '';
             quizzesContainer.appendChild(table);
             
         } catch (error) {
             console.error('Error loading quizzes:', error);
             const quizzesContainer = this.shadowRoot.querySelector('#quizzes-list');
             if (quizzesContainer) {
-                quizzesContainer.innerHTML = '<p class="error-message">Error loading quizzes. Please try again later.</p>';
+                quizzesContainer.innerHTML = '';
+                const errorMessage = document.createElement('p');
+                errorMessage.className = 'error-message';
+                errorMessage.textContent = 'Error loading quizzes. Please try again later.';
+                quizzesContainer.appendChild(errorMessage);
             }
         }
     }
@@ -474,14 +639,23 @@ class AdminDashboard extends HTMLElement {
             const quizzesCard = dashboardView.querySelector('admin-card:first-of-type');
             const contentSlot = quizzesCard.querySelector('[slot="content"]');
             
-            contentSlot.innerHTML = '<p class="loading-text">Loading quizzes...</p>';
+            contentSlot.innerHTML = '';
+            const loadingText = document.createElement('p');
+            loadingText.className = 'loading-text';
+            loadingText.textContent = 'Loading quizzes...';
+            contentSlot.appendChild(loadingText);
             
             if (this.quizzes.length === 0 && window.quizService) {
                 this.quizzes = await window.quizService.getAllQuizzes();
             }
             
+            contentSlot.innerHTML = '';
+            
             if (this.quizzes.length === 0) {
-                contentSlot.innerHTML = '<p class="empty-message">No quizzes found. Create your first quiz!</p>';
+                const emptyMessage = document.createElement('p');
+                emptyMessage.className = 'empty-message';
+                emptyMessage.textContent = 'No quizzes found. Create your first quiz!';
+                contentSlot.appendChild(emptyMessage);
                 return;
             }
             
@@ -530,7 +704,6 @@ class AdminDashboard extends HTMLElement {
                 }
             });
             
-            contentSlot.innerHTML = '';
             contentSlot.appendChild(table);
             
         } catch (error) {
@@ -539,7 +712,11 @@ class AdminDashboard extends HTMLElement {
             if (dashboardView) {
                 const quizzesCard = dashboardView.querySelector('admin-card:first-of-type');
                 const contentSlot = quizzesCard.querySelector('[slot="content"]');
-                contentSlot.innerHTML = '<p class="error-message">Error loading quizzes. Please try again later.</p>';
+                contentSlot.innerHTML = '';
+                const errorMessage = document.createElement('p');
+                errorMessage.className = 'error-message';
+                errorMessage.textContent = 'Error loading quizzes. Please try again later.';
+                contentSlot.appendChild(errorMessage);
             }
         }
     }
@@ -549,7 +726,11 @@ class AdminDashboard extends HTMLElement {
             const categoriesContainer = this.shadowRoot.querySelector('#categories-list');
             if (!categoriesContainer) return;
             
-            categoriesContainer.innerHTML = '<p class="loading-text">Loading categories...</p>';
+            categoriesContainer.innerHTML = '';
+            const loadingText = document.createElement('p');
+            loadingText.className = 'loading-text';
+            loadingText.textContent = 'Loading categories...';
+            categoriesContainer.appendChild(loadingText);
             
             if (!window.categoryService) {
                 throw new Error('Category service not available');
@@ -557,8 +738,13 @@ class AdminDashboard extends HTMLElement {
             
             this.categories = await window.categoryService.getAllCategories();
             
+            categoriesContainer.innerHTML = '';
+            
             if (this.categories.length === 0) {
-                categoriesContainer.innerHTML = '<p class="empty-message">No categories found. Add your first category!</p>';
+                const emptyMessage = document.createElement('p');
+                emptyMessage.className = 'empty-message';
+                emptyMessage.textContent = 'No categories found. Add your first category!';
+                categoriesContainer.appendChild(emptyMessage);
                 return;
             }
             
@@ -610,14 +796,17 @@ class AdminDashboard extends HTMLElement {
                 }
             });
             
-            categoriesContainer.innerHTML = '';
             categoriesContainer.appendChild(table);
             
         } catch (error) {
             console.error('Error loading categories:', error);
             const categoriesContainer = this.shadowRoot.querySelector('#categories-list');
             if (categoriesContainer) {
-                categoriesContainer.innerHTML = '<p class="error-message">Error loading categories. Please try again later.</p>';
+                categoriesContainer.innerHTML = '';
+                const errorMessage = document.createElement('p');
+                errorMessage.className = 'error-message';
+                errorMessage.textContent = 'Error loading categories. Please try again later.';
+                categoriesContainer.appendChild(errorMessage);
             }
         }
     }
@@ -630,14 +819,23 @@ class AdminDashboard extends HTMLElement {
             const categoriesCard = dashboardView.querySelector('admin-card:nth-of-type(2)');
             const contentSlot = categoriesCard.querySelector('[slot="content"]');
             
-            contentSlot.innerHTML = '<p class="loading-text">Loading categories...</p>';
+            contentSlot.innerHTML = '';
+            const loadingText = document.createElement('p');
+            loadingText.className = 'loading-text';
+            loadingText.textContent = 'Loading categories...';
+            contentSlot.appendChild(loadingText);
             
             if (this.categories.length === 0 && window.categoryService) {
                 this.categories = await window.categoryService.getAllCategories();
             }
             
+            contentSlot.innerHTML = '';
+            
             if (this.categories.length === 0) {
-                contentSlot.innerHTML = '<p class="empty-message">No categories found. Add your first category!</p>';
+                const emptyMessage = document.createElement('p');
+                emptyMessage.className = 'empty-message';
+                emptyMessage.textContent = 'No categories found. Add your first category!';
+                contentSlot.appendChild(emptyMessage);
                 return;
             }
             
@@ -656,7 +854,6 @@ class AdminDashboard extends HTMLElement {
                 };
             });
             
-            contentSlot.innerHTML = '';
             contentSlot.appendChild(table);
             
         } catch (error) {
@@ -665,7 +862,11 @@ class AdminDashboard extends HTMLElement {
             if (dashboardView) {
                 const categoriesCard = dashboardView.querySelector('admin-card:nth-of-type(2)');
                 const contentSlot = categoriesCard.querySelector('[slot="content"]');
-                contentSlot.innerHTML = '<p class="error-message">Error loading categories. Please try again later.</p>';
+                contentSlot.innerHTML = '';
+                const errorMessage = document.createElement('p');
+                errorMessage.className = 'error-message';
+                errorMessage.textContent = 'Error loading categories. Please try again later.';
+                contentSlot.appendChild(errorMessage);
             }
         }
     }
@@ -721,7 +922,7 @@ class AdminDashboard extends HTMLElement {
         if (!category) return;
         
         const categoryModal = this.shadowRoot.querySelector('#category-modal');
-        const modalTitle = categoryModal.querySelector('h2') || categoryModal.shadowRoot.querySelector('h2');
+        const modalTitle = categoryModal.shadowRoot.querySelector('h2');
         const categoryIdInput = this.shadowRoot.querySelector('#category-id');
         const categoryNameInput = this.shadowRoot.querySelector('#category-name');
         const categoryDescriptionInput = this.shadowRoot.querySelector('#category-description');
@@ -776,7 +977,7 @@ class AdminDashboard extends HTMLElement {
     
     showCategoryModal() {
         const categoryModal = this.shadowRoot.querySelector('#category-modal');
-        const modalTitle = categoryModal.querySelector('h2') || categoryModal.shadowRoot.querySelector('h2');
+        const modalTitle = categoryModal.shadowRoot.querySelector('h2');
         const categoryIdInput = this.shadowRoot.querySelector('#category-id');
         const categoryNameInput = this.shadowRoot.querySelector('#category-name');
         const categoryDescriptionInput = this.shadowRoot.querySelector('#category-description');

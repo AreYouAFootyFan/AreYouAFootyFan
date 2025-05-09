@@ -8,76 +8,115 @@ class AdminStats extends HTMLElement {
             quizzes_completed: 0,
             questions_answered: 0
         };
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
     }
     
-    render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .admin-stats {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-                    gap: 1.5rem;
-                    margin-bottom: 2rem;
-                }
-                
-                .stat-card {
-                    background-color: white;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                    padding: 1.5rem;
-                    transition: transform 0.2s ease, box-shadow 0.2s ease;
-                }
-                
-                .stat-card:hover {
-                    transform: translateY(-0.25rem);
-                    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-                }
-                
-                .stat-value {
-                    font-size: 2rem;
-                    margin-bottom: 0.5rem;
-                    font-weight: 700;
-                    color: var(--primary);
-                }
-                
-                .stat-label {
-                    font-size: 0.875rem;
-                    color: var(--gray-600);
-                    margin: 0;
-                }
-            </style>
+    async loadStyles() {
+         try {
+            const globalStylesResponse = await fetch('./static/css/styles.css');
+            const globalStyles = await globalStylesResponse.text();
+            const globalStyleSheet = new CSSStyleSheet();
+            globalStyleSheet.replaceSync(globalStyles);
             
-            <section class="admin-stats">
-                <article class="stat-card">
-                    <h2 class="stat-value" id="active-quizzes-stat">${this.stats.active_quizzes.toLocaleString()}</h2>
-                    <p class="stat-label">Total Quizzes Created</p>
-                </article>
-                
-                <article class="stat-card">
-                    <h2 class="stat-value" id="registered-players-stat">${this.stats.registered_players.toLocaleString()}</h2>
-                    <p class="stat-label">Registered Players</p>
-                </article>
-                
-                <article class="stat-card">
-                    <h2 class="stat-value" id="quizzes-completed-stat">${this.stats.quizzes_completed.toLocaleString()}</h2>
-                    <p class="stat-label">Quizzes Completed</p>
-                </article>
-                
-                <article class="stat-card">
-                    <h2 class="stat-value" id="questions-answered-stat">${this.stats.questions_answered.toLocaleString()}</h2>
-                    <p class="stat-label">Questions Answered</p>
-                </article>
-            </section>
-        `;
+            const adminSharedStylesResponse = await fetch('./static/css/admin/shared.css');
+            const adminSharedStyles = await adminSharedStylesResponse.text();
+            const adminSharedStyleSheet = new CSSStyleSheet();
+            adminSharedStyleSheet.replaceSync(adminSharedStyles);
+            
+            const componentStylesResponse = await fetch('./static/css/admin/adminstats.css');
+            const componentStyles = await componentStylesResponse.text();
+            const componentStyleSheet = new CSSStyleSheet();
+            componentStyleSheet.replaceSync(componentStyles);
+            
+            this.shadowRoot.adoptedStyleSheets = [
+                globalStyleSheet, 
+                adminSharedStyleSheet, 
+                componentStyleSheet
+            ];
+        } catch (error) {
+            console.error('Error loading styles:', error);
+        }
+    }
+    
+    render() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
+        const statsContainer = document.createElement('section');
+        statsContainer.className = 'admin-stats';
+        
+        const quizzesCard = document.createElement('article');
+        quizzesCard.className = 'stat-card';
+        
+        const quizzesValue = document.createElement('h2');
+        quizzesValue.className = 'stat-value';
+        quizzesValue.id = 'active-quizzes-stat';
+        quizzesValue.textContent = this.stats.active_quizzes.toLocaleString();
+        
+        const quizzesLabel = document.createElement('p');
+        quizzesLabel.className = 'stat-label';
+        quizzesLabel.textContent = 'Total Quizzes Created';
+        
+        quizzesCard.appendChild(quizzesValue);
+        quizzesCard.appendChild(quizzesLabel);
+        
+        const playersCard = document.createElement('article');
+        playersCard.className = 'stat-card';
+        
+        const playersValue = document.createElement('h2');
+        playersValue.className = 'stat-value';
+        playersValue.id = 'registered-players-stat';
+        playersValue.textContent = this.stats.registered_players.toLocaleString();
+        
+        const playersLabel = document.createElement('p');
+        playersLabel.className = 'stat-label';
+        playersLabel.textContent = 'Registered Players';
+        
+        playersCard.appendChild(playersValue);
+        playersCard.appendChild(playersLabel);
+        
+        const completedCard = document.createElement('article');
+        completedCard.className = 'stat-card';
+        
+        const completedValue = document.createElement('h2');
+        completedValue.className = 'stat-value';
+        completedValue.id = 'quizzes-completed-stat';
+        completedValue.textContent = this.stats.quizzes_completed.toLocaleString();
+        
+        const completedLabel = document.createElement('p');
+        completedLabel.className = 'stat-label';
+        completedLabel.textContent = 'Quizzes Completed';
+        
+        completedCard.appendChild(completedValue);
+        completedCard.appendChild(completedLabel);
+        
+        const questionsCard = document.createElement('article');
+        questionsCard.className = 'stat-card';
+        
+        const questionsValue = document.createElement('h2');
+        questionsValue.className = 'stat-value';
+        questionsValue.id = 'questions-answered-stat';
+        questionsValue.textContent = this.stats.questions_answered.toLocaleString();
+        
+        const questionsLabel = document.createElement('p');
+        questionsLabel.className = 'stat-label';
+        questionsLabel.textContent = 'Questions Answered';
+        
+        questionsCard.appendChild(questionsValue);
+        questionsCard.appendChild(questionsLabel);
+        
+        statsContainer.appendChild(quizzesCard);
+        statsContainer.appendChild(playersCard);
+        statsContainer.appendChild(completedCard);
+        statsContainer.appendChild(questionsCard);
+        
+        this.shadowRoot.appendChild(statsContainer);
     }
     
     setStats(stats) {
@@ -86,22 +125,16 @@ class AdminStats extends HTMLElement {
     }
     
     setError(error) {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .error-message {
-                    color: var(--error);
-                    text-align: center;
-                    margin: 2rem 0;
-                }
-            </style>
-            
-            <p class="error-message">Error loading statistics: ${error.message || 'Unknown error'}</p>
-        `;
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
+        const errorMessage = document.createElement('p');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = `Error loading statistics: ${error.message || 'Unknown error'}`;
+        
+        this.shadowRoot.appendChild(style);
+        this.shadowRoot.appendChild(errorMessage);
     }
 }
 
