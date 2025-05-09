@@ -4,9 +4,11 @@ class AdminTable extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this._columns = [];
         this._data = [];
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
     }
     
@@ -28,146 +30,137 @@ class AdminTable extends HTMLElement {
         return this._data;
     }
     
-    render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .admin-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                
-                .admin-table th,
-                .admin-table td {
-                    padding: 0.75rem;
-                    text-align: left;
-                    border-bottom: 0.0625rem solid var(--gray-200);
-                }
-                
-                .admin-table th {
-                    font-weight: 600;
-                    color: var(--gray-700);
-                    background-color: var(--gray-50);
-                }
-                
-                .table-actions {
-                    display: flex;
-                    gap: 0.5rem;
-                }
-                
-                .action-btn {
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                    width: 2rem;
-                    height: 2rem;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: background-color 0.2s ease;
-                }
-                
-                .action-btn:hover {
-                    background-color: var(--gray-200);
-                }
-                
-                .action-icon {
-                    font-style: normal;
-                    font-size: 1rem;
-                }
-                
-                .status-badge {
-                    display: inline-block;
-                    padding: 0.25rem 0.5rem;
-                    border-radius: 0.25rem;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                }
-                
-                .valid-status {
-                    background-color: var(--success-light);
-                    color: var(--success-dark);
-                }
-                
-                .invalid-status {
-                    background-color: var(--error-light);
-                    color: var(--error-dark);
-                }
-                
-                .empty-message {
-                    text-align: center;
-                    padding: 2rem;
-                    color: var(--gray-600);
-                }
-            </style>
+    async loadStyles() {
+         try {
+            const globalStylesResponse = await fetch('./static/css/styles.css');
+            const globalStyles = await globalStylesResponse.text();
+            const globalStyleSheet = new CSSStyleSheet();
+            globalStyleSheet.replaceSync(globalStyles);
             
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        ${this._columns.map(column => `<th>${column.title}</th>`).join('')}
-                    </tr>
-                </thead>
-                <tbody>
-                    ${this._data.length === 0 ? `
-                        <tr>
-                            <td colspan="${this._columns.length}" class="empty-message">No data available</td>
-                        </tr>
-                    ` : this._data.map(row => this.renderRow(row)).join('')}
-                </tbody>
-            </table>
-        `;
+            const adminSharedStylesResponse = await fetch('./static/css/admin/shared.css');
+            const adminSharedStyles = await adminSharedStylesResponse.text();
+            const adminSharedStyleSheet = new CSSStyleSheet();
+            adminSharedStyleSheet.replaceSync(adminSharedStyles);
+            
+            const componentStylesResponse = await fetch('./static/css/admin/admintable.css');
+            const componentStyles = await componentStylesResponse.text();
+            const componentStyleSheet = new CSSStyleSheet();
+            componentStyleSheet.replaceSync(componentStyles);
+            
+            this.shadowRoot.adoptedStyleSheets = [
+                globalStyleSheet, 
+                adminSharedStyleSheet, 
+                componentStyleSheet
+            ];
+        } catch (error) {
+            console.error('Error loading styles:', error);
+        }
+    }
+    
+    render() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
+        const table = document.createElement('table');
+        table.className = 'admin-table';
+        
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        
+        this._columns.forEach(column => {
+            const th = document.createElement('th');
+            th.textContent = column.title;
+            headerRow.appendChild(th);
+        });
+        
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+        
+        const tbody = document.createElement('tbody');
+        
+        if (this._data.length === 0) {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = this._columns.length;
+            emptyCell.className = 'empty-message';
+            emptyCell.textContent = 'No data available';
+            emptyRow.appendChild(emptyCell);
+            tbody.appendChild(emptyRow);
+        } else {
+            this._data.forEach(row => {
+                const tr = this.createTableRow(row);
+                tbody.appendChild(tr);
+            });
+        }
+        
+        table.appendChild(tbody);
+        
+        this.shadowRoot.appendChild(table);
         
         this.setupEventListeners();
     }
     
-    renderRow(row) {
-        return `
-            <tr>
-                ${this._columns.map(column => this.renderCell(row[column.key], column.key)).join('')}
-            </tr>
-        `;
+    createTableRow(row) {
+        const tr = document.createElement('tr');
+        
+        this._columns.forEach(column => {
+            const cell = row[column.key];
+            const td = this.createTableCell(cell, column.key);
+            tr.appendChild(td);
+        });
+        
+        return tr;
     }
     
-    renderCell(cell, columnKey) {
+    createTableCell(cell, columnKey) {
+        const td = document.createElement('td');
+        
         if (!cell) {
-            return `<td></td>`;
+            return td;
         }
         
         if (typeof cell === 'object') {
             switch (cell.type) {
                 case 'badge':
-                    return `<td><p class="status-badge ${cell.class}">${cell.value}</p></td>`;
+                    const badge = document.createElement('p');
+                    badge.className = `status-badge ${cell.class}`;
+                    badge.textContent = cell.value;
+                    td.appendChild(badge);
+                    break;
                 
                 case 'actions':
-                    return `<td>
-                        <section class="table-actions">
-                            ${cell.items.map(item => `
-                                <button 
-                                    class="action-btn" 
-                                    title="${item.title}" 
-                                    data-action="${item.action}" 
-                                    data-id="${item.data.id}" 
-                                    data-title="${item.data.title || ''}" 
-                                    data-name="${item.data.name || ''}"
-                                >
-                                    <i class="action-icon">${item.icon}</em>
-                                </button>
-                            `).join('')}
-                        </section>
-                    </td>`;
+                    const actionsSection = document.createElement('section');
+                    actionsSection.className = 'table-actions';
+                    
+                    cell.items.forEach(item => {
+                        const button = document.createElement('button');
+                        button.className = 'action-btn';
+                        button.title = item.title;
+                        button.dataset.action = item.action;
+                        button.dataset.id = item.data.id;
+                        button.dataset.title = item.data.title || '';
+                        button.dataset.name = item.data.name || '';
+                        
+                        const icon = document.createElement('i');
+                        icon.className = 'action-icon';
+                        icon.textContent = item.icon;
+                        
+                        button.appendChild(icon);
+                        actionsSection.appendChild(button);
+                    });
+                    
+                    td.appendChild(actionsSection);
+                    break;
                 
                 default:
-                    return `<td>${cell.value}</td>`;
+                    td.textContent = cell.value;
             }
+        } else {
+            td.textContent = cell;
         }
         
-        return `<td>${cell}</td>`;
+        return td;
     }
     
     setupEventListeners() {

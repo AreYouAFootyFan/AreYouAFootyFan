@@ -1,0 +1,27 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 0.0625rem solid var(--gray-200);
+}
+
+.admin-table th {
+    font-weight: 600;
+    color: var(--gray-700);
+    background-color: var(--gray-50);
+}
+
+.table-actions {
+    display: flex;
+    gap: 0.5rem;
+}
