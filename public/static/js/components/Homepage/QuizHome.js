@@ -5,275 +5,181 @@ class QuizHome extends HTMLElement {
       this.quizzes = [];
       this.categories = [];
       this.selectedCategory = '';
+      this.styleSheet = new CSSStyleSheet();
   }
 
-  connectedCallback() {
-      this.render();
+  async connectedCallback() {
+      await this.render();
       this.setupEventListeners();
       this.loadData();
       this.checkUserRole();
   }
 
-  render() {
-      this.shadowRoot.innerHTML = `
-          <style>
-              :host {
-                  display: block;
-                  width: 100%;
-              }
-              
-              .hero {
-                  background-color: var(--primary);
-                  color: white;
-                  text-align: center;
-                  padding: 4rem 1rem;
-                  margin-bottom: 2rem;
-              }
-              
-              .hero-content {
-                  max-width: var(--container-max-width);
-                  margin: 0 auto;
-              }
-              
-              .hero-title {
-                  font-size: 2.5rem;
-                  margin-bottom: 1rem;
-                  font-weight: 700;
-                  color: white;
-              }
-              
-              .hero-subtitle {
-                  font-size: 1.25rem;
-                  opacity: 0.9;
-                  max-width: 36rem;
-                  margin: 0 auto;
-              }
-              
-              .content-section {
-                  max-width: var(--container-max-width);
-                  margin: 0 auto 2rem auto;
-                  padding: 0 1rem;
-              }
-              
-              .section-title {
-                  font-size: 1.5rem;
-                  margin-bottom: 1rem;
-                  font-weight: 600;
-              }
-              
-              .section-header {
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  margin-bottom: 1.5rem;
-                  flex-wrap: wrap;
-                  gap: 1rem;
-              }
-              
-              .notification {
-                  width: 100%;
-                  max-width: var(--container-max-width);
-                  margin: 0 auto 2rem auto;
-                  background-color: #fff7ed;
-                  border-left: 0.25rem solid #f97316;
-                  padding: 1rem;
-                  border-radius: 0 0.25rem 0.25rem 0;
-                  display: none;
-              }
-              
-              .notification-title {
-                  color: #9a3412;
-                  font-weight: 600;
-                  margin-bottom: 0.25rem;
-              }
-              
-              .notification-message {
-                  color: #7c2d12;
-                  font-size: 0.875rem;
-              }
-              
-              .quiz-grid {
-                  display: grid;
-                  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-                  gap: 1.5rem;
-                  margin-bottom: 2rem;
-              }
-              
-              .empty-state {
-                  text-align: center;
-                  padding: 3rem 1rem;
-                  background-color: var(--gray-50);
-                  border-radius: 0.5rem;
-                  margin-bottom: 2rem;
-              }
-              
-              .empty-icon {
-                  font-size: 3rem;
-                  margin-bottom: 1rem;
-                  color: var(--gray-400);
-              }
-              
-              .empty-title {
-                  font-size: 1.25rem;
-                  font-weight: 600;
-                  margin-bottom: 0.5rem;
-                  color: var(--gray-700);
-              }
-              
-              .empty-message {
-                  color: var(--gray-500);
-                  max-width: 24rem;
-                  margin: 0 auto;
-              }
-              
-              .loading {
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  padding: 2rem;
-                  color: var(--gray-500);
-              }
-              
-              .loading-spinner {
-                  display: inline-block;
-                  width: 1.5rem;
-                  height: 1.5rem;
-                  border: 0.125rem solid currentColor;
-                  border-right-color: transparent;
-                  border-radius: 50%;
-                  margin-right: 0.5rem;
-                  animation: spin 0.75s linear infinite;
-              }
-              
-              @keyframes spin {
-                  to { transform: rotate(360deg); }
-              }
-              
-              /* Modal styling */
-              .modal {
-                  position: fixed;
-                  inset: 0;
-                  background-color: rgba(0, 0, 0, 0.5);
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  z-index: 1000;
-                  padding: 1rem;
-                  opacity: 0;
-                  visibility: hidden;
-                  transition: opacity 0.3s, visibility 0.3s;
-              }
-              
-              .modal.visible {
-                  opacity: 1;
-                  visibility: visible;
-              }
-              
-              .modal-content {
-                  background-color: white;
-                  border-radius: 0.5rem;
-                  width: 100%;
-                  max-width: 28rem;
-                  padding: 1.5rem;
-                  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-              }
-              
-              .modal-title {
-                  font-size: 1.25rem;
-                  font-weight: 600;
-                  margin-bottom: 1rem;
-              }
-              
-              .modal-message {
-                  margin-bottom: 1.5rem;
-              }
-              
-              .modal-actions {
-                  display: flex;
-                  justify-content: flex-end;
-                  gap: 0.75rem;
-              }
-              
-              .secondary-btn {
-                  padding: 0.5rem 1rem;
-                  background-color: white;
-                  color: var(--gray-600);
-                  border: 0.0625rem solid var(--gray-300);
-                  border-radius: 0.25rem;
-                  font-weight: 500;
-                  cursor: pointer;
-                  font-family: inherit;
-              }
-              
-              .secondary-btn:hover {
-                  background-color: var(--gray-50);
-              }
-              
-              .primary-btn {
-                  padding: 0.5rem 1rem;
-                  background-color: var(--primary);
-                  color: white;
-                  border: none;
-                  border-radius: 0.25rem;
-                  font-weight: 500;
-                  cursor: pointer;
-                  text-decoration: none;
-                  display: inline-block;
-                  font-family: inherit;
-              }
-              
-              .primary-btn:hover {
-                  background-color: var(--primary-dark);
-              }
-              
-              .hidden {
-                  display: none !important;
-              }
-          </style>
-          
-          <main>
-              <section class="hero">
-                  <section class="hero-content">
-                      <h2 class="hero-title">Test Your Football Knowledge</h2>
-                      <p class="hero-subtitle">Choose from a variety of quizzes and compete with players worldwide</p>
-                  </section>
-              </section>
-              
-              <section class="notification" id="quiz-maker-note">
-                  <h3 class="notification-title">Quiz Master Account</h3>
-                  <p class="notification-message">As a Quiz Master, you can create and manage quizzes but cannot participate in them. Use a Quiz Taker account to play quizzes.</p>
-              </section>
-              
-              <section class="content-section">
-                  <header class="section-header">
-                      <h2 class="section-title">Available Quizzes</h2>
-                      <quiz-category-filter id="category-filter"></quiz-category-filter>
-                  </header>
-                  
-                  <section id="quiz-grid" class="quiz-grid">
-                      <p class="loading">
-                          <span class="loading-spinner"></span>
-                          <span>Loading quizzes...</span>
-                      </p>
-                  </section>
-              </section>
-              
-              <quiz-leaderboard id="leaderboard"></quiz-leaderboard>
-              
-              <section id="quiz-master-modal" class="modal">
-                  <article class="modal-content">
-                      <h3 class="modal-title">Quiz Master Account</h3>
-                      <p class="modal-message">As a Quiz Master, you can create and manage quizzes but cannot participate in them. Would you like to go to the Admin dashboard instead?</p>
-                      <footer class="modal-actions">
-                          <button id="close-modal-btn" class="secondary-btn">Cancel</button>
-                          <a href="/admin" class="primary-btn" data-link>Go to Admin</a>
-                      </footer>
-                  </article>
-              </section>
-          </main>
-      `;
+  async render() {
+    await this.getStyles();   
+    const shadow = this.shadowRoot;
+    shadow.adoptedStyleSheets = [this.styleSheet];
+    shadow.innerHTML = '';
+    const homeContent = this.buildMainContent();
+    shadow.appendChild(homeContent);
   }
   
+
+    async getStyles(){
+        const cssText = await fetch('./static/css/home/home.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+    }
+
+    buildMainContent() {
+        const main = document.createElement('main');
+    
+        // Hero Section
+        const hero = document.createElement('section');
+        hero.className = 'hero';
+    
+        const heroContent = document.createElement('section');
+        heroContent.className = 'hero-content';
+    
+        const heroTitle = document.createElement('h2');
+        heroTitle.className = 'hero-title';
+        heroTitle.textContent = 'Test Your Football Knowledge';
+    
+        const heroSubtitle = document.createElement('p');
+        heroSubtitle.className = 'hero-subtitle';
+        heroSubtitle.textContent = 'Choose from a variety of quizzes and compete with players worldwide';
+    
+        heroContent.appendChild(heroTitle);
+        heroContent.appendChild(heroSubtitle);
+        hero.appendChild(heroContent);
+        main.appendChild(hero);
+    
+        // Notification
+        const notification = document.createElement('section');
+        notification.className = 'notification';
+        notification.id = 'quiz-maker-note';
+    
+        const noteTitle = document.createElement('h3');
+        noteTitle.className = 'notification-title';
+        noteTitle.textContent = 'Quiz Master Account';
+    
+        const noteMessage = document.createElement('p');
+        noteMessage.className = 'notification-message';
+        noteMessage.textContent = 'As a Quiz Master, you can create and manage quizzes but cannot participate in them. Use a Quiz Taker account to play quizzes.';
+    
+        notification.appendChild(noteTitle);
+        notification.appendChild(noteMessage);
+        main.appendChild(notification);
+    
+        // Content Section
+        const contentSection = document.createElement('section');
+        contentSection.className = 'content-section';
+    
+        const sectionHeader = document.createElement('header');
+        sectionHeader.className = 'section-header';
+    
+        const sectionTitle = document.createElement('h2');
+        sectionTitle.className = 'section-title';
+        sectionTitle.textContent = 'Available Quizzes';
+    
+        const filter = document.createElement('quiz-category-filter');
+        filter.id = 'category-filter';
+    
+        sectionHeader.appendChild(sectionTitle);
+        sectionHeader.appendChild(filter);
+        contentSection.appendChild(sectionHeader);
+    
+        // Quiz Grid
+        const quizGrid = document.createElement('section');
+        quizGrid.id = 'quiz-grid';
+        quizGrid.className = 'quiz-grid';
+    
+        const loadingParagraph = document.createElement('p');
+        loadingParagraph.className = 'loading';
+    
+        const spinner = document.createElement('span');
+        spinner.className = 'loading-spinner';
+    
+        const loadingText = document.createElement('span');
+        loadingText.textContent = 'Loading quizzes...';
+    
+        loadingParagraph.appendChild(spinner);
+        loadingParagraph.appendChild(loadingText);
+        quizGrid.appendChild(loadingParagraph);
+        contentSection.appendChild(quizGrid);
+    
+        main.appendChild(contentSection);
+    
+        // Leaderboard
+        const leaderboard = document.createElement('quiz-leaderboard');
+        leaderboard.id = 'leaderboard';
+        main.appendChild(leaderboard);
+    
+        // Modal
+        const modal = document.createElement('section');
+        modal.id = 'quiz-master-modal';
+        modal.className = 'modal';
+    
+        const modalContent = document.createElement('article');
+        modalContent.className = 'modal-content';
+    
+        const modalTitle = document.createElement('h3');
+        modalTitle.className = 'modal-title';
+        modalTitle.textContent = 'Quiz Master Account';
+    
+        const modalMessage = document.createElement('p');
+        modalMessage.className = 'modal-message';
+        modalMessage.textContent = 'As a Quiz Master, you can create and manage quizzes but cannot participate in them. Would you like to go to the Admin dashboard instead?';
+    
+        const modalFooter = document.createElement('footer');
+        modalFooter.className = 'modal-actions';
+    
+        const cancelButton = document.createElement('button');
+        cancelButton.id = 'close-modal-btn';
+        cancelButton.className = 'secondary-btn';
+        cancelButton.textContent = 'Cancel';
+    
+        const adminLink = document.createElement('a');
+        adminLink.href = '/admin';
+        adminLink.className = 'primary-btn';
+        adminLink.dataset.link = '';
+        adminLink.textContent = 'Go to Admin';
+    
+        modalFooter.appendChild(cancelButton);
+        modalFooter.appendChild(adminLink);
+    
+        modalContent.appendChild(modalTitle);
+        modalContent.appendChild(modalMessage);
+        modalContent.appendChild(modalFooter);
+        modal.appendChild(modalContent);
+    
+        main.appendChild(modal);
+    
+        return main;
+    }
+
+    createEmptyQuizMessage() {
+        const article = document.createElement('article');
+        article.className = 'empty-state';
+    
+        const icon = document.createElement('p');
+        icon.className = 'empty-icon';
+        icon.textContent = '🔍';
+    
+        const title = document.createElement('h3');
+        title.className = 'empty-title';
+        title.textContent = 'No quizzes found';
+    
+        const message = document.createElement('p');
+        message.className = 'empty-message';
+        message.textContent = 'Try selecting a different category or check back later for new quizzes.';
+    
+        article.appendChild(icon);
+        article.appendChild(title);
+        article.appendChild(message);
+    
+        return article;
+    }
+
   setupEventListeners() {
       const categoryFilter = this.shadowRoot.querySelector('#category-filter');
       if (categoryFilter) {
@@ -367,13 +273,9 @@ class QuizHome extends HTMLElement {
           : this.quizzes;
       
       if (filteredQuizzes.length === 0) {
-          quizGrid.innerHTML = `
-              <article class="empty-state">
-                  <p class="empty-icon">🔍</p>
-                  <h3 class="empty-title">No quizzes found</h3>
-                  <p class="empty-message">Try selecting a different category or check back later for new quizzes.</p>
-              </article>
-          `;
+          quizGrid.innerHTML = '';
+          const emptyQuiz = this.createEmptyQuizMessage()
+          quizGrid.appendChild(emptyQuiz)
           return;
       }
       

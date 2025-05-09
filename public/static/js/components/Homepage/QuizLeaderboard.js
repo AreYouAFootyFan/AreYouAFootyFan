@@ -4,270 +4,211 @@ class QuizLeaderboard extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.leaderboardData = [];
         this.fullLeaderboardData = [];
+        this.styleSheet = new CSSStyleSheet();
     }
     
-    connectedCallback() {
-        this.render();
+    async connectedCallback() {
+        await this.render();
         this.setupEventListeners();
         this.loadLeaderboardData();
     }
     
-    render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                }
-                
-                .leaderboard {
-                    background-color: white;
-                    padding: 3rem 1rem;
-                    margin-top: 2rem;
-                }
-                
-                .leaderboard-inner {
-                    max-width: var(--container-max-width);
-                    margin: 0 auto;
-                }
-                
-                .section-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 1.5rem;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                }
-                
-                .section-title {
-                    font-size: 1.5rem;
-                    margin-bottom: 1rem;
-                    font-weight: 600;
-                }
-                
-                .view-all {
-                    color: var(--primary);
-                    text-decoration: none;
-                    font-weight: 500;
-                    font-size: 0.875rem;
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                }
-                
-                .view-all:hover {
-                    text-decoration: underline;
-                }
-                
-                .table-container {
-                    overflow-x: auto;
-                    margin-bottom: 1rem;
-                }
-                
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                
-                th, td {
-                    padding: 1rem;
-                    text-align: left;
-                    border-bottom: 0.0625rem solid var(--gray-200);
-                }
-                
-                th {
-                    font-weight: 600;
-                    color: var(--gray-600);
-                    background-color: var(--gray-50);
-                }
-                
-                .rank {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    border-radius: 50%;
-                    background-color: var(--gray-200);
-                    font-weight: 600;
-                    font-size: 0.75rem;
-                    margin-right: 0.5rem;
-                }
-                
-                .rank-1 {
-                    background-color: #fcd34d;
-                    color: #92400e;
-                }
-                
-                .rank-2 {
-                    background-color: #cbd5e1;
-                    color: #334155;
-                }
-                
-                .rank-3 {
-                    background-color: #d8b4fe;
-                    color: #6b21a8;
-                }
-                
-                .loading {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 2rem;
-                    color: var(--gray-500);
-                }
-                
-                .loading-spinner {
-                    display: inline-block;
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    border: 0.125rem solid currentColor;
-                    border-right-color: transparent;
-                    border-radius: 50%;
-                    margin-right: 0.5rem;
-                    animation: spin 0.75s linear infinite;
-                }
-                
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                
-                .empty-state {
-                    text-align: center;
-                    padding: 3rem 1rem;
-                    background-color: var(--gray-50);
-                    border-radius: 0.5rem;
-                    margin-bottom: 2rem;
-                }
-                
-                .empty-title {
-                    font-size: 1.25rem;
-                    font-weight: 600;
-                    margin-bottom: 0.5rem;
-                    color: var(--gray-700);
-                }
-                
-                .empty-message {
-                    color: var(--gray-500);
-                    max-width: 24rem;
-                    margin: 0 auto;
-                }
-                
-                /* Modal styling */
-                .modal {
-                    position: fixed;
-                    inset: 0;
-                    background-color: rgba(0, 0, 0, 0.5);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1000;
-                    padding: 1rem;
-                    opacity: 0;
-                    visibility: hidden;
-                    transition: opacity 0.3s, visibility 0.3s;
-                }
-                
-                .modal.visible {
-                    opacity: 1;
-                    visibility: visible;
-                }
-                
-                .modal-content {
-                    background-color: white;
-                    border-radius: 0.5rem;
-                    width: 100%;
-                    max-width: 40rem;
-                    padding: 1.5rem;
-                    position: relative;
-                    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-                    max-height: 90vh;
-                    overflow-y: auto;
-                }
-                
-                .close-btn {
-                    position: sticky;
-                    top: 0;
-                    float: right;
-                    border: none;
-                    font-size: 1.5rem;
-                    background: none;
-                    cursor: pointer;
-                    color: var(--gray-500);
-                    width: 2rem;
-                    height: 2rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 50%;
-                }
-                
-                .close-btn:hover {
-                    background-color: var(--gray-100);
-                    color: var(--gray-900);
-                }
-            </style>
-            
-            <section class="leaderboard">
-                <section class="leaderboard-inner">
-                    <header class="section-header">
-                        <h2 class="section-title">Top Players</h2>
-                        <button class="view-all" id="view-full-leaderboard">View Full Leaderboard</button>
-                    </header>
-                    
-                    <section class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Player</th>
-                                    <th>Points</th>
-                                    <th>Quizzes</th>
-                                </tr>
-                            </thead>
-                            <tbody id="leaderboard-body">
-                                <tr>
-                                    <td colspan="4" class="loading">
-                                        <span class="loading-spinner"></span>
-                                        <span>Loading leaderboard data...</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
-                </section>
-            </section>
-            
-            <section id="full-leaderboard-modal" class="modal">
-                <article class="modal-content">
-                    <button id="close-leaderboard-btn" class="close-btn">&times;</button>
-                    <h2 class="section-title">Football Quiz Leaderboard</h2>
-                    
-                    <section class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Player</th>
-                                    <th>Points</th>
-                                    <th>Quizzes</th>
-                                </tr>
-                            </thead>
-                            <tbody id="full-leaderboard-body">
-                                <tr>
-                                    <td colspan="4" class="loading">
-                                        <span class="loading-spinner"></span>
-                                        <span>Loading full leaderboard data...</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
-                </article>
-            </section>
-        `;
+    async render() {
+        this.getStyles();
+        const shadow = this.shadowRoot;
+        shadow.innerHTML = '';
+        shadow.adoptedStyleSheets = [this.styleSheet];
+
+        const leaderboard = this.createLeaderboardSection();
+        const modal = this.createModalSection();
+    
+        shadow.appendChild(leaderboard);
+        shadow.appendChild(modal);
+    }
+
+    async getStyles(){
+        const cssText = await fetch('./static/css/home/leaderboard.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
     }
     
+    createLeaderboardSection() {
+        const section = document.createElement('section');
+        section.className = 'leaderboard';
+    
+        const inner = document.createElement('section');
+        inner.className = 'leaderboard-inner';
+    
+        const header = document.createElement('header');
+        header.className = 'section-header';
+    
+        const title = document.createElement('h2');
+        title.className = 'section-title';
+        title.textContent = 'Top Players';
+    
+        const button = document.createElement('button');
+        button.className = 'view-all';
+        button.id = 'view-full-leaderboard';
+        button.textContent = 'View Full Leaderboard';
+    
+        header.appendChild(title);
+        header.appendChild(button);
+    
+        const table = this.createLeaderboardTable('leaderboard-body', 'Loading leaderboard data...');
+        inner.appendChild(header);
+        inner.appendChild(table);
+    
+        section.appendChild(inner);
+        return section;
+    }
+    
+    createModalSection() {
+        const modal = document.createElement('section');
+        modal.className = 'modal';
+        modal.id = 'full-leaderboard-modal';
+    
+        const content = document.createElement('article');
+        content.className = 'modal-content';
+    
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.id = 'close-leaderboard-btn';
+        closeBtn.textContent = '×';
+    
+        const title = document.createElement('h2');
+        title.className = 'section-title';
+        title.textContent = 'Football Quiz Leaderboard';
+    
+        const table = this.createLeaderboardTable('full-leaderboard-body', 'Loading full leaderboard data...');
+    
+        content.appendChild(closeBtn);
+        content.appendChild(title);
+        content.appendChild(table);
+    
+        modal.appendChild(content);
+        return modal;
+    }
+    
+    createLeaderboardTable(tbodyId, loadingText) {
+        const container = document.createElement('section');
+        container.className = 'table-container';
+    
+        const table = document.createElement('table');
+    
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        ['Rank', 'Player', 'Points', 'Quizzes'].forEach(text => {
+            const th = document.createElement('th');
+            th.textContent = text;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+    
+        const tbody = document.createElement('tbody');
+        tbody.id = tbodyId;
+    
+        const loadingRow = document.createElement('tr');
+        const loadingCell = document.createElement('td');
+        loadingCell.colSpan = 4;
+        loadingCell.className = 'loading';
+    
+        const spinner = document.createElement('span');
+        spinner.className = 'loading-spinner';
+    
+        const message = document.createElement('span');
+        message.textContent = loadingText;
+    
+        loadingCell.appendChild(spinner);
+        loadingCell.appendChild(message);
+        loadingRow.appendChild(loadingCell);
+        tbody.appendChild(loadingRow);
+    
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        container.appendChild(table);
+    
+        return container;
+    }
+
+    createEmptyState(title, message) {
+        const section = document.createElement('section');
+        section.className = 'empty-state';
+    
+        const h3 = document.createElement('h3');
+        h3.className = 'empty-title';
+        h3.textContent = title;
+    
+        const p = document.createElement('p');
+        p.className = 'empty-message';
+        p.textContent = message;
+    
+        section.appendChild(h3);
+        section.appendChild(p);
+    
+        return section;
+    }
+    
+    createColSpanCell(content, colspan = 4) {
+        const td = document.createElement('td');
+        td.colSpan = colspan;
+        td.appendChild(content);
+        return td;
+    }
+
+    createErrorRow() {
+        const row = document.createElement('tr');
+        const cell = this.createColSpanCell(
+            this.createEmptyState(
+                'Error loading leaderboard',
+                'There was a problem loading the leaderboard data. Please try again later.'
+            )
+        );
+        row.appendChild(cell);
+        return row;
+    }
+
+    createLeaderboardRow(player) {
+        const row = document.createElement('tr');
+
+        const rankCell = document.createElement('td');
+        const rankSpan = document.createElement('span');
+        rankSpan.classList.add('rank');
+        if (player.rank <= 3) rankSpan.classList.add(`rank-${player.rank}`);
+        rankSpan.textContent = player.rank;
+        rankCell.appendChild(rankSpan);
+    
+        const usernameCell = document.createElement('td');
+        usernameCell.textContent = player.username;
+    
+        const pointsCell = document.createElement('td');
+        pointsCell.textContent = player.total_points;
+    
+        const quizzesCell = document.createElement('td');
+        quizzesCell.textContent = player.quizzes_taken || 0;
+    
+        row.appendChild(rankCell);
+        row.appendChild(usernameCell);
+        row.appendChild(pointsCell);
+        row.appendChild(quizzesCell);
+    
+        return row;
+    }
+    
+    createLeaderboardRows(data) {
+        return data.map(player => this.createLeaderboardRow(player));
+    }
+
+    createEmptyRow() {
+        const row = document.createElement('tr');
+        const cell = this.createColSpanCell(
+           this.createEmptyState(
+                'No leaderboard data',
+                'There is no leaderboard data to display yet. Start playing quizzes to appear on the leaderboard!'
+            )
+        );
+        row.appendChild(cell);
+        return row;
+    }
+
     setupEventListeners() {
         const viewLeaderboardBtn = this.shadowRoot.querySelector('#view-full-leaderboard');
         if (viewLeaderboardBtn) {
@@ -307,16 +248,17 @@ class QuizLeaderboard extends HTMLElement {
             console.error('Error loading leaderboard data:', error);
             const leaderboardBody = this.shadowRoot.querySelector('#leaderboard-body');
             if (leaderboardBody) {
-                leaderboardBody.innerHTML = `
-                    <tr>
-                        <td colspan="4">
-                            <section class="empty-state">
-                                <h3 class="empty-title">Error loading leaderboard</h3>
-                                <p class="empty-message">There was a problem loading the leaderboard data. Please try again later.</p>
-                            </section>
-                        </td>
-                    </tr>
-                `;
+                leaderboardBody.innerHTML = '';
+                try {
+                    if (this.leaderboardData.length === 0) {
+                        leaderboardBody.appendChild(this.createEmptyRow());
+                    } else {
+                        const rows = this.createLeaderboardRows(this.leaderboardData);
+                        rows.forEach(row => leaderboardBody.appendChild(row));
+                    }
+                } catch (e) {
+                    leaderboardBody.appendChild(this.createErrorRow());
+                }
             }
         }
     }
@@ -324,31 +266,20 @@ class QuizLeaderboard extends HTMLElement {
     renderLeaderboard() {
         const leaderboardBody = this.shadowRoot.querySelector('#leaderboard-body');
         if (!leaderboardBody) return;
-        
-        if (!this.leaderboardData || this.leaderboardData.length === 0) {
-            leaderboardBody.innerHTML = `
-                <tr>
-                    <td colspan="4">
-                        <section class="empty-state">
-                            <h3 class="empty-title">No leaderboard data</h3>
-                            <p class="empty-message">There is no leaderboard data to display yet. Start playing quizzes to appear on the leaderboard!</p>
-                        </section>
-                    </td>
-                </tr>
-            `;
-            return;
+
+        leaderboardBody.innerHTML = '';
+        try {
+            if (!this.leaderboardData || this.leaderboardData.length === 0) {
+                const emptyRow = this.createEmptyRow();
+                leaderboardBody.appendChild(emptyRow);
+            } else {
+                const rows = this.createLeaderboardRows(this.leaderboardData);
+                rows.forEach(row => leaderboardBody.appendChild(row));
+            }
+        } catch (e) {
+            leaderboardBody.appendChild(this.createErrorRow());
         }
-        
-        leaderboardBody.innerHTML = this.leaderboardData.map(player => `
-            <tr>
-                <td>
-                    <span class="rank ${player.rank <= 3 ? `rank-${player.rank}` : ''}">${player.rank}</span>
-                </td>
-                <td>${player.username}</td>
-                <td>${player.total_points}</td>
-                <td>${player.quizzes_taken || 0}</td>
-            </tr>
-        `).join('');
+        return;
     }
     
     async showFullLeaderboard() {
@@ -362,30 +293,18 @@ class QuizLeaderboard extends HTMLElement {
         try {
             if (window.leaderboardService) {
                 this.fullLeaderboardData = await window.leaderboardService.getLeaderboard();
-                
-                fullLeaderboardBody.innerHTML = this.fullLeaderboardData.map(player => `
-                    <tr>
-                        <td>
-                            <span class="rank ${player.rank <= 3 ? `rank-${player.rank}` : ''}">${player.rank}</span>
-                        </td>
-                        <td>${player.username}</td>
-                        <td>${player.total_points}</td>
-                        <td>${player.quizzes_taken || 0}</td>
-                    </tr>
-                `).join('');
+                fullLeaderboardBody.innerHTML = '';
+                if (!this.fullLeaderboardData || this.fullLeaderboardData.length === 0) {
+                    const emptyRow = this.createEmptyRow();
+                    fullLeaderboardBody.appendChild(emptyRow);
+                } else {
+                    const rows = this.createLeaderboardRows(this.fullLeaderboardData);
+                    rows.forEach(row => fullLeaderboardBody.appendChild(row));
+                }
             }
         } catch (error) {
             console.error('Error loading full leaderboard:', error);
-            fullLeaderboardBody.innerHTML = `
-                <tr>
-                    <td colspan="4">
-                        <section class="empty-state">
-                            <h3 class="empty-title">Error loading leaderboard</h3>
-                            <p class="empty-message">There was a problem loading the full leaderboard data. Please try again later.</p>
-                        </section>
-                    </td>
-                </tr>
-            `;
+            fullLeaderboardBody.appendChild(this.createErrorRow());
         }
     }
     

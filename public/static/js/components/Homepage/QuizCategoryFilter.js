@@ -3,34 +3,21 @@ class QuizCategoryFilter extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this._categories = [];
+        this.styleSheet = new CSSStyleSheet();
     }
 
-    connectedCallback() {
-        this.render();
+    async connectedCallback() {
+        await this.render();
         this.setupEventListeners();
     }
 
-    render() {
+
+
+    async render() {
+        await this.getStyles();   
         const shadow = this.shadowRoot;
-        shadow.innerHTML = ''; 
-
-        const style = document.createElement('style');
-        style.textContent = `
-            :host {
-                display: block;
-            }
-
-            select {
-                padding: 0.5rem 1rem;
-                border: 0.0625rem solid var(--gray-300);
-                border-radius: 0.25rem;
-                background-color: white;
-                font-size: 1rem;
-                min-width: 12rem;
-                font-family: inherit;
-            }
-        `;
-        shadow.appendChild(style);
+        shadow.adoptedStyleSheets = [this.styleSheet];
+        shadow.innerHTML = '';
         const select = document.createElement('select');
         select.id = 'category-select';
 
@@ -42,6 +29,11 @@ class QuizCategoryFilter extends HTMLElement {
         shadow.appendChild(select);
 
         this.updateCategoryOptions();
+    }
+    
+    async getStyles(){
+        const cssText = await fetch('./static/css/home/category.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
     }
 
     setupEventListeners() {

@@ -3,16 +3,24 @@ class QuizCard extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.quiz = null;
+        this.styleSheet = new CSSStyleSheet();
     }
     
-    connectedCallback() {
-        this.render();
+    async connectedCallback() {
+        await this.render();
         this.setupEventListeners();
     }
     
-    render() {
+    async render() {
+        await this.getStyles();   
+        const shadow = this.shadowRoot;
+        shadow.adoptedStyleSheets = [this.styleSheet];
+        shadow.innerHTML = '';
+
         if (!this.quiz) {
-            this.shadowRoot.innerHTML = '<p>No quiz data</p>';
+            const paragraph = document.createElement('p');
+            paragraph.textContent = 'No quiz data';
+            shadow.appendChild(paragraph);
             return;
         }
         
@@ -21,112 +29,61 @@ class QuizCard extends HTMLElement {
             ? `${totalSeconds} sec` 
             : `${Math.ceil(totalSeconds / 60)} min`;
         
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                }
-                
-                article {
-                    background-color: white;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                    overflow: hidden;
-                    display: flex;
-                    flex-direction: column;
-                    transition: transform 0.2s, box-shadow 0.2s;
-                    height: 100%;
-                }
-                
-                article:hover {
-                    transform: translateY(-0.25rem);
-                    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-                }
-                
-                header {
-                    padding: 1rem;
-                    border-bottom: 0.0625rem solid var(--gray-200);
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
-                
-                .category {
-                    font-size: 0.875rem;
-                    font-weight: 600;
-                }
-                
-                .quiz-body {
-                    padding: 1rem;
-                    flex: 1;
-                }
-                
-                h3 {
-                    font-size: 1.25rem;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                }
-                
-                .description {
-                    color: var(--gray-600);
-                    margin-bottom: 1rem;
-                    font-size: 0.875rem;
-                }
-                
-                .meta {
-                    display: flex;
-                    gap: 1rem;
-                    font-size: 0.75rem;
-                    color: var(--gray-500);
-                }
-                
-                footer {
-                    padding: 1rem;
-                    border-top: 0.0625rem solid var(--gray-200);
-                    text-align: right;
-                }
-                
-                button {
-                    display: inline-block;
-                    padding: 0.5rem 1rem;
-                    background-color: var(--primary);
-                    color: white;
-                    border-radius: 0.25rem;
-                    font-weight: 500;
-                    text-decoration: none;
-                    border: none;
-                    cursor: pointer;
-                    font-size: 0.875rem;
-                    font-family: inherit;
-                }
-                
-                button:hover {
-                    background-color: var(--primary-dark);
-                }
-            </style>
-            
-            <article>
-                <header>
-                    <p class="category">${this.quiz.category_name || 'Uncategorized'}</p>
-                </header>
-                
-                <section class="quiz-body">
-                    <h3>${this.quiz.quiz_title}</h3>
-                    <p class="description">${this.quiz.quiz_description || 'No description available.'}</p>
-                    
-                    <section class="meta">
-                        <p>${this.quiz.question_count || 0} questions</p>
-                        <p>Est. time: ${timeEstimate}</p>
-                    </section>
-                </section>
-                
-                <footer>
-                    <button class="start-btn">Start Quiz</button>
-                </footer>
-            </article>
-        `;
+        const article = document.createElement('article');
+
+        // Header
+        const header = document.createElement('header');
+        const categoryP = document.createElement('p');
+        categoryP.className = 'category';
+        categoryP.textContent = this.quiz.category_name || 'Uncategorized';
+        header.appendChild(categoryP);
+        article.appendChild(header);
+        
+        // Quiz Body
+        const quizBody = document.createElement('section');
+        quizBody.className = 'quiz-body';
+        
+        const title = document.createElement('h3');
+        title.textContent = this.quiz.quiz_title;
+        quizBody.appendChild(title);
+        
+        const description = document.createElement('p');
+        description.className = 'description';
+        description.textContent = this.quiz.quiz_description || 'No description available.';
+        quizBody.appendChild(description);
+        
+        // Meta section
+        const metaSection = document.createElement('section');
+        metaSection.className = 'meta';
+        
+        const questionCount = document.createElement('p');
+        questionCount.textContent = `${this.quiz.question_count || 0} questions`;
+        metaSection.appendChild(questionCount);
+        
+        const timeP = document.createElement('p');
+        timeP.textContent = `Est. time: ${timeEstimate}`;
+        metaSection.appendChild(timeP);
+        
+        quizBody.appendChild(metaSection);
+        article.appendChild(quizBody);
+        
+        // Footer
+        const footer = document.createElement('footer');
+        const startBtn = document.createElement('button');
+        startBtn.className = 'start-btn';
+        startBtn.textContent = 'Start Quiz';
+        footer.appendChild(startBtn);
+        
+        article.appendChild(footer);
+        
+        shadow.appendChild(article);
     }
     
+    async getStyles(){
+        const cssText = await fetch('./static/css/home/quizcard.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+    }
+
     setupEventListeners() {
         const startButton = this.shadowRoot.querySelector('.start-btn');
         if (startButton) {
