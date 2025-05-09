@@ -29,4 +29,18 @@ export enum Quiz {
   UPDATE = "Quiz updated successfully",
   CREATE = "Quiz created successfully",
   VALIDATE = "Quiz validation completed",
-} 
+}
+
+/**
+ * Answer-related success messages
+ */
+export enum Answer {
+  DELETE = "Answer deleted successfully",
+}
+
+/**
+ * Category-related success messages
+ */
+export enum Category {
+  DELETE = "Category deleted successfully",
+}

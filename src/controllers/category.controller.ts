@@ -154,7 +154,7 @@ export class CategoryController {
       }
 
       await CategoryService.deleteCategory(id);
-      response.json({ message: Message.SuccessMessage.CATEGORY_DELETE });
+      response.json({ message: Message.Success.Category.DELETE });
     } catch (error) {
       next(error);
     }
