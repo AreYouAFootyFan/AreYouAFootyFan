@@ -550,7 +550,7 @@ class AdminDashboard extends HTMLElement {
             table.data = this.quizzes.map(quiz => {
                 const isValid = quiz.is_valid;
                 const statusClass = isValid ? 'valid-status' : 'invalid-status';
-                const statusText = isValid ? 'Ready' : `Not Live`;
+                const statusText = isValid ? 'Live' : `Not Live`;
                 
                 return {
                     quiz_title: quiz.quiz_title,
