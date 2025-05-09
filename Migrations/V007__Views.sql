@@ -4,8 +4,8 @@ Shows the total accumulated score for each user on each quiz they have attempted
 Columns: user_id, username, quiz_id, quiz_title, total_points
 Ordered by total_points descending (highest first).
  */
-CREATE
-OR REPLACE VIEW user_quiz_scores AS
+CREATE OR REPLACE VIEW
+    user_quiz_scores AS
 SELECT
     qa.user_id,
     u.username,
@@ -30,12 +30,12 @@ View: user_total_points
 Shows the total accumulated points for each user with the 'Quiz Taker' role.
 Columns: user_id, username, total_points
  */
-CREATE
-OR REPLACE VIEW user_total_points AS
+CREATE OR REPLACE VIEW
+    user_total_points AS
 SELECT
     u.user_id,
     u.username,
-    COALESCE(SUM(ur.points_earned), 0) AS total_points
+    COALESCE(SUM(ur.points_earned), 0) AS user_total_points
 FROM
     users u
     LEFT JOIN quiz_attempts qa ON u.user_id = qa.user_id
@@ -51,8 +51,8 @@ View: user_category_scores
 Shows each user's accumulated score for quizzes in each category.
 Columns: user_id, username, category_id, category_name, total_points
  */
-CREATE
-OR REPLACE VIEW user_category_scores AS
+CREATE OR REPLACE VIEW
+    user_category_scores AS
 SELECT
     u.user_id,
     u.username,
@@ -75,8 +75,8 @@ GROUP BY
 View: leaderboard
 Shows the top users by total points (only Quiz Takers)
  */
-CREATE
-OR REPLACE VIEW leaderboard AS
+CREATE OR REPLACE VIEW
+    leaderboard AS
 SELECT
     u.user_id,
     u.username,
@@ -97,8 +97,8 @@ ORDER BY
 View: quiz_statistics
 Shows number of attempts and average score for each quiz
  */
-CREATE
-OR REPLACE VIEW quiz_statistics AS
+CREATE OR REPLACE VIEW
+    quiz_statistics AS
 SELECT
     q.quiz_id,
     q.quiz_title,
@@ -116,8 +116,8 @@ GROUP BY
 View: active_categories
 Shows all active categories (not deactivated) ordered alphabetically by name
  */
-CREATE
-OR REPLACE VIEW active_categories AS
+CREATE OR REPLACE VIEW
+    active_categories AS
 SELECT
     category_id,
     category_name,
@@ -133,8 +133,8 @@ ORDER BY
 View: active_quizzes
 Shows all active quizzes (not deactivated) ordered by creation date descending
  */
-CREATE
-OR REPLACE VIEW active_quizzes AS
+CREATE OR REPLACE VIEW
+    active_quizzes AS
 SELECT
     quiz_id,
     quiz_title,

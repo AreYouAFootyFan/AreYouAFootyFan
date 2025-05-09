@@ -40,7 +40,7 @@ BEGIN
     FROM users u
     LEFT JOIN quiz_attempts qa ON u.user_id = qa.user_id
     LEFT JOIN user_responses ur ON qa.attempt_id = ur.attempt_id
-    WHERE u.role_id = 0 AND u.user_id = p_user_id;
+    WHERE u.role_id = 1 AND u.user_id = p_user_id;
     RETURN total_points;
 END;
 $$ LANGUAGE plpgsql;
@@ -96,13 +96,16 @@ $$ LANGUAGE plpgsql;
 CREATE
 OR REPLACE FUNCTION get_quizzes_for_user (p_user_id INT) RETURNS TABLE (
     quiz_id INT,
-    quiz_title VARCHAR,
-    quiz_description TEXT,
-    end_timestamp TIMESTAMP
+    quiz_title VARCHAR(64),
+    quiz_description VARCHAR(128),
+    category_name VARCHAR(32),
+    created_by VARCHAR(16),
+    created_at TIMESTAMP,
+    end_time TIMESTAMP
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT
+    SELECT DISTINCT
         q.quiz_id,
         q.quiz_title,
         q.quiz_description,
