@@ -7,7 +7,7 @@ OR REPLACE FUNCTION get_answers (p_question_id INT) RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT a.answer_id, a.answer_text, a.is_correct
+    SELECT a.answer_id, a.question_id, a.answer_text, a.is_correct
     FROM answers a
     WHERE a.question_id = p_question_id
     ORDER BY a.answer_id;

@@ -19,7 +19,7 @@ export class AnswerModel {
 
   static async findById(id: number): Promise<Answer | null> {
     const result = await db.query(
-      "SELECT answer_id, answer_text, is_correct FROM answers WHERE answer_id = $1",
+      "SELECT answer_id, answer_text, is_correct, question_id FROM answers WHERE answer_id = $1",
       [id]
     );
 
