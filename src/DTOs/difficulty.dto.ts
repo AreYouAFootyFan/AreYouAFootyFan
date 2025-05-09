@@ -10,4 +10,4 @@ export interface UpdateDifficultyLevelDto {
   time_limit_seconds?: number;
   points_on_correct?: number;
   points_on_incorrect?: number;
-} 
+}

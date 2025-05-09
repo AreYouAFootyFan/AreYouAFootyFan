@@ -7,4 +7,4 @@ export interface CreateQuestionDto {
 export interface UpdateQuestionDto {
   question_text?: string;
   difficulty_id?: number;
-} 
+}

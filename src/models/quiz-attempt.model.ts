@@ -1,5 +1,8 @@
-import db from '../config/db';
-import { CreateQuizAttemptDto, CompleteQuizAttemptDto } from '../DTOs/quiz-attempt.dto';
+import db from "../config/db";
+import {
+  CreateQuizAttemptDto,
+  CompleteQuizAttemptDto,
+} from "../DTOs/quiz-attempt.dto";
 
 export interface QuizAttempt {
   attempt_id: number;
@@ -10,7 +13,6 @@ export interface QuizAttempt {
 }
 
 export class QuizAttemptModel {
-  
   static async findByUserId(userId: number): Promise<QuizAttempt[]> {
     const result = await db.query(
       `SELECT qa.*, q.quiz_title, 
@@ -25,45 +27,41 @@ export class QuizAttemptModel {
     return result.rows;
   }
 
-  
   static async findById(id: number): Promise<QuizAttempt | null> {
     const result = await db.query(
-      'SELECT * FROM quiz_attempts WHERE attempt_id = $1',
+      "SELECT * FROM quiz_attempts WHERE attempt_id = $1",
       [id]
     );
-    
+
     if (result.rows.length === 0) {
       return null;
     }
-    
+
     return result.rows[0];
   }
 
-  
   static async create(data: CreateQuizAttemptDto): Promise<QuizAttempt> {
     const result = await db.query(
-      'INSERT INTO quiz_attempts (user_id, quiz_id, start_time) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING *',
+      "INSERT INTO quiz_attempts (user_id, quiz_id, start_time) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING *",
       [data.user_id, data.quiz_id]
     );
-    
+
     return result.rows[0];
   }
 
-  
   static async complete(id: number): Promise<QuizAttempt | null> {
     const result = await db.query(
-      'UPDATE quiz_attempts SET end_time = CURRENT_TIMESTAMP WHERE attempt_id = $1 AND end_time IS NULL RETURNING *',
+      "UPDATE quiz_attempts SET end_time = CURRENT_TIMESTAMP WHERE attempt_id = $1 AND end_time IS NULL RETURNING *",
       [id]
     );
-    
+
     if (result.rows.length === 0) {
       return null;
     }
-    
+
     return result.rows[0];
   }
 
-  
   static async findByIdWithDetails(id: number): Promise<any | null> {
     const result = await db.query(
       `SELECT qa.*, q.quiz_title, q.quiz_description, c.category_name,
@@ -76,16 +74,17 @@ export class QuizAttemptModel {
        WHERE qa.attempt_id = $1`,
       [id]
     );
-    
+
     if (result.rows.length === 0) {
       return null;
     }
-    
+
     return result.rows[0];
   }
 
-  
-  static async getQuizQuestionsWithResponses(attemptId: number): Promise<any[]> {
+  static async getQuizQuestionsWithResponses(
+    attemptId: number
+  ): Promise<any[]> {
     const result = await db.query(
       `SELECT q.question_id, q.question_text, d.difficulty_level, 
         d.time_limit_seconds, d.points_on_correct, d.points_on_incorrect,
@@ -100,27 +99,25 @@ export class QuizAttemptModel {
        ORDER BY q.question_id`,
       [attemptId]
     );
-    
+
     return result.rows;
   }
 
-  
   static async isActive(id: number): Promise<boolean> {
     const result = await db.query(
-      'SELECT COUNT(*) FROM quiz_attempts WHERE attempt_id = $1 AND end_time IS NULL',
+      "SELECT COUNT(*) FROM quiz_attempts WHERE attempt_id = $1 AND end_time IS NULL",
       [id]
     );
-    
+
     return parseInt(result.rows[0].count) > 0;
   }
 
-  
   static async calculateScore(id: number): Promise<number> {
     const result = await db.query(
-      'SELECT COALESCE(SUM(points_earned), 0) as total_points FROM user_responses WHERE attempt_id = $1',
+      "SELECT COALESCE(SUM(points_earned), 0) as total_points FROM user_responses WHERE attempt_id = $1",
       [id]
     );
-    
+
     return parseInt(result.rows[0].total_points);
   }
 }

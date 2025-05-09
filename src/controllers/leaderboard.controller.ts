@@ -1,10 +1,14 @@
-import { Request, Response, NextFunction } from 'express';
-import { LeaderboardService } from '../services/leaderboard.service';
-import { ErrorUtils } from '../utils/error.utils';
+import { Request, Response, NextFunction } from "express";
+import { LeaderboardService } from "../services/leaderboard.service";
+import { ErrorUtils } from "../utils/error.utils";
+import { Config, Message } from "../utils/enums";
 
 export class LeaderboardController {
-  
-  static async getLeaderboard(_request: Request, response: Response, next: NextFunction): Promise<void> {
+  static async getLeaderboard(
+    _request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const leaderboard = await LeaderboardService.getLeaderboard();
       response.json(leaderboard);
@@ -13,14 +17,20 @@ export class LeaderboardController {
     }
   }
 
-  static async getUserRank(request: Request, response: Response, next: NextFunction): Promise<void> {
+  static async getUserRank(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const userId = request.user?.id;
-      
+
       if (!userId) {
-        throw ErrorUtils.unauthorized('User not authenticated');
+        throw ErrorUtils.unauthorized(
+          Message.Error.Base.USER_NOT_AUTHENTICATED
+        );
       }
-      
+
       const userRank = await LeaderboardService.getUserRank(userId);
       response.json(userRank);
     } catch (error) {
@@ -28,14 +38,20 @@ export class LeaderboardController {
     }
   }
 
-  static async getTopPlayers(request: Request, response: Response, next: NextFunction): Promise<void> {
+  static async getTopPlayers(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const limit = request.query.limit ? parseInt(request.query.limit as string) : 5;
-      
+      const limit = request.query.limit
+        ? parseInt(request.query.limit as string)
+        : Config.Value.DEFAULT_LEADERBOARD_LIMIT;
+
       if (isNaN(limit) || limit < 1) {
-        throw ErrorUtils.badRequest('Invalid limit parameter');
+        throw ErrorUtils.badRequest(Message.Error.Base.INVALID_LIMIT);
       }
-      
+
       const topPlayers = await LeaderboardService.getTopPlayers(limit);
       response.json(topPlayers);
     } catch (error) {

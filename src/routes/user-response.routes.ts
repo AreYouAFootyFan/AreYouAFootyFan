@@ -1,15 +1,20 @@
-import express from 'express';
-import { UserResponseController } from '../controllers/user-response.controller';
-import { authenticate, requireUsername, requireRole } from '../middleware/auth.middleware';
+import express from "express";
+import { UserResponseController } from "../controllers/user-response.controller";
+import {
+  authenticate,
+  requireUsername,
+  requireRole,
+} from "../middleware/auth.middleware";
+import { User } from "../utils/enums";
 
 const router = express.Router();
 
 router.use(authenticate);
 router.use(requireUsername);
-router.use(requireRole('Quiz Taker'));
+router.use(requireRole(User.Role.PLAYER));
 
-router.get('/attempt/:attemptId', UserResponseController.getAttemptResponses);
-router.get('/:id', UserResponseController.getResponseById);
-router.post('/submit', UserResponseController.submitResponse);
+router.get("/attempt/:attemptId", UserResponseController.getAttemptResponses);
+router.get("/:id", UserResponseController.getResponseById);
+router.post("/submit", UserResponseController.submitResponse);
 
 export default router;

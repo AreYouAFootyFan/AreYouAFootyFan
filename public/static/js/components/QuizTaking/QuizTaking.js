@@ -1,429 +1,478 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { Role } from "../../enums/users.js";
+
 class QuizTaking extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-        
-        this.quizId = localStorage.getItem('selected_quiz_id');
-        this.quizData = null;
-        this.attempt = null;
-        this.currentQuestionIndex = 0;
-        this.currentQuestion = null;
-        this.selectedAnswer = null;
-        this.timer = null;
-        this.timeLeft = 0;
-        this.score = 0;
-        this.isQuizCompleted = false;
-        this.styleSheet = new CSSStyleSheet();
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+
+    this.quizId = localStorage.getItem("selected_quiz_id");
+    this.quizData = null;
+    this.attempt = null;
+    this.currentQuestionIndex = 0;
+    this.currentQuestion = null;
+    this.selectedAnswer = null;
+    this.timer = null;
+    this.timeLeft = 0;
+    this.score = 0;
+    this.isQuizCompleted = false;
+    this.styleSheet = new CSSStyleSheet();
+  }
+
+  async connectedCallback() {
+    await this.loadStyles();
+    this.render();
+    this.init();
+
+    document.addEventListener(
+      "visibilitychange",
+      this.handleVisibilityChange.bind(this)
+    );
+    window.addEventListener("beforeunload", this.cleanup.bind(this));
+  }
+
+  disconnectedCallback() {
+    this.cleanup();
+    document.removeEventListener(
+      "visibilitychange",
+      this.handleVisibilityChange
+    );
+  }
+
+  async loadStyles() {
+    await StyleLoader(
+      this.shadowRoot,
+      "./static/css/styles.css",
+      "./static/css/quizTaking/quizTaking.css"
+    );
+  }
+
+  render() {
+    const style = document.createElement("style");
+
+    const main = document.createElement("main");
+    main.classList.add("quiz-container");
+
+    const loadingContainer = document.createElement("section");
+    loadingContainer.classList.add("loading-container");
+
+    const loadingSpinner = document.createElement("span");
+    loadingSpinner.classList.add("loading-spinner");
+
+    const loadingText = document.createElement("p");
+    loadingText.textContent = "Loading quiz...";
+
+    loadingContainer.appendChild(loadingSpinner);
+    loadingContainer.appendChild(loadingText);
+    main.appendChild(loadingContainer);
+
+    this.shadowRoot.appendChild(style);
+    this.shadowRoot.appendChild(main);
+  }
+
+  async init() {
+    const authService = window.authService;
+
+    if (!authService || !authService.isAuthenticated()) {
+      window.location.href = "/";
+      return;
     }
 
-    async connectedCallback() {
-        await this.loadStyles();
-        this.render();
-        this.init();
-        
-        document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-        window.addEventListener('beforeunload', this.cleanup.bind(this));
-    }
-    
-    disconnectedCallback() {
-        this.cleanup();
-        document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    if (authService.isQuizMaster && authService.isQuizMaster()) {
+      this.showError(
+        `${Role.Manager}s cannot take quizzes. Please use a ${Role.Player} account.`
+      );
+      return;
     }
 
-    async loadStyles() {        
-        await StyleLoader(
-            this.shadowRoot,
-            './static/css/styles.css',
-            './static/css/quizTaking/quizTaking.css'
-        );
+    if (this.quizId) {
+      await this.startQuiz(this.quizId);
+    } else {
+      this.showError(
+        "No quiz selected. Please go back to the home page and select a quiz."
+      );
     }
-    
-    render() {
-        const style = document.createElement('style');
-      
-        const main = document.createElement('main');
-        main.classList.add('quiz-container');
-        
-        const loadingContainer = document.createElement('section');
-        loadingContainer.classList.add('loading-container');
-        
-        const loadingSpinner = document.createElement('span');
-        loadingSpinner.classList.add('loading-spinner');
-        
-        const loadingText = document.createElement('p');
-        loadingText.textContent = 'Loading quiz...';
-        
+  }
+
+  cleanup() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+
+  handleVisibilityChange() {
+    if (document.hidden) {
+      this.pauseTimer();
+    } else {
+      this.resumeTimer();
+    }
+  }
+
+  async startQuiz(quizId) {
+    try {
+      const quizAttemptService = window.quizAttemptService;
+
+      const quizContainer = this.shadowRoot.querySelector(".quiz-container");
+      if (quizContainer) {
+        quizContainer.innerHTML = "";
+
+        const loadingContainer = document.createElement("section");
+        loadingContainer.classList.add("loading-container");
+
+        const loadingSpinner = document.createElement("span");
+        loadingSpinner.classList.add("loading-spinner");
+
+        const loadingText = document.createElement("p");
+        loadingText.textContent = "Loading quiz... Please wait.";
+
         loadingContainer.appendChild(loadingSpinner);
         loadingContainer.appendChild(loadingText);
-        main.appendChild(loadingContainer);
-        
-        this.shadowRoot.appendChild(style);
-        this.shadowRoot.appendChild(main);
-    }
-    
-    async init() {
-        const authService = window.authService;
-        
-        if (!authService || !authService.isAuthenticated()) {
-            window.location.href = '/';
-            return;
-        }
+        quizContainer.appendChild(loadingContainer);
+      }
 
-        if (authService.isQuizMaster && authService.isQuizMaster()) {
-            this.showError("Quiz Masters cannot take quizzes. Please use a Quiz Taker account.");
-            return;
-        }
+      this.attempt = await quizAttemptService.startQuiz(quizId);
 
-        if (this.quizId) {
-            await this.startQuiz(this.quizId);
+      this.quizData = {
+        title: this.attempt.quiz_title,
+        description: this.attempt.quiz_description,
+        totalQuestions: this.attempt.questions.length,
+      };
+
+      this.loadQuestion(0);
+    } catch (error) {
+      console.error("Error starting quiz:", error);
+      this.showError(
+        `Failed to start quiz: ${error.message || "Unknown error"}`
+      );
+    }
+  }
+
+  loadQuestion(index) {
+    if (
+      !this.attempt ||
+      !this.attempt.questions ||
+      index >= this.attempt.questions.length
+    ) {
+      this.completeQuiz();
+      return;
+    }
+
+    this.currentQuestionIndex = index;
+    this.currentQuestion = this.attempt.questions[index];
+    this.selectedAnswer = null;
+
+    this.timeLeft = this.currentQuestion.time_limit_seconds;
+
+    this.renderQuestion();
+
+    this.startTimer();
+  }
+
+  renderQuestion() {
+    const quizContainer = this.shadowRoot.querySelector(".quiz-container");
+    if (!quizContainer) return;
+
+    const question = this.currentQuestion;
+
+    const questionElement = document.createElement("quiz-question");
+    questionElement.setAttribute("question-index", this.currentQuestionIndex);
+    questionElement.setAttribute(
+      "total-questions",
+      this.quizData.totalQuestions
+    );
+    questionElement.setAttribute("quiz-title", this.quizData.title);
+    questionElement.setAttribute("score", this.score);
+    questionElement.setAttribute("time-limit", this.timeLeft);
+    questionElement.question = question;
+
+    questionElement.addEventListener("answer-selected", (e) =>
+      this.selectAnswer(e.detail.answerId)
+    );
+    questionElement.addEventListener("submit-answer", () =>
+      this.submitAnswer()
+    );
+
+    quizContainer.innerHTML = "";
+    quizContainer.appendChild(questionElement);
+
+    this.startTimerUpdates(questionElement);
+  }
+
+  startTimerUpdates(questionElement) {
+    const updateTimer = () => {
+      if (questionElement) {
+        questionElement.setAttribute("time-left", this.timeLeft);
+
+        if (this.timeLeft <= 5) {
+          questionElement.setAttribute("timer-warning", "true");
         } else {
-            this.showError("No quiz selected. Please go back to the home page and select a quiz.");
+          questionElement.removeAttribute("timer-warning");
         }
+      }
+    };
+
+    updateTimer();
+
+    this.timerUpdateInterval = setInterval(updateTimer, 100);
+  }
+
+  selectAnswer(answerId) {
+    this.selectedAnswer = parseInt(answerId);
+
+    const questionElement = this.shadowRoot.querySelector("quiz-question");
+    if (questionElement) {
+      questionElement.setAttribute("selected-answer", answerId);
     }
-    
-    cleanup() {
-        if (this.timer) {
-            clearInterval(this.timer);
-            this.timer = null;
-        }
-    }
-    
-    handleVisibilityChange() {
-        if (document.hidden) {
-            this.pauseTimer();
+  }
+
+  async submitAnswer() {
+    if (!this.selectedAnswer) return;
+
+    try {
+      this.pauseTimer();
+
+      const questionElement = this.shadowRoot.querySelector("quiz-question");
+      if (questionElement) {
+        questionElement.setAttribute("submitting", "true");
+      }
+
+      const userResponseService = window.userResponseService;
+
+      if (!userResponseService && !window.quizAttemptService) {
+        console.warn("Response services not available.");
+        return;
+      }
+
+      let response;
+      try {
+        if (userResponseService) {
+          response = await userResponseService.submitResponse({
+            attempt_id: this.attempt.attempt_id,
+            question_id: this.currentQuestion.question_id,
+            answer_id: this.selectedAnswer,
+          });
         } else {
-            this.resumeTimer();
+          response = await window.quizAttemptService.submitResponse({
+            attempt_id: this.attempt.attempt_id,
+            question_id: this.currentQuestion.question_id,
+            answer_id: this.selectedAnswer,
+          });
         }
+      } catch (e) {
+        console.warn("API call failed.", e);
+        return;
+      }
+
+      this.score += response.points_earned;
+
+      this.showAnswerFeedback(response);
+
+      this.updateActionButtons(
+        response.quiz_completed ||
+          this.currentQuestionIndex === this.quizData.totalQuestions - 1
+      );
+    } catch (error) {
+      console.error("Error submitting answer:", error);
+
+      const questionElement = this.shadowRoot.querySelector("quiz-question");
+      if (questionElement) {
+        questionElement.setAttribute("submitting", "false");
+      }
+
+      this.resumeTimer();
     }
-    
-    async startQuiz(quizId) {
-        try {
-            const quizAttemptService = window.quizAttemptService;
-            
-            const quizContainer = this.shadowRoot.querySelector('.quiz-container');
-            if (quizContainer) {
-                quizContainer.innerHTML = '';
-                
-                const loadingContainer = document.createElement('section');
-                loadingContainer.classList.add('loading-container');
-                
-                const loadingSpinner = document.createElement('span');
-                loadingSpinner.classList.add('loading-spinner');
-                
-                const loadingText = document.createElement('p');
-                loadingText.textContent = 'Loading quiz... Please wait.';
-                
-                loadingContainer.appendChild(loadingSpinner);
-                loadingContainer.appendChild(loadingText);
-                quizContainer.appendChild(loadingContainer);
-            }
-            
-            this.attempt = await quizAttemptService.startQuiz(quizId);
-            
-            this.quizData = {
-                title: this.attempt.quiz_title,
-                description: this.attempt.quiz_description,
-                totalQuestions: this.attempt.questions.length
-            };
-            
-            this.loadQuestion(0);
-        } catch (error) {
-            console.error('Error starting quiz:', error);
-            this.showError(`Failed to start quiz: ${error.message || 'Unknown error'}`);
+  }
+
+  showAnswerFeedback(response) {
+    const questionElement = this.shadowRoot.querySelector("quiz-question");
+    if (questionElement) {
+      questionElement.setAttribute("show-feedback", "true");
+      questionElement.setAttribute("feedback-points", response.points_earned);
+      questionElement.setAttribute("score", this.score);
+
+      this.currentQuestion.answers.forEach((answer) => {
+        if (answer.is_correct) {
+          questionElement.setAttribute(
+            `correct-answer-${answer.answer_id}`,
+            "true"
+          );
         }
+      });
     }
-    
-    loadQuestion(index) {
-        if (!this.attempt || !this.attempt.questions || index >= this.attempt.questions.length) {
-            this.completeQuiz();
-            return;
-        }
-        
-        this.currentQuestionIndex = index;
-        this.currentQuestion = this.attempt.questions[index];
-        this.selectedAnswer = null;
-        
-        this.timeLeft = this.currentQuestion.time_limit_seconds;
-        
-        this.renderQuestion();
-        
-        this.startTimer();
+  }
+
+  updateActionButtons(quizCompleted) {
+    const questionElement = this.shadowRoot.querySelector("quiz-question");
+    if (!questionElement) return;
+
+    if (
+      quizCompleted ||
+      this.currentQuestionIndex >= this.quizData.totalQuestions - 1
+    ) {
+      questionElement.setAttribute("show-results-button", "true");
+      questionElement.addEventListener("show-results", () =>
+        this.completeQuiz()
+      );
+    } else {
+      questionElement.setAttribute("show-next-button", "true");
+      questionElement.addEventListener("next-question", () =>
+        this.loadQuestion(this.currentQuestionIndex + 1)
+      );
     }
-    
-    renderQuestion() {
-        const quizContainer = this.shadowRoot.querySelector('.quiz-container');
-        if (!quizContainer) return;
-        
-        const question = this.currentQuestion;
-        
-        const questionElement = document.createElement('quiz-question');
-        questionElement.setAttribute('question-index', this.currentQuestionIndex);
-        questionElement.setAttribute('total-questions', this.quizData.totalQuestions);
-        questionElement.setAttribute('quiz-title', this.quizData.title);
-        questionElement.setAttribute('score', this.score);
-        questionElement.setAttribute('time-limit', this.timeLeft);
-        questionElement.question = question;
-        
-        questionElement.addEventListener('answer-selected', (e) => this.selectAnswer(e.detail.answerId));
-        questionElement.addEventListener('submit-answer', () => this.submitAnswer());
-        
-        quizContainer.innerHTML = '';
-        quizContainer.appendChild(questionElement);
-        
+  }
+
+  startTimer() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+
+    this.timer = setInterval(() => {
+      this.timeLeft--;
+
+      if (this.timeLeft <= 0) {
+        clearInterval(this.timer);
+        this.handleTimeUp();
+      }
+    }, 1000);
+  }
+
+  pauseTimer() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+
+    if (this.timerUpdateInterval) {
+      clearInterval(this.timerUpdateInterval);
+      this.timerUpdateInterval = null;
+    }
+  }
+
+  resumeTimer() {
+    if (!this.timer && this.timeLeft > 0 && !this.selectedAnswer) {
+      this.startTimer();
+
+      const questionElement = this.shadowRoot.querySelector("quiz-question");
+      if (questionElement) {
         this.startTimerUpdates(questionElement);
+      }
     }
-    
-    startTimerUpdates(questionElement) {
-        const updateTimer = () => {
-            if (questionElement) {
-                questionElement.setAttribute('time-left', this.timeLeft);
-                
-                if (this.timeLeft <= 5) {
-                    questionElement.setAttribute('timer-warning', 'true');
-                } else {
-                    questionElement.removeAttribute('timer-warning');
-                }
-            }
-        };
-        
-        updateTimer();
-        
-        this.timerUpdateInterval = setInterval(updateTimer, 100);
-    }
-    
-    selectAnswer(answerId) {
-        this.selectedAnswer = parseInt(answerId);
-        
-        const questionElement = this.shadowRoot.querySelector('quiz-question');
-        if (questionElement) {
-            questionElement.setAttribute('selected-answer', answerId);
+  }
+
+  handleTimeUp() {
+    const questionElement = this.shadowRoot.querySelector("quiz-question");
+    if (!questionElement) return;
+
+    if (this.selectedAnswer) {
+      this.submitAnswer();
+    } else {
+      questionElement.setAttribute("time-up", "true");
+
+      this.currentQuestion.answers.forEach((answer) => {
+        if (answer.is_correct) {
+          questionElement.setAttribute(
+            `correct-answer-${answer.answer_id}`,
+            "true"
+          );
         }
+      });
+
+      if (this.currentQuestionIndex >= this.quizData.totalQuestions - 1) {
+        questionElement.setAttribute("show-results-button", "true");
+        questionElement.addEventListener("show-results", () =>
+          this.completeQuiz()
+        );
+      } else {
+        questionElement.setAttribute("show-next-button", "true");
+        questionElement.addEventListener("next-question", () =>
+          this.loadQuestion(this.currentQuestionIndex + 1)
+        );
+      }
     }
-    
-    async submitAnswer() {
-        if (!this.selectedAnswer) return;
-        
-        try {
-            this.pauseTimer();
-            
-            const questionElement = this.shadowRoot.querySelector('quiz-question');
-            if (questionElement) {
-                questionElement.setAttribute('submitting', 'true');
-            }
-            
-            const userResponseService = window.userResponseService;
-            
-            if (!userResponseService && !window.quizAttemptService) {
-                console.warn("Response services not available.");
-                return;
-            }
-            
-            let response;
-            try {
-                if (userResponseService) {
-                    response = await userResponseService.submitResponse({
-                        attempt_id: this.attempt.attempt_id,
-                        question_id: this.currentQuestion.question_id,
-                        answer_id: this.selectedAnswer
-                    });
-                } else {
-                    response = await window.quizAttemptService.submitResponse({
-                        attempt_id: this.attempt.attempt_id,
-                        question_id: this.currentQuestion.question_id,
-                        answer_id: this.selectedAnswer
-                    });
-                }
-            } catch (e) {
-                console.warn("API call failed.", e);
-                return;
-            }
-            
-            this.score += response.points_earned;
-            
-            this.showAnswerFeedback(response);
-            
-            this.updateActionButtons(response.quiz_completed || this.currentQuestionIndex === this.quizData.totalQuestions - 1);
-        } catch (error) {
-            console.error('Error submitting answer:', error);
-            
-            const questionElement = this.shadowRoot.querySelector('quiz-question');
-            if (questionElement) {
-                questionElement.setAttribute('submitting', 'false');
-            }
-            
-            this.resumeTimer();
-        }
+  }
+
+  async completeQuiz() {
+    try {
+      const quizAttemptService = window.quizAttemptService;
+
+      if (!quizAttemptService) {
+        console.warn("Quiz attempt service not available.");
+        return;
+      }
+
+      try {
+        await quizAttemptService.completeQuiz(this.attempt.attempt_id);
+        const summary = await quizAttemptService.getAttemptSummary(
+          this.attempt.attempt_id
+        );
+        this.showQuizResults(summary);
+      } catch (e) {
+        console.warn("API call failed.", e);
+        throw e;
+      }
+
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+
+      if (this.timerUpdateInterval) {
+        clearInterval(this.timerUpdateInterval);
+        this.timerUpdateInterval = null;
+      }
+
+      this.isQuizCompleted = true;
+    } catch (error) {
+      console.error("Error completing quiz:", error);
+      this.showError(
+        `Failed to complete quiz: ${error.message || "Unknown error"}`
+      );
     }
-    
-    showAnswerFeedback(response) {
-        const questionElement = this.shadowRoot.querySelector('quiz-question');
-        if (questionElement) {
-            questionElement.setAttribute('show-feedback', 'true');
-            questionElement.setAttribute('feedback-points', response.points_earned);
-            questionElement.setAttribute('score', this.score);
-            
-            this.currentQuestion.answers.forEach(answer => {
-                if (answer.is_correct) {
-                    questionElement.setAttribute(`correct-answer-${answer.answer_id}`, 'true');
-                }
-            });
-        }
+  }
+
+  showQuizResults(summary) {
+    const quizContainer = this.shadowRoot.querySelector(".quiz-container");
+    if (!quizContainer) return;
+
+    const resultsElement = document.createElement("quiz-results");
+    resultsElement.summary = summary;
+
+    quizContainer.innerHTML = "";
+    quizContainer.appendChild(resultsElement);
+  }
+
+  showError(message) {
+    const quizContainer = this.shadowRoot.querySelector(".quiz-container");
+    if (quizContainer) {
+      quizContainer.innerHTML = "";
+
+      const errorContainer = document.createElement("article");
+      errorContainer.classList.add("error-container");
+
+      const errorMessage = document.createElement("p");
+      errorMessage.classList.add("error-message");
+      errorMessage.textContent = message;
+
+      const homeButton = document.createElement("a");
+      homeButton.href = "/home";
+      homeButton.classList.add("home-btn");
+      homeButton.setAttribute("data-link", "");
+      homeButton.textContent = "Back to Home";
+
+      errorContainer.appendChild(errorMessage);
+      errorContainer.appendChild(homeButton);
+      quizContainer.appendChild(errorContainer);
+
+      homeButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.history.pushState(null, null, homeButton.getAttribute("href"));
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      });
     }
-    
-    updateActionButtons(quizCompleted) {
-        const questionElement = this.shadowRoot.querySelector('quiz-question');
-        if (!questionElement) return;
-        
-        if (quizCompleted || this.currentQuestionIndex >= this.quizData.totalQuestions - 1) {
-            questionElement.setAttribute('show-results-button', 'true');
-            questionElement.addEventListener('show-results', () => this.completeQuiz());
-        } else {
-            questionElement.setAttribute('show-next-button', 'true');
-            questionElement.addEventListener('next-question', () => this.loadQuestion(this.currentQuestionIndex + 1));
-        }
-    }
-    
-    startTimer() {
-        if (this.timer) {
-            clearInterval(this.timer);
-        }
-        
-        this.timer = setInterval(() => {
-            this.timeLeft--;
-            
-            if (this.timeLeft <= 0) {
-                clearInterval(this.timer);
-                this.handleTimeUp();
-            }
-        }, 1000);
-    }
-    
-    pauseTimer() {
-        if (this.timer) {
-            clearInterval(this.timer);
-            this.timer = null;
-        }
-        
-        if (this.timerUpdateInterval) {
-            clearInterval(this.timerUpdateInterval);
-            this.timerUpdateInterval = null;
-        }
-    }
-    
-    resumeTimer() {
-        if (!this.timer && this.timeLeft > 0 && !this.selectedAnswer) {
-            this.startTimer();
-            
-            const questionElement = this.shadowRoot.querySelector('quiz-question');
-            if (questionElement) {
-                this.startTimerUpdates(questionElement);
-            }
-        }
-    }
-    
-    handleTimeUp() {
-        const questionElement = this.shadowRoot.querySelector('quiz-question');
-        if (!questionElement) return;
-        
-        if (this.selectedAnswer) {
-            this.submitAnswer();
-        } else {
-            questionElement.setAttribute('time-up', 'true');
-            
-            this.currentQuestion.answers.forEach(answer => {
-                if (answer.is_correct) {
-                    questionElement.setAttribute(`correct-answer-${answer.answer_id}`, 'true');
-                }
-            });
-            
-            if (this.currentQuestionIndex >= this.quizData.totalQuestions - 1) {
-                questionElement.setAttribute('show-results-button', 'true');
-                questionElement.addEventListener('show-results', () => this.completeQuiz());
-            } else {
-                questionElement.setAttribute('show-next-button', 'true');
-                questionElement.addEventListener('next-question', () => this.loadQuestion(this.currentQuestionIndex + 1));
-            }
-        }
-    }
-    
-    async completeQuiz() {
-        try {
-            const quizAttemptService = window.quizAttemptService;
-            
-            if (!quizAttemptService) {
-                console.warn("Quiz attempt service not available.");
-                return;
-            }
-            
-            try {
-                await quizAttemptService.completeQuiz(this.attempt.attempt_id);
-                const summary = await quizAttemptService.getAttemptSummary(this.attempt.attempt_id);
-                this.showQuizResults(summary);
-            } catch (e) {
-                console.warn("API call failed.", e);
-                throw e;
-            }
-            
-            if (this.timer) {
-                clearInterval(this.timer);
-                this.timer = null;
-            }
-            
-            if (this.timerUpdateInterval) {
-                clearInterval(this.timerUpdateInterval);
-                this.timerUpdateInterval = null;
-            }
-            
-            this.isQuizCompleted = true;
-        } catch (error) {
-            console.error('Error completing quiz:', error);
-            this.showError(`Failed to complete quiz: ${error.message || 'Unknown error'}`);
-        }
-    }
-    
-    showQuizResults(summary) {
-        const quizContainer = this.shadowRoot.querySelector('.quiz-container');
-        if (!quizContainer) return;
-        
-        const resultsElement = document.createElement('quiz-results');
-        resultsElement.summary = summary;
-        
-        quizContainer.innerHTML = '';
-        quizContainer.appendChild(resultsElement);
-    }
-    
-    showError(message) {
-        const quizContainer = this.shadowRoot.querySelector('.quiz-container');
-        if (quizContainer) {
-            quizContainer.innerHTML = '';
-            
-            const errorContainer = document.createElement('article');
-            errorContainer.classList.add('error-container');
-            
-            const errorMessage = document.createElement('p');
-            errorMessage.classList.add('error-message');
-            errorMessage.textContent = message;
-            
-            const homeButton = document.createElement('a');
-            homeButton.href = '/home';
-            homeButton.classList.add('home-btn');
-            homeButton.setAttribute('data-link', '');
-            homeButton.textContent = 'Back to Home';
-            
-            errorContainer.appendChild(errorMessage);
-            errorContainer.appendChild(homeButton);
-            quizContainer.appendChild(errorContainer);
-            
-            homeButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.history.pushState(null, null, homeButton.getAttribute('href'));
-                window.dispatchEvent(new PopStateEvent('popstate'));
-            });
-        }
-    }
+  }
 }
 
-customElements.define('quiz-taking', QuizTaking);
+customElements.define("quiz-taking", QuizTaking);
 
 export default QuizTaking;

@@ -9,4 +9,4 @@ export interface UpdateQuizDto {
   quiz_title?: string;
   quiz_description?: string;
   category_id?: number | null | undefined;
-} 
+}
