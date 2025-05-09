@@ -5,248 +5,101 @@ class QuestionsList extends HTMLElement {
         this.questions = [];
         this.loading = true;
         this.error = null;
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
-        this.setupEventListeners();
+    }
+    
+    async loadStyles() {        
+        const cssText = await fetch('./static/css/quizCreation/questionList.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
     }
     
     render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .action-bar {
-                    display: flex;
-                    justify-content: flex-end;
-                    margin-bottom: 1.5rem;
-                }
-                
-                .questions-list {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-                    gap: 1.5rem;
-                    margin-bottom: 2rem;
-                }
-                
-                .question-card {
-                    background-color: white;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                    overflow: hidden;
-                    transition: transform 0.2s ease, box-shadow 0.2s ease;
-                }
-                
-                .question-card:hover {
-                    transform: translateY(-0.25rem);
-                    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-                }
-                
-                .card-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 1rem;
-                    border-bottom: 0.0625rem solid var(--gray-200);
-                }
-                
-                .card-header h3 {
-                    margin: 0;
-                    font-size: 1rem;
-                }
-                
-                .question-actions {
-                    display: flex;
-                    gap: 0.5rem;
-                }
-                
-                .action-btn {
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                    width: 2rem;
-                    height: 2rem;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: background-color 0.2s ease;
-                }
-                
-                .action-btn:hover {
-                    background-color: var(--gray-200);
-                }
-                
-                .card-content {
-                    padding: 1rem;
-                }
-                
-                .question-text {
-                    margin-bottom: 1rem;
-                }
-                
-                .question-meta {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                    margin-bottom: 0.5rem;
-                }
-                
-                .difficulty-badge {
-                    background-color: var(--gray-200);
-                    color: var(--gray-700);
-                    padding: 0.25rem 0.5rem;
-                    border-radius: 0.25rem;
-                    font-size: 0.75rem;
-                    font-weight: 500;
-                }
-                
-                .question-status {
-                    font-size: 0.75rem;
-                    padding: 0.25rem 0.5rem;
-                    border-radius: 0.25rem;
-                }
-                
-                .status-valid {
-                    background-color: var(--success-light);
-                    color: var(--success-dark);
-                }
-                
-                .status-invalid {
-                    background-color: var(--error-light);
-                    color: var(--error-dark);
-                }
-                
-                .card-footer {
-                    padding: 1rem;
-                    border-top: 0.0625rem solid var(--gray-200);
-                    text-align: right;
-                }
-                
-                .btn {
-                    padding: 0.5rem 1rem;
-                    border-radius: 0.25rem;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    border: none;
-                    font-family: inherit;
-                    font-size: 0.875rem;
-                }
-                
-                .btn-primary {
-                    background-color: var(--primary);
-                    color: white;
-                }
-                
-                .btn-primary:hover {
-                    background-color: var(--primary-dark);
-                }
-                
-                .btn-secondary {
-                    background-color: var(--gray-200);
-                    color: var(--gray-700);
-                }
-                
-                .btn-secondary:hover {
-                    background-color: var(--gray-300);
-                }
-                
-                .empty-message {
-                    text-align: center;
-                    padding: 3rem 1rem;
-                    background-color: var(--gray-50);
-                    border-radius: 0.5rem;
-                    margin-bottom: 2rem;
-                }
-                
-                .empty-title {
-                    font-size: 1.25rem;
-                    font-weight: 600;
-                    margin-bottom: 0.5rem;
-                    color: var(--gray-700);
-                }
-                
-                .empty-message-text {
-                    color: var(--gray-500);
-                    max-width: 30rem;
-                    margin: 0 auto;
-                }
-                
-                .loading {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 2rem;
-                    color: var(--gray-500);
-                }
-                
-                .loading-spinner {
-                    display: inline-block;
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    border: 0.125rem solid currentColor;
-                    border-right-color: transparent;
-                    border-radius: 50%;
-                    margin-right: 0.5rem;
-                    animation: spin 0.75s linear infinite;
-                }
-                
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                
-                .error-message {
-                    color: var(--error);
-                    text-align: center;
-                    padding: 1rem;
-                    background-color: var(--error-light);
-                    border-radius: 0.5rem;
-                    margin-bottom: 1rem;
-                }
-            </style>
-            
-            <section class="action-bar">
-                <button id="add-question-btn" class="btn btn-primary">Add Question</button>
-            </section>
-            
-            <section class="questions-list">
-                ${this.renderContent()}
-            </section>
-        `;
-    }
-    
-    renderContent() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
+        const actionBar = document.createElement('section');
+        actionBar.className = 'action-bar';
+        
+        const addQuestionBtn = document.createElement('button');
+        addQuestionBtn.id = 'add-question-btn';
+        addQuestionBtn.className = 'btn btn-primary';
+        addQuestionBtn.textContent = 'Add Question';
+        addQuestionBtn.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('add-question', {
+                bubbles: true,
+                composed: true
+            }));
+        });
+        
+        actionBar.appendChild(addQuestionBtn);
+        this.shadowRoot.appendChild(actionBar);
+        
+        const questionsListContainer = document.createElement('section');
+        questionsListContainer.className = 'questions-list';
+        
         if (this.loading) {
-            return `
-                <section class="loading">
-                    <span class="loading-spinner"></span>
-                    <p>Loading questions...</p>
-                </section>
-            `;
+            const loadingSection = this.createLoadingSection();
+            questionsListContainer.appendChild(loadingSection);
+        } else if (this.error) {
+            const errorMessage = document.createElement('p');
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = this.error;
+            questionsListContainer.appendChild(errorMessage);
+        } else if (this.questions.length === 0) {
+            const emptySection = this.createEmptySection();
+            questionsListContainer.appendChild(emptySection);
+        } else {
+            this.questions.forEach((question, index) => {
+                const questionCard = this.createQuestionCard(question, index);
+                questionsListContainer.appendChild(questionCard);
+            });
         }
         
-        if (this.error) {
-            return `<p class="error-message">${this.error}</p>`;
-        }
-        
-        if (this.questions.length === 0) {
-            return `
-                <section class="empty-message">
-                    <h3 class="empty-title">No questions found</h3>
-                    <p class="empty-message-text">Add your first question to get started.</p>
-                </section>
-            `;
-        }
-        
-        return this.questions.map((question, index) => this.renderQuestionCard(question, index)).join('');
+        this.shadowRoot.appendChild(questionsListContainer);
     }
     
-    renderQuestionCard(question, index) {
+    createLoadingSection() {
+        const loadingSection = document.createElement('section');
+        loadingSection.className = 'loading';
+        
+        const spinner = document.createElement('span');
+        spinner.className = 'loading-spinner';
+        
+        const loadingText = document.createElement('p');
+        loadingText.textContent = 'Loading questions...';
+        
+        loadingSection.appendChild(spinner);
+        loadingSection.appendChild(loadingText);
+        
+        return loadingSection;
+    }
+    
+    createEmptySection() {
+        const emptySection = document.createElement('section');
+        emptySection.className = 'empty-message';
+        
+        const title = document.createElement('h3');
+        title.className = 'empty-title';
+        title.textContent = 'No questions found';
+        
+        const message = document.createElement('p');
+        message.className = 'empty-message-text';
+        message.textContent = 'Add your first question to get started.';
+        
+        emptySection.appendChild(title);
+        emptySection.appendChild(message);
+        
+        return emptySection;
+    }
+    
+    createQuestionCard(question, index) {
         const isValid = question.is_valid;
         const statusClass = isValid ? 'status-valid' : 'status-invalid';
         
@@ -254,98 +107,130 @@ class QuestionsList extends HTMLElement {
             ? question.validation_messages[0]
             : isValid ? 'Valid question' : 'Invalid question';
         
-        return `
-            <article class="question-card" data-id="${question.question_id}">
-                <header class="card-header">
-                    <h3>Question ${index + 1}</h3>
-                    <section class="question-actions">
-                        <button type="button" class="action-btn edit-question" title="Edit Question" data-id="${question.question_id}">
-                            <span aria-hidden="true">✏️</span>
-                        </button>
-                        <button type="button" class="action-btn delete-question" title="Delete Question" data-id="${question.question_id}">
-                            <span aria-hidden="true">🗑️</span>
-                        </button>
-                    </section>
-                </header>
-                <section class="card-content">
-                    <p class="question-text">${question.question_text}</p>
-                    <section class="question-meta">
-                        <span class="difficulty-badge">${question.difficulty_level}</span>
-                        <span class="question-status ${statusClass}">${statusText}</span>
-                    </section>
-                </section>
-                <footer class="card-footer">
-                    <button type="button" class="btn btn-secondary manage-answers" data-id="${question.question_id}" data-text="${question.question_text}">Manage Answers</button>
-                </footer>
-            </article>
-        `;
-    }
-    
-    setupEventListeners() {
-        const addQuestionBtn = this.shadowRoot.querySelector('#add-question-btn');
-        if (addQuestionBtn) {
-            addQuestionBtn.addEventListener('click', () => {
-                this.dispatchEvent(new CustomEvent('add-question', {
-                    bubbles: true,
-                    composed: true
-                }));
-            });
-        }
+        const questionCard = document.createElement('article');
+        questionCard.className = 'question-card';
+        questionCard.dataset.id = question.question_id;
         
-        const editButtons = this.shadowRoot.querySelectorAll('.edit-question');
-        editButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const questionId = button.dataset.id;
-                this.dispatchEvent(new CustomEvent('edit-question', {
-                    detail: { questionId },
-                    bubbles: true,
-                    composed: true
-                }));
-            });
+        const cardHeader = document.createElement('header');
+        cardHeader.className = 'card-header';
+        
+        const cardTitle = document.createElement('h3');
+        cardTitle.textContent = `Question ${index + 1}`;
+        
+        const actionSection = document.createElement('section');
+        actionSection.className = 'question-actions';
+        
+        const editButton = document.createElement('button');
+        editButton.type = 'button';
+        editButton.className = 'action-btn edit-question';
+        editButton.title = 'Edit Question';
+        editButton.dataset.id = question.question_id;
+        
+        const editIcon = document.createElement('span');
+        editIcon.setAttribute('aria-hidden', 'true');
+        editIcon.textContent = '✏️';
+        
+        editButton.appendChild(editIcon);
+        editButton.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('edit-question', {
+                detail: { questionId: question.question_id },
+                bubbles: true,
+                composed: true
+            }));
         });
         
-        const deleteButtons = this.shadowRoot.querySelectorAll('.delete-question');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const questionId = button.dataset.id;
-                this.dispatchEvent(new CustomEvent('delete-question', {
-                    detail: { questionId },
-                    bubbles: true,
-                    composed: true
-                }));
-            });
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'action-btn delete-question';
+        deleteButton.title = 'Delete Question';
+        deleteButton.dataset.id = question.question_id;
+        
+        const deleteIcon = document.createElement('span');
+        deleteIcon.setAttribute('aria-hidden', 'true');
+        deleteIcon.textContent = '🗑️';
+        
+        deleteButton.appendChild(deleteIcon);
+        deleteButton.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('delete-question', {
+                detail: { questionId: question.question_id },
+                bubbles: true,
+                composed: true
+            }));
         });
         
-        const manageAnswersButtons = this.shadowRoot.querySelectorAll('.manage-answers');
-        manageAnswersButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const questionId = button.dataset.id;
-                const questionText = button.dataset.text;
-                this.dispatchEvent(new CustomEvent('manage-answers', {
-                    detail: { questionId, questionText },
-                    bubbles: true,
-                    composed: true
-                }));
-            });
+        actionSection.appendChild(editButton);
+        actionSection.appendChild(deleteButton);
+        
+        cardHeader.appendChild(cardTitle);
+        cardHeader.appendChild(actionSection);
+        
+        const cardContent = document.createElement('section');
+        cardContent.className = 'card-content';
+        
+        const questionText = document.createElement('p');
+        questionText.className = 'question-text';
+        questionText.textContent = question.question_text;
+        
+        const questionMeta = document.createElement('section');
+        questionMeta.className = 'question-meta';
+        
+        const difficultyBadge = document.createElement('span');
+        difficultyBadge.className = 'difficulty-badge';
+        difficultyBadge.textContent = question.difficulty_level;
+        
+        const statusBadge = document.createElement('span');
+        statusBadge.className = `question-status ${statusClass}`;
+        statusBadge.textContent = statusText;
+        
+        questionMeta.appendChild(difficultyBadge);
+        questionMeta.appendChild(statusBadge);
+        
+        cardContent.appendChild(questionText);
+        cardContent.appendChild(questionMeta);
+        
+        const cardFooter = document.createElement('footer');
+        cardFooter.className = 'card-footer';
+        
+        const manageAnswersBtn = document.createElement('button');
+        manageAnswersBtn.type = 'button';
+        manageAnswersBtn.className = 'btn btn-secondary manage-answers';
+        manageAnswersBtn.dataset.id = question.question_id;
+        manageAnswersBtn.dataset.text = question.question_text;
+        manageAnswersBtn.textContent = 'Manage Answers';
+        
+        manageAnswersBtn.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('manage-answers', {
+                detail: { 
+                    questionId: question.question_id,
+                    questionText: question.question_text
+                },
+                bubbles: true,
+                composed: true
+            }));
         });
+        
+        cardFooter.appendChild(manageAnswersBtn);
+        
+        questionCard.appendChild(cardHeader);
+        questionCard.appendChild(cardContent);
+        questionCard.appendChild(cardFooter);
+        
+        return questionCard;
     }
     
     setQuestions(questions) {
         this.questions = questions;
         this.render();
-        this.setupEventListeners();
     }
     
     setLoading(isLoading) {
         this.loading = isLoading;
         this.render();
-        this.setupEventListeners();
     }
     
     setError(errorMessage) {
         this.error = errorMessage;
         this.render();
-        this.setupEventListeners();
     }
 }
 

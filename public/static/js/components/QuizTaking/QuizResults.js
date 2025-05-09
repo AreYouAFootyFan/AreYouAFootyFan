@@ -3,9 +3,11 @@ class QuizResults extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this._summary = null;
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
         this.setupEventListeners();
     }
@@ -18,15 +20,29 @@ class QuizResults extends HTMLElement {
     get summary() {
         return this._summary;
     }
+
+    async loadStyles() {        
+        const cssText = await fetch('./static/css/quizTaking/quizResults.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+    }
     
     render() {
         if (!this._summary) {
-            this.shadowRoot.innerHTML = `
-                <section class="loading">
-                    <span class="loading-spinner"></span>
-                    <p>Loading quiz results...</p>
-                </section>
-            `;
+            const loadingSection = document.createElement('section');
+            loadingSection.classList.add('loading');
+            
+            const loadingSpinner = document.createElement('span');
+            loadingSpinner.classList.add('loading-spinner');
+            
+            const loadingText = document.createElement('p');
+            loadingText.textContent = 'Loading quiz results...';
+            
+            loadingSection.appendChild(loadingSpinner);
+            loadingSection.appendChild(loadingText);
+            
+            this.shadowRoot.innerHTML = '';
+            this.shadowRoot.appendChild(loadingSection);
             return;
         }
         
@@ -35,124 +51,56 @@ class QuizResults extends HTMLElement {
             ? Math.round((this._summary.correct_answers / this._summary.answered_questions) * 100) 
             : 0;
         
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .loading {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 2rem;
-                    color: var(--gray-500);
-                }
-                
-                .loading-spinner {
-                    display: inline-block;
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    border: 0.125rem solid currentColor;
-                    border-right-color: transparent;
-                    border-radius: 50%;
-                    margin-right: 0.5rem;
-                    animation: spin 0.75s linear infinite;
-                }
-                
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                
-                article {
-                    background-color: white;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                    padding: 2rem;
-                    max-width: 40rem;
-                    margin: 0 auto;
-                    text-align: center;
-                }
-                
-                h2 {
-                    color: var(--primary);
-                    margin-bottom: 1.5rem;
-                    font-size: 1.75rem;
-                }
-                
-                .final-score {
-                    font-size: 1.25rem;
-                    margin-bottom: 1rem;
-                }
-                
-                .percentage {
-                    font-size: 3rem;
-                    font-weight: 700;
-                    color: var(--primary);
-                    margin: 1.5rem 0;
-                }
-                
-                .stats-summary {
-                    background-color: var(--gray-50);
-                    border-radius: 0.5rem;
-                    padding: 1.5rem;
-                    margin-bottom: 2rem;
-                    text-align: left;
-                }
-                
-                .stats-summary p {
-                    margin-bottom: 0.5rem;
-                }
-                
-                .actions {
-                    display: flex;
-                    justify-content: center;
-                    gap: 1rem;
-                }
-                
-                .home-btn {
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 0.5rem;
-                    font-size: 1rem;
-                    font-weight: 500;
-                    background-color: var(--primary);
-                    color: white;
-                    text-decoration: none;
-                    display: inline-block;
-                    transition: all var(--transition-fast);
-                    border: none;
-                    cursor: pointer;
-                    font-family: inherit;
-                }
-                
-                .home-btn:hover {
-                    background-color: var(--primary-dark);
-                }
-            </style>
-            
-            <article>
-                <h2>Quiz Complete!</h2>
-                
-                <p class="final-score">
-                    Your score: <strong>${this._summary.total_points}</strong> points
-                </p>
-                
-                <p class="percentage">
-                    ${accuracyPercent}%
-                </p>
-                
-                <section class="stats-summary">
-                    <p><strong>Questions:</strong> ${this._summary.answered_questions}/${this._summary.total_questions} (${answeredPercent}% completed)</p>
-                    <p><strong>Correct answers:</strong> ${this._summary.correct_answers}/${this._summary.answered_questions}</p>
-                    <p><strong>Incorrect answers:</strong> ${this._summary.incorrect_answers}</p>
-                </section>
-                
-                <section class="actions">
-                    <a href="/home" class="home-btn" data-link>Back to Home</a>
-                </section>
-            </article>
-        `;
+        const style = document.createElement('style');
+        const article = document.createElement('article');
+        
+        const heading = document.createElement('h2');
+        heading.textContent = 'Quiz Complete!';
+        
+        const finalScore = document.createElement('p');
+        finalScore.classList.add('final-score');
+        finalScore.innerHTML = `Your score: <strong>${this._summary.total_points}</strong> points`;
+        
+        const percentage = document.createElement('p');
+        percentage.classList.add('percentage');
+        percentage.textContent = `${accuracyPercent}%`;
+        
+        const statsSummary = document.createElement('section');
+        statsSummary.classList.add('stats-summary');
+        
+        const questions = document.createElement('p');
+        questions.innerHTML = `<strong>Questions:</strong> ${this._summary.answered_questions}/${this._summary.total_questions} (${answeredPercent}% completed)`;
+        
+        const correctAnswers = document.createElement('p');
+        correctAnswers.innerHTML = `<strong>Correct answers:</strong> ${this._summary.correct_answers}/${this._summary.answered_questions}`;
+        
+        const incorrectAnswers = document.createElement('p');
+        incorrectAnswers.innerHTML = `<strong>Incorrect answers:</strong> ${this._summary.incorrect_answers}`;
+        
+        statsSummary.appendChild(questions);
+        statsSummary.appendChild(correctAnswers);
+        statsSummary.appendChild(incorrectAnswers);
+        
+        const actions = document.createElement('section');
+        actions.classList.add('actions');
+        
+        const homeButton = document.createElement('a');
+        homeButton.href = '/home';
+        homeButton.classList.add('home-btn');
+        homeButton.setAttribute('data-link', '');
+        homeButton.textContent = 'Back to Home';
+        
+        actions.appendChild(homeButton);
+        
+        article.appendChild(heading);
+        article.appendChild(finalScore);
+        article.appendChild(percentage);
+        article.appendChild(statsSummary);
+        article.appendChild(actions);
+        
+        this.shadowRoot.innerHTML = '';
+        this.shadowRoot.appendChild(style);
+        this.shadowRoot.appendChild(article);
     }
     
     setupEventListeners() {

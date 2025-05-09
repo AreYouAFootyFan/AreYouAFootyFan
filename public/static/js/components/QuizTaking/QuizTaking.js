@@ -13,9 +13,11 @@ class QuizTaking extends HTMLElement {
         this.timeLeft = 0;
         this.score = 0;
         this.isQuizCompleted = false;
+        this.styleSheet = new CSSStyleSheet();
     }
 
     connectedCallback() {
+        this.loadStyles();
         this.render();
         this.init();
         
@@ -27,88 +29,34 @@ class QuizTaking extends HTMLElement {
         this.cleanup();
         document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     }
+
+    async loadStyles() {        
+        const cssText = await fetch('./static/css/quizTaking/quizTaking.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+    }
     
     render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                    font-family: var(--font-sans, 'Inter', sans-serif);
-                    color: var(--gray-800);
-                    background-color: var(--gray-100);
-                    min-height: calc(100vh - 4rem);
-                }
-                
-                .quiz-container {
-                    max-width: var(--container-max-width);
-                    margin: 0 auto;
-                    padding: 2rem 1rem;
-                }
-                
-                .loading-container {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 50vh;
-                    font-size: 1.125rem;
-                    color: var(--gray-600);
-                }
-                
-                .loading-spinner {
-                    display: inline-block;
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    border: 0.125rem solid currentColor;
-                    border-right-color: transparent;
-                    border-radius: 50%;
-                    margin-right: 0.5rem;
-                    animation: spin 0.75s linear infinite;
-                }
-                
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                
-                .error-container {
-                    background-color: white;
-                    border-radius: 0.5rem;
-                    box-shadow: var(--shadow);
-                    padding: 2rem;
-                    text-align: center;
-                    max-width: 40rem;
-                    margin: 2rem auto;
-                }
-                
-                .error-message {
-                    color: var(--error);
-                    margin-bottom: 1.5rem;
-                }
-                
-                .home-btn {
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 0.5rem;
-                    font-size: 1rem;
-                    font-weight: 500;
-                    background-color: var(--primary);
-                    color: white;
-                    text-decoration: none;
-                    display: inline-block;
-                    transition: all var(--transition-fast);
-                }
-                
-                .home-btn:hover {
-                    background-color: var(--primary-dark);
-                }
-            </style>
-            
-            <main class="quiz-container">
-                <section class="loading-container">
-                    <span class="loading-spinner"></span>
-                    <p>Loading quiz...</p>
-                </section>
-            </main>
-        `;
+        const style = document.createElement('style');
+      
+        const main = document.createElement('main');
+        main.classList.add('quiz-container');
+        
+        const loadingContainer = document.createElement('section');
+        loadingContainer.classList.add('loading-container');
+        
+        const loadingSpinner = document.createElement('span');
+        loadingSpinner.classList.add('loading-spinner');
+        
+        const loadingText = document.createElement('p');
+        loadingText.textContent = 'Loading quiz...';
+        
+        loadingContainer.appendChild(loadingSpinner);
+        loadingContainer.appendChild(loadingText);
+        main.appendChild(loadingContainer);
+        
+        this.shadowRoot.appendChild(style);
+        this.shadowRoot.appendChild(main);
     }
     
     async init() {
@@ -152,12 +100,20 @@ class QuizTaking extends HTMLElement {
             
             const quizContainer = this.shadowRoot.querySelector('.quiz-container');
             if (quizContainer) {
-                quizContainer.innerHTML = `
-                    <section class="loading-container">
-                        <span class="loading-spinner"></span>
-                        <p>Loading quiz... Please wait.</p>
-                    </section>
-                `;
+                quizContainer.innerHTML = '';
+                
+                const loadingContainer = document.createElement('section');
+                loadingContainer.classList.add('loading-container');
+                
+                const loadingSpinner = document.createElement('span');
+                loadingSpinner.classList.add('loading-spinner');
+                
+                const loadingText = document.createElement('p');
+                loadingText.textContent = 'Loading quiz... Please wait.';
+                
+                loadingContainer.appendChild(loadingSpinner);
+                loadingContainer.appendChild(loadingText);
+                quizContainer.appendChild(loadingContainer);
             }
             
             this.attempt = await quizAttemptService.startQuiz(quizId);
@@ -437,21 +393,30 @@ class QuizTaking extends HTMLElement {
     showError(message) {
         const quizContainer = this.shadowRoot.querySelector('.quiz-container');
         if (quizContainer) {
-            quizContainer.innerHTML = `
-                <article class="error-container">
-                    <p class="error-message">${message}</p>
-                    <a href="/home" class="home-btn" data-link>Back to Home</a>
-                </article>
-            `;
+            quizContainer.innerHTML = '';
             
-            const homeButton = quizContainer.querySelector('[data-link]');
-            if (homeButton) {
-                homeButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.history.pushState(null, null, homeButton.getAttribute('href'));
-                    window.dispatchEvent(new PopStateEvent('popstate'));
-                });
-            }
+            const errorContainer = document.createElement('article');
+            errorContainer.classList.add('error-container');
+            
+            const errorMessage = document.createElement('p');
+            errorMessage.classList.add('error-message');
+            errorMessage.textContent = message;
+            
+            const homeButton = document.createElement('a');
+            homeButton.href = '/home';
+            homeButton.classList.add('home-btn');
+            homeButton.setAttribute('data-link', '');
+            homeButton.textContent = 'Back to Home';
+            
+            errorContainer.appendChild(errorMessage);
+            errorContainer.appendChild(homeButton);
+            quizContainer.appendChild(errorContainer);
+            
+            homeButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.history.pushState(null, null, homeButton.getAttribute('href'));
+                window.dispatchEvent(new PopStateEvent('popstate'));
+            });
         }
     }
 }

@@ -12,177 +12,152 @@ class QuizForm extends HTMLElement {
             quiz_description: '',
             category_id: ''
         };
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
-        this.setupEventListeners();
     }
     
     attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'quiz-title' && newValue) {
-            this._quizData.quiz_title = newValue;
-        }
-        
-        if (this.isConnected) {
-            this.render();
-        }
+    if (oldValue === newValue) return;
+    
+    console.log(`QuestionForm attribute changed: ${name} from ${oldValue} to ${newValue}`);
+    
+    if (name === 'editing') {
+        this.isEditing = newValue === 'true';
+    } else if (name === 'question-id') {
+        this.questionId = newValue;
+    } else if (name === 'quiz-id') {
+        this.quizId = newValue;
+    }
+    
+    if (this.isConnected) {
+        this.render();
+    }
+}
+    
+    async loadStyles() {
+        const cssText = await fetch('./static/css/quizCreation/quizform.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
     }
     
     render() {
         const isEditing = this.getAttribute('editing') === 'true';
         
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .creator-form {
-                    background-color: white;
-                    border-radius: 0.5rem;
-                    padding: 2rem;
-                    max-width: 40rem;
-                    margin: 0 auto;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                }
-                
-                .form-group {
-                    margin-bottom: 1.5rem;
-                }
-                
-                .form-group label {
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 500;
-                    color: var(--gray-700);
-                }
-                
-                .form-group input,
-                .form-group select,
-                .form-group textarea {
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 0.0625rem solid var(--gray-300);
-                    border-radius: 0.25rem;
-                    font-size: 1rem;
-                    background-color: white;
-                    transition: border-color 0.2s;
-                    font-family: inherit;
-                }
-                
-                .form-group input:focus,
-                .form-group select:focus,
-                .form-group textarea:focus {
-                    outline: none;
-                    border-color: var(--primary);
-                    box-shadow: 0 0 0 0.125rem rgba(59, 130, 246, 0.2);
-                }
-                
-                .form-help {
-                    font-size: 0.75rem;
-                    color: var(--gray-500);
-                    margin-top: 0.25rem;
-                }
-                
-                .form-actions {
-                    display: flex;
-                    justify-content: flex-end;
-                    gap: 1rem;
-                    margin-top: 1.5rem;
-                }
-                
-                .btn {
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 0.25rem;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    border: none;
-                    font-family: inherit;
-                    font-size: 0.875rem;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    text-decoration: none;
-                }
-                
-                .btn-secondary {
-                    background-color: var(--gray-200);
-                    color: var(--gray-700);
-                }
-                
-                .btn-secondary:hover {
-                    background-color: var(--gray-300);
-                }
-                
-                .btn-primary {
-                    background-color: var(--primary);
-                    color: white;
-                }
-                
-                .btn-primary:hover {
-                    background-color: var(--primary-dark);
-                }
-            </style>
-            
-            <form class="creator-form">
-                <section class="form-group">
-                    <label for="quiz-title">Quiz Title</label>
-                    <input type="text" id="quiz-title" required placeholder="e.g. World Cup History" maxlength="64" value="${this._quizData.quiz_title || ''}">
-                    <p class="form-help">Maximum 64 characters</p>
-                </section>
-                
-                <section class="form-group">
-                    <label for="quiz-category">Category</label>
-                    <select id="quiz-category">
-                        <option value="">-- Select a category --</option>
-                        ${this._categories.map(category => `
-                            <option 
-                                value="${category.category_id}" 
-                                ${this._quizData.category_id == category.category_id ? 'selected' : ''}
-                            >
-                                ${category.category_name}
-                            </option>
-                        `).join('')}
-                    </select>
-                </section>
-                
-                <section class="form-group">
-                    <label for="quiz-description">Description</label>
-                    <textarea id="quiz-description" rows="3" placeholder="Describe what this quiz is about" maxlength="128">${this._quizData.quiz_description || ''}</textarea>
-                    <p class="form-help">Maximum 128 characters</p>
-                </section>
-                
-                <section class="form-actions">
-                    <a href="/admin" class="btn btn-secondary" data-link>Cancel</a>
-                    <button type="submit" class="btn btn-primary">${isEditing ? 'Save Changes' : 'Create Quiz'}</button>
-                </section>
-            </form>
-        `;
-    }
-    
-    setupEventListeners() {
-        const form = this.shadowRoot.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', this.handleSubmit.bind(this));
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
         }
         
-        // Navigation links
-        const links = this.shadowRoot.querySelectorAll('[data-link]');
-        links.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                // Clean up localStorage
-                localStorage.removeItem('current_question_id');
-                localStorage.removeItem('current_question_text');
-                
-                window.history.pushState(null, null, link.getAttribute('href'));
-                window.dispatchEvent(new PopStateEvent('popstate'));
-            });
+        const form = document.createElement('form');
+        form.className = 'creator-form';
+        form.addEventListener('submit', this.handleSubmit.bind(this));
+        
+        const titleGroup = document.createElement('section');
+        titleGroup.className = 'form-group';
+        
+        const titleLabel = document.createElement('label');
+        titleLabel.setAttribute('for', 'quiz-title');
+        titleLabel.textContent = 'Quiz Title';
+        
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.id = 'quiz-title';
+        titleInput.required = true;
+        titleInput.placeholder = 'e.g. World Cup History';
+        titleInput.maxLength = 64;
+        titleInput.value = this._quizData.quiz_title || '';
+        
+        const titleHelp = document.createElement('p');
+        titleHelp.className = 'form-help';
+        titleHelp.textContent = 'Maximum 64 characters';
+        
+        titleGroup.appendChild(titleLabel);
+        titleGroup.appendChild(titleInput);
+        titleGroup.appendChild(titleHelp);
+        
+        const categoryGroup = document.createElement('section');
+        categoryGroup.className = 'form-group';
+        
+        const categoryLabel = document.createElement('label');
+        categoryLabel.setAttribute('for', 'quiz-category');
+        categoryLabel.textContent = 'Category';
+        
+        const categorySelect = document.createElement('select');
+        categorySelect.id = 'quiz-category';
+        
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = '-- Select a category --';
+        categorySelect.appendChild(defaultOption);
+        
+        this._categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.category_id;
+            option.textContent = category.category_name;
+            if (this._quizData.category_id == category.category_id) {
+                option.selected = true;
+            }
+            categorySelect.appendChild(option);
         });
+        
+        categoryGroup.appendChild(categoryLabel);
+        categoryGroup.appendChild(categorySelect);
+        
+        const descGroup = document.createElement('section');
+        descGroup.className = 'form-group';
+        
+        const descLabel = document.createElement('label');
+        descLabel.setAttribute('for', 'quiz-description');
+        descLabel.textContent = 'Description';
+        
+        const descTextarea = document.createElement('textarea');
+        descTextarea.id = 'quiz-description';
+        descTextarea.rows = 3;
+        descTextarea.placeholder = 'Describe what this quiz is about';
+        descTextarea.maxLength = 128;
+        descTextarea.textContent = this._quizData.quiz_description || '';
+        
+        const descHelp = document.createElement('p');
+        descHelp.className = 'form-help';
+        descHelp.textContent = 'Maximum 128 characters';
+        
+        descGroup.appendChild(descLabel);
+        descGroup.appendChild(descTextarea);
+        descGroup.appendChild(descHelp);
+        
+        const actions = document.createElement('section');
+        actions.className = 'form-actions';
+        
+        const cancelLink = document.createElement('a');
+        cancelLink.href = '/admin';
+        cancelLink.className = 'btn btn-secondary';
+        cancelLink.dataset.link = '';
+        cancelLink.textContent = 'Cancel';
+        cancelLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('current_question_id');
+            localStorage.removeItem('current_question_text');
+            window.history.pushState(null, null, cancelLink.getAttribute('href'));
+            window.dispatchEvent(new PopStateEvent('popstate'));
+        });
+        
+        const submitButton = document.createElement('button');
+        submitButton.type = 'submit';
+        submitButton.className = 'btn btn-primary';
+        submitButton.textContent = isEditing ? 'Save Changes' : 'Create Quiz';
+        
+        actions.appendChild(cancelLink);
+        actions.appendChild(submitButton);
+        
+        form.appendChild(titleGroup);
+        form.appendChild(categoryGroup);
+        form.appendChild(descGroup);
+        form.appendChild(actions);
+        
+        this.shadowRoot.appendChild(form);
     }
     
     handleSubmit(event) {

@@ -11,160 +11,158 @@ class QuestionForm extends HTMLElement {
             question_text: '',
             difficulty_id: ''
         };
+        this.styleSheet = new CSSStyleSheet();
+        
+        this.isEditing = false;
+        this.questionId = null;
+        this.quizId = null;
     }
     
     connectedCallback() {
+        this.loadStyles();
+        this.updateStateFromAttributes();
         this.render();
-        this.setupEventListeners();
+        console.log('QuestionForm connected with state:', {
+            isEditing: this.isEditing,
+            questionId: this.questionId,
+            quizId: this.quizId,
+            questionData: this._questionData
+        });
     }
     
     attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue === newValue) return;
+        
+        if (name === 'editing') {
+            this.isEditing = newValue === 'true';
+        } else if (name === 'question-id') {
+            this.questionId = newValue;
+        } else if (name === 'quiz-id') {
+            this.quizId = newValue;
+        }
+        
         if (this.isConnected) {
+            this.updateStateFromAttributes();
             this.render();
         }
     }
     
-    render() {
-        const isEditing = this.getAttribute('editing') === 'true';
-        
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .creator-form {
-                    background-color: white;
-                    border-radius: 0.5rem;
-                    padding: 2rem;
-                    max-width: 40rem;
-                    margin: 0 auto;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                }
-                
-                .form-group {
-                    margin-bottom: 1.5rem;
-                }
-                
-                .form-group label {
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 500;
-                    color: var(--gray-700);
-                }
-                
-                .form-group textarea,
-                .form-group select {
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 0.0625rem solid var(--gray-300);
-                    border-radius: 0.25rem;
-                    font-size: 1rem;
-                    background-color: white;
-                    transition: border-color 0.2s;
-                    font-family: inherit;
-                }
-                
-                .form-group textarea:focus,
-                .form-group select:focus {
-                    outline: none;
-                    border-color: var(--primary);
-                    box-shadow: 0 0 0 0.125rem rgba(59, 130, 246, 0.2);
-                }
-                
-                .form-help {
-                    font-size: 0.75rem;
-                    color: var(--gray-500);
-                    margin-top: 0.25rem;
-                }
-                
-                .form-actions {
-                    display: flex;
-                    justify-content: flex-end;
-                    gap: 1rem;
-                    margin-top: 1.5rem;
-                }
-                
-                .btn {
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 0.25rem;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    border: none;
-                    font-family: inherit;
-                    font-size: 0.875rem;
-                }
-                
-                .btn-secondary {
-                    background-color: var(--gray-200);
-                    color: var(--gray-700);
-                }
-                
-                .btn-secondary:hover {
-                    background-color: var(--gray-300);
-                }
-                
-                .btn-primary {
-                    background-color: var(--primary);
-                    color: white;
-                }
-                
-                .btn-primary:hover {
-                    background-color: var(--primary-dark);
-                }
-            </style>
-            
-            <form class="creator-form">
-                <section class="form-group">
-                    <label for="question-text">Question Text</label>
-                    <textarea id="question-text" rows="2" required placeholder="Enter your question" maxlength="256">${this._questionData.question_text || ''}</textarea>
-                    <p class="form-help">Maximum 256 characters</p>
-                </section>
-                
-                <section class="form-group">
-                    <label for="question-difficulty">Difficulty Level</label>
-                    <select id="question-difficulty" required>
-                        <option value="">-- Select difficulty --</option>
-                        ${this._difficulties.map(difficulty => `
-                            <option 
-                                value="${difficulty.difficulty_id}" 
-                                ${this._questionData.difficulty_id == difficulty.difficulty_id ? 'selected' : ''}
-                            >
-                                ${difficulty.difficulty_level} (${difficulty.time_limit_seconds}s, +${difficulty.points_on_correct}/${difficulty.points_on_incorrect})
-                            </option>
-                        `).join('')}
-                    </select>
-                </section>
-                
-                <section class="form-actions">
-                    <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Continue to Add Answers</button>
-                </section>
-            </form>
-        `;
+    updateStateFromAttributes() {
+        this.isEditing = this.getAttribute('editing') === 'true';
+        this.questionId = this.getAttribute('question-id') || null;
+        this.quizId = this.getAttribute('quiz-id') || null;
     }
     
-    setupEventListeners() {
-        const form = this.shadowRoot.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', this.handleSubmit.bind(this));
+    async loadStyles() {
+        const cssText = await fetch('./static/css/quizCreation/questionForm.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+    }
+    
+    render() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
         }
         
-        const cancelBtn = this.shadowRoot.querySelector('#cancel-btn');
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => {
-                this.dispatchEvent(new CustomEvent('cancel', {
-                    bubbles: true,
-                    composed: true
-                }));
-            });
+        const form = document.createElement('form');
+        form.className = 'creator-form';
+        form.addEventListener('submit', this.handleSubmit.bind(this));
+        
+        const questionTextGroup = document.createElement('section');
+        questionTextGroup.className = 'form-group';
+        
+        const questionTextLabel = document.createElement('label');
+        questionTextLabel.setAttribute('for', 'question-text');
+        questionTextLabel.textContent = 'Question Text';
+        
+        const questionTextArea = document.createElement('textarea');
+        questionTextArea.id = 'question-text';
+        questionTextArea.rows = 2;
+        questionTextArea.required = true;
+        questionTextArea.placeholder = 'Enter your question';
+        questionTextArea.maxLength = 256;
+        questionTextArea.value = this._questionData.question_text || '';
+        
+        const questionTextHelp = document.createElement('p');
+        questionTextHelp.className = 'form-help';
+        questionTextHelp.textContent = 'Maximum 256 characters';
+        
+        questionTextGroup.appendChild(questionTextLabel);
+        questionTextGroup.appendChild(questionTextArea);
+        questionTextGroup.appendChild(questionTextHelp);
+        
+        const difficultyGroup = document.createElement('section');
+        difficultyGroup.className = 'form-group';
+        
+        const difficultyLabel = document.createElement('label');
+        difficultyLabel.setAttribute('for', 'question-difficulty');
+        difficultyLabel.textContent = 'Difficulty Level';
+        
+        const difficultySelect = document.createElement('select');
+        difficultySelect.id = 'question-difficulty';
+        difficultySelect.required = true;
+        
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = '-- Select difficulty --';
+        difficultySelect.appendChild(defaultOption);
+        
+        this._difficulties.forEach(difficulty => {
+            const option = document.createElement('option');
+            option.value = difficulty.difficulty_id;
+            option.textContent = `${difficulty.difficulty_level} (${difficulty.time_limit_seconds}s, +${difficulty.points_on_correct}/${difficulty.points_on_incorrect})`;
+            
+            if (this._questionData.difficulty_id == difficulty.difficulty_id) {
+                option.selected = true;
+            }
+            
+            difficultySelect.appendChild(option);
+        });
+        
+        difficultyGroup.appendChild(difficultyLabel);
+        difficultyGroup.appendChild(difficultySelect);
+        
+        const formActions = document.createElement('section');
+        formActions.className = 'form-actions';
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.id = 'cancel-btn';
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('cancel', {
+                bubbles: true,
+                composed: true
+            }));
+        });
+        
+        const submitBtn = document.createElement('button');
+        submitBtn.type = 'submit';
+        submitBtn.className = 'btn btn-primary';
+        submitBtn.textContent = this.isEditing ? 'Update Question' : 'Continue to Add Answers';
+        
+        if (this.isEditing) {
+            const modeIndicator = document.createElement('p');
+            modeIndicator.style.color = 'var(--primary)';
+            modeIndicator.style.fontWeight = 'bold';
+            modeIndicator.textContent = `Editing question ID: ${this.questionId}`;
+            form.appendChild(modeIndicator);
         }
+        
+        formActions.appendChild(cancelBtn);
+        formActions.appendChild(submitBtn);
+        
+        form.appendChild(questionTextGroup);
+        form.appendChild(difficultyGroup);
+        form.appendChild(formActions);
+        
+        this.shadowRoot.appendChild(form);
     }
     
     handleSubmit(event) {
         event.preventDefault();
+        console.log('QuestionForm: handleSubmit triggered');
         
         const textInput = this.shadowRoot.querySelector('#question-text');
         const difficultySelect = this.shadowRoot.querySelector('#question-difficulty');
@@ -184,16 +182,13 @@ class QuestionForm extends HTMLElement {
             return;
         }
         
-        const questionId = this.getAttribute('question-id');
-        const isNew = !questionId;
+        const isNew = !this.isEditing || !this.questionId;
         
-        // Prepare question data
         const questionData = {
             question_text: text,
             difficulty_id: difficultyId
         };
         
-        // Dispatch submit event
         this.dispatchEvent(new CustomEvent('question-submit', {
             detail: {
                 question: questionData,
@@ -225,6 +220,7 @@ class QuestionForm extends HTMLElement {
     }
     
     setEditing(isEditing) {
+        this.isEditing = isEditing;
         this.setAttribute('editing', isEditing.toString());
     }
     
@@ -233,6 +229,11 @@ class QuestionForm extends HTMLElement {
             question_text: '',
             difficulty_id: ''
         };
+        this.isEditing = false;
+        this.questionId = null;
+        
+        this.setAttribute('editing', 'false');
+        this.removeAttribute('question-id');
         
         this.render();
     }
