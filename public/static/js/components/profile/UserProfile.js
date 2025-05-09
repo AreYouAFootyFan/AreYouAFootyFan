@@ -1,3 +1,4 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
 class UserProfile extends HTMLElement {
     constructor() {
         super();
@@ -8,15 +9,17 @@ class UserProfile extends HTMLElement {
     }
 
     async connectedCallback() {
-        await this.getStyles();
+        await this.loadStyles();
         this.renderSkeleton();
         this.loadUserData();
     }
 
-    async getStyles() {
-        const cssText = await fetch('./static/css/profile/profile.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+    async loadStyles() {
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/profile/profile.css'
+        );
     }
 
     renderSkeleton() {

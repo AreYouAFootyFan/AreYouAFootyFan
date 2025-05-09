@@ -1,7 +1,7 @@
 import AbstractView from "./AbstractView.js";
-import "../components/quizTaking/QuizTaking.js";
-import "../components/quizTaking/QuizResults.js";
-import "../components/quizTaking/QuizQuestion.js"
+import "../components/QuizTaking/QuizTaking.js";
+import "../components/QuizTaking/QuizResults.js";
+import "../components/QuizTaking/QuizQuestion.js"
 
 export default class QuizView extends AbstractView {
     constructor() {

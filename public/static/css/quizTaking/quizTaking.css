@@ -1,4 +1,4 @@
- :host {
+:host {
     display: block;
     width: 100%;
     font-family: var(--font-sans, 'Inter', sans-serif);
@@ -13,30 +13,6 @@
     padding: 2rem 1rem;
 }
 
-.loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 50vh;
-    font-size: 1.125rem;
-    color: var(--gray-600);
-}
-
-.loading-spinner {
-    display: inline-block;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 0.125rem solid currentColor;
-    border-right-color: transparent;
-    border-radius: 50%;
-    margin-right: 0.5rem;
-    animation: spin 0.75s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
 .error-container {
     background-color: white;
     border-radius: 0.5rem;
@@ -45,11 +21,6 @@
     text-align: center;
     max-width: 40rem;
     margin: 2rem auto;
-}
-
-.error-message {
-    color: var(--error);
-    margin-bottom: 1.5rem;
 }
 
 .home-btn {

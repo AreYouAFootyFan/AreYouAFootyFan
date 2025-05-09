@@ -1,3 +1,4 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
 class QuizForm extends HTMLElement {
     static get observedAttributes() {
         return ['editing', 'quiz-id', 'quiz-title'];
@@ -15,16 +16,14 @@ class QuizForm extends HTMLElement {
         this.styleSheet = new CSSStyleSheet();
     }
     
-    connectedCallback() {
-        this.loadStyles();
+    async connectedCallback() {
+        await this.loadStyles();
         this.render();
     }
     
     attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;
-    
-    console.log(`QuestionForm attribute changed: ${name} from ${oldValue} to ${newValue}`);
-    
+        
     if (name === 'editing') {
         this.isEditing = newValue === 'true';
     } else if (name === 'question-id') {
@@ -39,9 +38,11 @@ class QuizForm extends HTMLElement {
 }
     
     async loadStyles() {
-        const cssText = await fetch('./static/css/quizCreation/quizform.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/quizCreation/quizform.css'
+        );
     }
     
     render() {

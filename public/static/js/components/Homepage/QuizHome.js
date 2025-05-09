@@ -1,3 +1,4 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
 class QuizHome extends HTMLElement {
   constructor() {
       super();
@@ -9,26 +10,28 @@ class QuizHome extends HTMLElement {
   }
 
   async connectedCallback() {
+      await this.loadStyles();
+      this.shadowRoot.innerHTML = '';
       await this.render();
       this.setupEventListeners();
-      this.loadData();
+      await this.loadData();
       this.checkUserRole();
   }
 
+  async loadStyles() {
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/home/home.css'
+        );
+    }
+
   async render() {
-    await this.getStyles();   
-    const shadow = this.shadowRoot;
-    shadow.adoptedStyleSheets = [this.styleSheet];
-    shadow.innerHTML = '';
+     const shadow = this.shadowRoot;
     const homeContent = this.buildMainContent();
     shadow.appendChild(homeContent);
   }
   
-
-    async getStyles(){
-        const cssText = await fetch('./static/css/home/home.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-    }
 
     buildMainContent() {
         const main = document.createElement('main');

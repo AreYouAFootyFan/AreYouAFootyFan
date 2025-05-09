@@ -4,6 +4,7 @@ import "./AdminTable.js";
 import "./AdminModal.js";
 import "./AdminCard.js";
 import "./AdminNotification.js";
+import { StyleLoader } from "../../utils/cssLoader.js";
 
 class AdminDashboard extends HTMLElement {
     constructor() {
@@ -23,8 +24,8 @@ class AdminDashboard extends HTMLElement {
         this.styleSheet = new CSSStyleSheet();
     }
 
-    connectedCallback() {
-        this.loadStyles();
+    async connectedCallback() {
+        await this.loadStyles();
         this.render();
         this.setupEventListeners();
         
@@ -32,30 +33,12 @@ class AdminDashboard extends HTMLElement {
     }
     
     async loadStyles() {
-         try {
-            const globalStylesResponse = await fetch('./static/css/styles.css');
-            const globalStyles = await globalStylesResponse.text();
-            const globalStyleSheet = new CSSStyleSheet();
-            globalStyleSheet.replaceSync(globalStyles);
-            
-            const adminSharedStylesResponse = await fetch('./static/css/admin/shared.css');
-            const adminSharedStyles = await adminSharedStylesResponse.text();
-            const adminSharedStyleSheet = new CSSStyleSheet();
-            adminSharedStyleSheet.replaceSync(adminSharedStyles);
-            
-            const componentStylesResponse = await fetch('./static/css/admin/admindashboard.css');
-            const componentStyles = await componentStylesResponse.text();
-            const componentStyleSheet = new CSSStyleSheet();
-            componentStyleSheet.replaceSync(componentStyles);
-            
-            this.shadowRoot.adoptedStyleSheets = [
-                globalStyleSheet, 
-                adminSharedStyleSheet, 
-                componentStyleSheet
-            ];
-        } catch (error) {
-            console.error('Error loading styles:', error);
-        }
+         await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/admin/shared.css',
+            './static/css/admin/adminDashboard.css'
+        );
     }
     
     render() {

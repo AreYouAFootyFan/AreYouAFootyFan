@@ -1,3 +1,4 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
 class QuestionForm extends HTMLElement {
     static get observedAttributes() {
         return ['editing', 'question-id', 'quiz-id'];
@@ -18,16 +19,10 @@ class QuestionForm extends HTMLElement {
         this.quizId = null;
     }
     
-    connectedCallback() {
-        this.loadStyles();
+    async connectedCallback() {
+        await this.loadStyles();
         this.updateStateFromAttributes();
         this.render();
-        console.log('QuestionForm connected with state:', {
-            isEditing: this.isEditing,
-            questionId: this.questionId,
-            quizId: this.quizId,
-            questionData: this._questionData
-        });
     }
     
     attributeChangedCallback(name, oldValue, newValue) {
@@ -54,9 +49,11 @@ class QuestionForm extends HTMLElement {
     }
     
     async loadStyles() {
-        const cssText = await fetch('./static/css/quizCreation/questionForm.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/quizCreation/questionForm.css'
+        );
     }
     
     render() {
