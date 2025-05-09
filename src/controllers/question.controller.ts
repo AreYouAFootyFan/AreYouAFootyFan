@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { QuestionService } from "../services/question.service";
 import { CreateQuestionDto, UpdateQuestionDto } from "../DTOs/question.dto";
 import { ErrorUtils } from "../utils/error.utils";
-import { Message, Http } from "../utils/enums";
+import { Message, Http, Length } from "../utils/enums";
 
 export class QuestionController {
   static async getQuestionsByQuizId(
@@ -60,7 +60,11 @@ export class QuestionController {
         throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_REQUIRED);
       }
 
-      if (question_text.length > 256) {
+      if (question_text.length < Length.Min.QUESTION_TEXT) {
+        throw ErrorUtils.badRequest(`Question text must be at least ${Length.Min.QUESTION_TEXT} characters`);
+      }
+
+      if (question_text.length > Length.Max.QUESTION_TEXT) {
         throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_TOO_LONG);
       }
 
@@ -108,8 +112,14 @@ export class QuestionController {
         throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
       }
 
-      if (question_text !== undefined && question_text.length > 256) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_TOO_LONG);
+      if (question_text !== undefined) {
+        if (question_text.length < Length.Min.QUESTION_TEXT) {
+          throw ErrorUtils.badRequest(`Question text must be at least ${Length.Min.QUESTION_TEXT} characters`);
+        }
+        
+        if (question_text.length > Length.Max.QUESTION_TEXT) {
+          throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_TOO_LONG);
+        }
       }
 
       const data: UpdateQuestionDto = {};

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { QuizService } from "../services/quiz.service";
 import { CreateQuizDto, UpdateQuizDto } from "../DTOs/quiz.dto";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message, Http, Length } from "../utils/enums";
 
 export class QuizController {
   static async getAllQuizzes(
@@ -22,7 +23,7 @@ export class QuizController {
         const categoryId = parseInt(request.query.category as string);
 
         if (isNaN(categoryId)) {
-          throw ErrorUtils.badRequest("Invalid category ID");
+          throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
         }
 
         const quizzes = await QuizService.getQuizzesByCategory(categoryId);
@@ -34,7 +35,7 @@ export class QuizController {
         const creatorId = parseInt(request.query.creator as string);
 
         if (isNaN(creatorId)) {
-          throw ErrorUtils.badRequest("Invalid creator ID");
+          throw ErrorUtils.badRequest(Message.Error.UserError.INVALID_ID);
         }
 
         const quizzes = await QuizService.getQuizzesByCreator(creatorId);
@@ -57,7 +58,7 @@ export class QuizController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid quiz ID");
+        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
       }
 
       const quiz = await QuizService.getQuizById(id);
@@ -77,17 +78,25 @@ export class QuizController {
         request.body as CreateQuizDto;
 
       if (!quiz_title) {
-        throw ErrorUtils.badRequest("Quiz title is required");
+        throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_REQUIRED);
       }
 
-      if (quiz_title.length > 64) {
-        throw ErrorUtils.badRequest("Quiz title cannot exceed 64 characters");
+      if (quiz_title.length < Length.Min.QUIZ_TITLE) {
+        throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_TOO_SHORT);
       }
 
-      if (quiz_description && quiz_description.length > 128) {
-        throw ErrorUtils.badRequest(
-          "Quiz description cannot exceed 128 characters"
-        );
+      if (quiz_title.length > Length.Max.QUIZ_TITLE) {
+        throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_TOO_LONG);
+      }
+
+      if (quiz_description) {
+        if (quiz_description.length < Length.Min.QUIZ_DESCRIPTION) {
+          throw ErrorUtils.badRequest(Message.Error.QuizError.DESCRIPTION_TOO_SHORT);
+        }
+        
+        if (quiz_description.length > Length.Max.QUIZ_DESCRIPTION) {
+          throw ErrorUtils.badRequest(Message.Error.QuizError.DESCRIPTION_TOO_LONG);
+        }
       }
 
       const created_by = request.user!.id;
@@ -100,7 +109,7 @@ export class QuizController {
         } else {
           const tempCategoryId = parseInt(category_id.toString());
           if (isNaN(tempCategoryId)) {
-            throw ErrorUtils.badRequest("Invalid category ID");
+            throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
           }
           parsedCategoryId = tempCategoryId;
         }
@@ -116,7 +125,7 @@ export class QuizController {
         user_role
       );
 
-      response.status(201).json(quiz);
+      response.status(Http.HttpStatus.CREATED).json(quiz);
     } catch (error) {
       next(error);
     }
@@ -131,7 +140,7 @@ export class QuizController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid quiz ID");
+        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
       }
 
       const { quiz_title, quiz_description, category_id } =
@@ -142,17 +151,27 @@ export class QuizController {
         quiz_description === undefined &&
         category_id === undefined
       ) {
-        throw ErrorUtils.badRequest("At least one field to update is required");
+        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
       }
 
-      if (quiz_title !== undefined && quiz_title.length > 64) {
-        throw ErrorUtils.badRequest("Quiz title cannot exceed 64 characters");
+      if (quiz_title !== undefined) {
+        if (quiz_title.length < Length.Min.QUIZ_TITLE) {
+          throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_TOO_SHORT);
+        }
+        
+        if (quiz_title.length > Length.Max.QUIZ_TITLE) {
+          throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_TOO_LONG);
+        }
       }
 
-      if (quiz_description !== undefined && quiz_description.length > 128) {
-        throw ErrorUtils.badRequest(
-          "Quiz description cannot exceed 128 characters"
-        );
+      if (quiz_description !== undefined) {
+        if (quiz_description.length < Length.Min.QUIZ_DESCRIPTION) {
+          throw ErrorUtils.badRequest(Message.Error.QuizError.DESCRIPTION_TOO_SHORT);
+        }
+        
+        if (quiz_description.length > Length.Max.QUIZ_DESCRIPTION) {
+          throw ErrorUtils.badRequest(Message.Error.QuizError.DESCRIPTION_TOO_LONG);
+        }
       }
 
       let parsedCategoryId = undefined;
@@ -162,7 +181,7 @@ export class QuizController {
         } else {
           parsedCategoryId = parseInt(category_id.toString());
           if (isNaN(parsedCategoryId)) {
-            throw ErrorUtils.badRequest("Invalid category ID");
+            throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
           }
         }
       }
@@ -188,11 +207,11 @@ export class QuizController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid quiz ID");
+        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
       }
 
       await QuizService.deleteQuiz(id);
-      response.json({ message: "Quiz deleted successfully" });
+      response.json({ message: Message.Success.QuizSuccess.DELETE });
     } catch (error) {
       next(error);
     }
@@ -207,7 +226,7 @@ export class QuizController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid quiz ID");
+        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
       }
 
       const quiz = await QuizService.getQuizById(id);

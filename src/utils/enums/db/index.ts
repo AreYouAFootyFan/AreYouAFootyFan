@@ -1,0 +1,13 @@
+/**
+ * PostgreSQL database error codes.
+ * Makes code more readable when handling database errors.
+ */
+export enum PgErrorCode {
+  UNIQUE_VIOLATION = "23505",
+  FOREIGN_KEY_VIOLATION = "23503",
+  NOT_NULL_VIOLATION = "23502",
+  CHECK_VIOLATION = "23514",
+  INVALID_TEXT_REPRESENTATION = "22P02",
+  UNDEFINED_TABLE = "42P01",
+  UNDEFINED_COLUMN = "42703",
+} 

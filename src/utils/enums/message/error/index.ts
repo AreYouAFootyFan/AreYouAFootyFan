@@ -19,6 +19,15 @@ export enum BaseError {
 }
 
 /**
+ * API-related error messages
+ */
+export enum ApiError {
+  SOMETHING_WENT_WRONG = "Something went wrong",
+  DUPLICATE_RECORD = "A record with this information already exists",
+  ENDPOINT_NOT_FOUND = "Cannot {method} {path}",
+}
+
+/**
  * Auth-related error messages
  */
 export enum AuthError {
@@ -37,6 +46,11 @@ export enum QuizError {
   UPDATE_FAILED = "Failed to update quiz",
   DELETE_FAILED = "Failed to delete quiz",
   INVALID_ID = "Invalid quiz ID",
+  TITLE_REQUIRED = "Quiz title is required",
+  TITLE_TOO_SHORT = "Quiz title must be at least 5 characters",
+  TITLE_TOO_LONG = "Quiz title cannot exceed 64 characters",
+  DESCRIPTION_TOO_SHORT = "Quiz description must be at least 10 characters",
+  DESCRIPTION_TOO_LONG = "Quiz description cannot exceed 256 characters",
 }
 
 /**
@@ -136,10 +150,15 @@ export enum ResponseError {
  * User-related error messages
  */
 export enum UserError {
+  NOT_FOUND = "User not found",
   GOOGLE_ID_EXISTS = "User with this Google ID already exists",
   USERNAME_TAKEN = "Username already taken",
   UPDATE_FAILED = "Failed to update user",
   DEACTIVATE_FAILED = "Failed to deactivate user",
+  USERNAME_REQUIRED = "Username is required",
+  USERNAME_LENGTH = "Username must be between 3 and 32 characters",
+  INVALID_ID = "Invalid user ID",
+  INVALID_ROLE_ID = "Invalid role ID",
 }
 
 /**

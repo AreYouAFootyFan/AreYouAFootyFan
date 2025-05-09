@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { CategoryService } from "../services/category.service";
 import { CreateCategoryDto, UpdateCategoryDto } from "../DTOs/category.dto";
 import { ErrorUtils } from "../utils/error.utils";
-import { Message, Http } from "../utils/enums";
+import { Message, Http, Length } from "../utils/enums";
 
 export class CategoryController {
   static async getAllCategories(
@@ -50,13 +50,24 @@ export class CategoryController {
         throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_REQUIRED);
       }
 
-      if (category_name.length > Message.Error.Length.MaxLength.CATEGORY_NAME) {
+      if (category_name.length < Length.Min.CATEGORY_NAME) {
+        throw ErrorUtils.badRequest(`Category name must be at least ${Length.Min.CATEGORY_NAME} characters`);
+      }
+
+      if (category_name.length > Length.Max.CATEGORY_NAME) {
         throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_NAME_TOO_LONG);
       }
 
       if (
         category_description &&
-        category_description.length > Message.Error.Length.MaxLength.CATEGORY_DESCRIPTION
+        category_description.length < Length.Min.CATEGORY_DESCRIPTION
+      ) {
+        throw ErrorUtils.badRequest(`Category description must be at least ${Length.Min.CATEGORY_DESCRIPTION} characters`);
+      }
+
+      if (
+        category_description &&
+        category_description.length > Length.Max.CATEGORY_DESCRIPTION
       ) {
         throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_DESCRIPTION_TOO_LONG);
       }
@@ -90,15 +101,24 @@ export class CategoryController {
         throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
       }
 
-      if (category_name && category_name.length > Message.Error.Length.MaxLength.CATEGORY_NAME) {
-        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_NAME_TOO_LONG);
+      if (category_name) {
+        if (category_name.length < Length.Min.CATEGORY_NAME) {
+          throw ErrorUtils.badRequest(`Category name must be at least ${Length.Min.CATEGORY_NAME} characters`);
+        }
+
+        if (category_name.length > Length.Max.CATEGORY_NAME) {
+          throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_NAME_TOO_LONG);
+        }
       }
 
-      if (
-        category_description &&
-        category_description.length > Message.Error.Length.MaxLength.CATEGORY_DESCRIPTION
-      ) {
-        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_DESCRIPTION_TOO_LONG);
+      if (category_description) {
+        if (category_description.length < Length.Min.CATEGORY_DESCRIPTION) {
+          throw ErrorUtils.badRequest(`Category description must be at least ${Length.Min.CATEGORY_DESCRIPTION} characters`);
+        }
+
+        if (category_description.length > Length.Max.CATEGORY_DESCRIPTION) {
+          throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_DESCRIPTION_TOO_LONG);
+        }
       }
 
       const category = await CategoryService.updateCategory(id, {

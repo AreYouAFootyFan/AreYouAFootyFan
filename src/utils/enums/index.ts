@@ -16,4 +16,12 @@ export { User };
 
 // Configuration values
 import * as Config from './config';
-export { Config }; 
+export { Config };
+
+// Database error codes
+import * as Db from './db';
+export { Db };
+
+// Length constraints
+import * as Length from './length';
+export { Length }; 

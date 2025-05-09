@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AnswerService } from "../services/answer.service";
 import { CreateAnswerDto, UpdateAnswerDto } from "../DTOs/answer.dto";
 import { ErrorUtils } from "../utils/error.utils";
-import { Message, Http } from "../utils/enums";
+import { Message, Http, Length } from "../utils/enums";
 
 export class AnswerController {
   static async getAnswersByQuestionId(
@@ -60,7 +60,11 @@ export class AnswerController {
         throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_REQUIRED);
       }
 
-      if (answer_text.length > Message.Error.Length.MaxLength.ANSWER_TEXT) {
+      if (answer_text.length < Length.Min.ANSWER_TEXT) {
+        throw ErrorUtils.badRequest(`Answer text must be at least ${Length.Min.ANSWER_TEXT} character`);
+      }
+
+      if (answer_text.length > Length.Max.ANSWER_TEXT) {
         throw ErrorUtils.badRequest(Message.Error.Length.LengthError.ANSWER_TOO_LONG);
       }
 
@@ -103,11 +107,14 @@ export class AnswerController {
         throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
       }
 
-      if (
-        answer_text !== undefined &&
-        answer_text.length > Message.Error.Length.MaxLength.ANSWER_TEXT
-      ) {
-        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.ANSWER_TOO_LONG);
+      if (answer_text !== undefined) {
+        if (answer_text.length < Length.Min.ANSWER_TEXT) {
+          throw ErrorUtils.badRequest(`Answer text must be at least ${Length.Min.ANSWER_TEXT} character`);
+        }
+        
+        if (answer_text.length > Length.Max.ANSWER_TEXT) {
+          throw ErrorUtils.badRequest(Message.Error.Length.LengthError.ANSWER_TOO_LONG);
+        }
       }
 
       const data: UpdateAnswerDto = {};

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/error.utils";
+import { Message, Http, Db } from "../utils/enums";
 
 export const errorHandler = (
   error: AppError,
@@ -11,12 +12,12 @@ export const errorHandler = (
     return next(error);
   }
 
-  const status = error.status || 500;
-  const message = error.message || "Something went wrong";
+  const status = error.status || Http.HttpStatus.INTERNAL_SERVER_ERROR;
+  const message = error.message || Message.Error.ApiError.SOMETHING_WENT_WRONG;
 
-  if (error.code === "23505") {
-    response.status(409).json({
-      error: "A record with this information already exists",
+  if (error.code === Db.PgErrorCode.UNIQUE_VIOLATION) {
+    response.status(Http.HttpStatus.CONFLICT).json({
+      error: Message.Error.ApiError.DUPLICATE_RECORD,
     });
     return;
   }
@@ -27,7 +28,11 @@ export const errorHandler = (
 };
 
 export const notFoundHandler = (request: Request, response: Response): void => {
-  response.status(404).json({
-    error: `Cannot ${request.method} ${request.path}`,
+  const errorMessage = Message.Error.ApiError.ENDPOINT_NOT_FOUND
+    .replace("{method}", request.method)
+    .replace("{path}", request.path);
+    
+  response.status(Http.HttpStatus.NOT_FOUND).json({
+    error: errorMessage,
   });
 };
