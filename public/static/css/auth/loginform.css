@@ -100,12 +100,6 @@ input {
     background-color: var(--primary-dark);
 }
 
-.error-message {
-    color: var(--error);
-    margin-top: 1rem;
-    font-size: 0.875rem;
-}
-
 .auth-footer {
     padding: 1.5rem;
     text-align: center;
@@ -136,19 +130,4 @@ input {
 .google-icon {
     margin-right: 0.5rem;
     vertical-align: middle;
-}
-
-i {
-    font-style: normal;
-}
-
-.loading-indicator {
-    padding: 1rem;
-    color: var(--primary);
-    font-weight: 500;
-}
-
-/* Utility classes for hiding/showing elements */
-.hidden {
-    display: none !important;
 }

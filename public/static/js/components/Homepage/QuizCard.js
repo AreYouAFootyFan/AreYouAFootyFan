@@ -1,3 +1,4 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
 class QuizCard extends HTMLElement {
     constructor() {
         super();
@@ -7,14 +8,21 @@ class QuizCard extends HTMLElement {
     }
     
     async connectedCallback() {
+        await this.loadStyles();
         await this.render();
         this.setupEventListeners();
     }
     
+    async loadStyles() {
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/home/quizcard.css'
+        );
+    }
+
     async render() {
-        await this.getStyles();   
         const shadow = this.shadowRoot;
-        shadow.adoptedStyleSheets = [this.styleSheet];
         shadow.innerHTML = '';
 
         if (!this.quiz) {
@@ -79,10 +87,6 @@ class QuizCard extends HTMLElement {
         shadow.appendChild(article);
     }
     
-    async getStyles(){
-        const cssText = await fetch('./static/css/home/quizcard.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-    }
 
     setupEventListeners() {
         const startButton = this.shadowRoot.querySelector('.start-btn');

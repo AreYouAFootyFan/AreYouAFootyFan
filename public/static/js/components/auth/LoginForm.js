@@ -1,3 +1,5 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
+
 class LoginForm extends HTMLElement {
     constructor() {
         super();
@@ -7,16 +9,18 @@ class LoginForm extends HTMLElement {
         this.styleSheet = new CSSStyleSheet();
     }
 
-    connectedCallback() {
-        this.loadStyles();
+    async connectedCallback() {
+        await this.loadStyles();
         this.render();
         this.checkAuthentication();
     }
     
     async loadStyles() {
-        const cssText = await fetch('./static/css/auth/loginform.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-        this.shadowRoot.adoptedStyleSheets = [this.styleSheet]; 
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/auth/loginform.css'
+        );
     }
     
     render() {

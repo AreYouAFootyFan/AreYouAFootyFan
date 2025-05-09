@@ -37,35 +37,6 @@ h1 {
     overflow: hidden;
 }
 
-.loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 10rem;
-    font-size: 1.125rem;
-    color: var(--gray-600);
-    padding: 1.5rem;
-}
-
-.loading-spinner {
-    display: inline-block;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 0.125rem solid currentColor;
-    border-right-color: transparent;
-    border-radius: 50%;
-    margin-right: 0.5rem;
-    animation: spin 0.75s linear infinite;
-}
-
-i {
-    font-style: normal;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
 .profile-header {
     display: flex;
     gap: 1.5rem;
@@ -107,70 +78,4 @@ legend {
     margin-bottom: 1rem;
     font-size: 1.125rem;
     color: var(--gray-800);
-}
-
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--gray-700);
-}
-
-input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 0.0625rem solid var(--gray-300);
-    border-radius: 0.25rem;
-    font-size: 1rem;
-    font-family: inherit;
-}
-
-input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 0.125rem var(--primary-light);
-}
-
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.25rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    border: none;
-    font-family: inherit;
-    font-size: 1rem;
-}
-
-.btn-primary {
-    background-color: var(--primary);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-}
-
-.message {
-    margin-top: 1rem;
-    padding: 0.75rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-}
-
-.error-message {
-    color: var(--error);
-    background-color: rgba(239, 68, 68, 0.1);
-}
-
-.success-message {
-    color: var(--success);
-    background-color: rgba(34, 197, 94, 0.1);
 }

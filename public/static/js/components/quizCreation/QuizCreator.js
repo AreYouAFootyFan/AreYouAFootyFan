@@ -2,7 +2,7 @@ import "./QuizForm.js";
 import "./QuestionList.js";
 import "./QuestionForm.js";
 import "./AnswerList.js";
-
+import { StyleLoader } from "../../utils/cssLoader.js";
 class QuizCreator extends HTMLElement {
     constructor() {
         super();
@@ -29,8 +29,8 @@ class QuizCreator extends HTMLElement {
         this.styleSheet = new CSSStyleSheet();
     }
 
-    connectedCallback() {
-        this.loadStyles();
+    async connectedCallback() {
+        await this.loadStyles();
         this.render();
         this.checkAuthorization();
     }
@@ -45,9 +45,11 @@ class QuizCreator extends HTMLElement {
     }
     
     async loadStyles() {
-        const cssText = await fetch('./static/css/quizCreation/quizCreator.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/quizCreation/quizCreator.css'
+        );
     }
     
     render() {
@@ -389,7 +391,6 @@ class QuizCreator extends HTMLElement {
     }
     
     async loadCategories() {
-        console.log("cat");
         try {
             const categoryService = window.categoryService;
             if (!categoryService) {
@@ -398,7 +399,6 @@ class QuizCreator extends HTMLElement {
             }
             
             this.categories = await categoryService.getAllCategories();
-            console.log(this.categories);
             const quizForm = this.shadowRoot.querySelector('#quiz-form');
             if (quizForm) {
                 setTimeout(() => {
@@ -412,7 +412,6 @@ class QuizCreator extends HTMLElement {
     }
     
     async loadDifficulties() {
-        console.log("loading diff");
         try {
             const difficultyService = window.difficultyService;
             if (!difficultyService) {
@@ -421,7 +420,6 @@ class QuizCreator extends HTMLElement {
             }
             
             this.difficulties = await difficultyService.getAllDifficultyLevels();
-            console.log(this.difficulties)
             const questionForm = this.shadowRoot.querySelector('#question-form');
             if (questionForm) {
                 setTimeout(() => {
@@ -716,11 +714,9 @@ class QuizCreator extends HTMLElement {
     
     async handleEditQuestion(questionId) {
     try {
-        console.log(`QuizCreator: Editing question with ID: ${questionId}`);
         
         this.currentQuestionId = questionId;
         localStorage.setItem('current_question_id', questionId);
-        console.log(`Set currentQuestionId to ${questionId} and saved to localStorage`);
         
         const questionService = window.questionService;
         if (!questionService) {
@@ -728,20 +724,17 @@ class QuizCreator extends HTMLElement {
         }
         
         const question = await questionService.getQuestionById(questionId);
-        console.log('Question data loaded for editing:', question);
         
         this.changeView('question-form');
         
         const questionForm = this.shadowRoot.querySelector('#question-form');
         if (questionForm) {
             questionForm.setAttribute('question-id', questionId);
-            console.log(`Set question-id attribute on form to ${questionId}`);
             
             questionForm.setAttribute('editing', 'true');
             
             questionForm.setQuestionData(question);
             
-            console.log('Question form prepared for editing with ID:', questionId);
         } else {
             console.error('Question form element not found!');
         }

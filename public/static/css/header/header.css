@@ -64,13 +64,6 @@ header {
     padding: 0 1rem;
 }
 
-.nav-list {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
 .nav-item {
     position: relative;
 }
@@ -168,12 +161,6 @@ header {
     max-height: 10rem; /* Enough height to show content */
 }
 
-.dropdown-list {
-    list-style: none;
-    margin: 0;
-    padding: 0.5rem;
-}
-
 .logout-btn {
     display: block;
     width: 100%;
@@ -193,8 +180,4 @@ header {
 .logout-btn:hover {
     background-color: var(--gray-50);
     color: var(--error-dark);
-}
-
-.hidden {
-    display: none !important;
 }

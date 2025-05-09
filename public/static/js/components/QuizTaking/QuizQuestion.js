@@ -1,3 +1,4 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
 class QuizQuestion extends HTMLElement {
     constructor() {
         super();
@@ -30,8 +31,8 @@ class QuizQuestion extends HTMLElement {
         this.render();
     }
 
-    connectedCallback() {
-        this.loadStyles();
+    async connectedCallback() {
+        await this.loadStyles();
         this.render();
         this.setupEventListeners();
     }
@@ -46,9 +47,11 @@ class QuizQuestion extends HTMLElement {
     }
 
     async loadStyles() {        
-        const cssText = await fetch('./static/css/quizTaking/quizQuestion.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/quizTaking/quizQuestion.css'
+        );
     }
 
     render() {

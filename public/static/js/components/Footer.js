@@ -1,3 +1,4 @@
+import { StyleLoader } from "../utils/cssLoader.js";
 class FootballQuizFooter extends HTMLElement {
   constructor() {
     super();
@@ -5,19 +6,17 @@ class FootballQuizFooter extends HTMLElement {
     this.styleSheet = new CSSStyleSheet();
   }
 
-  connectedCallback() {
-    this.loadStyles();
+  async connectedCallback() {
+        await this.loadStyles();
     this.render();
   }
   
   async loadStyles() {
-    try {
-      const cssText = await fetch('./static/css/footer/footer.css').then(r => r.text());
-      this.styleSheet.replaceSync(cssText);
-      this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
-    } catch (error) {
-      console.error('Error loading styles:', error);
-    }
+      await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/footer/footer.css'
+        );
   }
 
   render() {

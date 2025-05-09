@@ -1,3 +1,4 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
 class QuizResults extends HTMLElement {
     constructor() {
         super();
@@ -6,8 +7,8 @@ class QuizResults extends HTMLElement {
         this.styleSheet = new CSSStyleSheet();
     }
     
-    connectedCallback() {
-        this.loadStyles();
+    async connectedCallback() {
+        await this.loadStyles();
         this.render();
         this.setupEventListeners();
     }
@@ -22,9 +23,11 @@ class QuizResults extends HTMLElement {
     }
 
     async loadStyles() {        
-        const cssText = await fetch('./static/css/quizTaking/quizResults.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/quizTaking/quizResults.css'
+        );
     }
     
     render() {

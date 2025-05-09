@@ -1,3 +1,4 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
 class QuizHome extends HTMLElement {
   constructor() {
       super();
@@ -9,26 +10,28 @@ class QuizHome extends HTMLElement {
   }
 
   async connectedCallback() {
+      await this.loadStyles();
+      this.shadowRoot.innerHTML = '';
       await this.render();
       this.setupEventListeners();
-      this.loadData();
+      await this.loadData();
       this.checkUserRole();
   }
 
+  async loadStyles() {
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/home/home.css'
+        );
+    }
+
   async render() {
-    await this.getStyles();   
-    const shadow = this.shadowRoot;
-    shadow.adoptedStyleSheets = [this.styleSheet];
-    shadow.innerHTML = '';
+     const shadow = this.shadowRoot;
     const homeContent = this.buildMainContent();
     shadow.appendChild(homeContent);
   }
   
-
-    async getStyles(){
-        const cssText = await fetch('./static/css/home/home.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
-    }
 
     buildMainContent() {
         const main = document.createElement('main');
@@ -64,7 +67,7 @@ class QuizHome extends HTMLElement {
     
         const noteMessage = document.createElement('p');
         noteMessage.className = 'notification-message';
-        noteMessage.textContent = 'As a Quiz Master, you can create and manage quizzes but cannot participate in them. Use a Quiz Taker account to play quizzes.';
+        noteMessage.textContent = `As a Quiz Master, you can take quizzes, but won't be ranked. Use a Quiz Taker account to compete.`;
     
         notification.appendChild(noteTitle);
         notification.appendChild(noteMessage);

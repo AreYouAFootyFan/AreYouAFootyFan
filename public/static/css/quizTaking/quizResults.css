@@ -1,29 +1,6 @@
- :host {
+:host {
     display: block;
     width: 100%;
-}
-
-.loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: var(--gray-500);
-}
-
-.loading-spinner {
-    display: inline-block;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 0.125rem solid currentColor;
-    border-right-color: transparent;
-    border-radius: 50%;
-    margin-right: 0.5rem;
-    animation: spin 0.75s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
 }
 
 article {

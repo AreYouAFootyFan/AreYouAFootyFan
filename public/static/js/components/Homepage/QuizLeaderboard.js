@@ -1,3 +1,4 @@
+import { StyleLoader } from "../../utils/cssLoader.js";
 class QuizLeaderboard extends HTMLElement {
     constructor() {
         super();
@@ -8,27 +9,30 @@ class QuizLeaderboard extends HTMLElement {
     }
     
     async connectedCallback() {
+        await this.loadStyles();
         await this.render();
         this.setupEventListeners();
         this.loadLeaderboardData();
     }
+
+    async loadStyles() {
+        await StyleLoader(
+            this.shadowRoot,
+            './static/css/styles.css',
+            './static/css/home/leaderboard.css'
+        );
+    }
     
     async render() {
-        this.getStyles();
         const shadow = this.shadowRoot;
         shadow.innerHTML = '';
-        shadow.adoptedStyleSheets = [this.styleSheet];
+        
 
         const leaderboard = this.createLeaderboardSection();
         const modal = this.createModalSection();
     
         shadow.appendChild(leaderboard);
         shadow.appendChild(modal);
-    }
-
-    async getStyles(){
-        const cssText = await fetch('./static/css/home/leaderboard.css').then(r => r.text());
-        this.styleSheet.replaceSync(cssText);
     }
     
     createLeaderboardSection() {
