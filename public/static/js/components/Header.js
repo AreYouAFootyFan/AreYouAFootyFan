@@ -239,6 +239,8 @@ class FootballQuizHeader extends HTMLElement {
                 <nav class="dropdown-menu" aria-label="User menu">
                   <ul class="dropdown-list">
                     <li><button id="logout-button" type="button" class="logout-btn">Log Out</button></li>
+                    <li><button id="logout-button" type="button" onclick="window.location.href = '/profile'"  class="logout-btn">Profile</button></li>
+
                   </ul>
                 </nav>
               </section>
@@ -250,7 +252,6 @@ class FootballQuizHeader extends HTMLElement {
           <nav class="nav-inner">
             <ul class="nav-list">
               <li class="nav-item"><a href="/home" class="nav-link nav-link" data-link>Home</a></li>
-              <li class="nav-item"><a href="/profile" class="nav-link nav-link" data-link>Profile</a></li>
               <li class="nav-item admin-item hidden"><a href="/admin" class="nav-link nav-link admin-link" data-link>Admin</a></li>
             </ul>
           </nav>
