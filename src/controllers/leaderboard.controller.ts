@@ -26,7 +26,9 @@ export class LeaderboardController {
       const userId = request.user?.id;
 
       if (!userId) {
-        throw ErrorUtils.unauthorized(Message.Error.BaseError.USER_NOT_AUTHENTICATED);
+        throw ErrorUtils.unauthorized(
+          Message.Error.Base.USER_NOT_AUTHENTICATED
+        );
       }
 
       const userRank = await LeaderboardService.getUserRank(userId);
@@ -47,7 +49,7 @@ export class LeaderboardController {
         : Config.Value.DEFAULT_LEADERBOARD_LIMIT;
 
       if (isNaN(limit) || limit < 1) {
-        throw ErrorUtils.badRequest(Message.Error.BaseError.INVALID_LIMIT);
+        throw ErrorUtils.badRequest(Message.Error.Base.INVALID_LIMIT);
       }
 
       const topPlayers = await LeaderboardService.getTopPlayers(limit);

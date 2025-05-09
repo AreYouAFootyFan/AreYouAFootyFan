@@ -1,9 +1,9 @@
 /**
  * Base error messages used throughout the application
  */
-import { Length } from '../../';
+import { Length } from "../../";
 
-export enum BaseError {
+export enum Base {
   UNAUTHORIZED = "Authentication token is required",
   USER_NOT_AUTHENTICATED = "User not authenticated",
   BAD_REQUEST = "Bad request",
@@ -17,7 +17,7 @@ export enum BaseError {
 /**
  * API-related error messages
  */
-export enum ApiError {
+export enum Api {
   SOMETHING_WENT_WRONG = "Something went wrong",
   DUPLICATE_RECORD = "A record with this information already exists",
   ENDPOINT_NOT_FOUND = "Cannot {method} {path}",
@@ -26,14 +26,14 @@ export enum ApiError {
 /**
  * Auth-related error messages
  */
-export enum AuthError {
+export enum Auth {
   GOOGLE_CODE_REQUIRED = "Google code is required",
 }
 
 /**
  * Quiz-related error messages
  */
-export enum QuizError {
+export enum Quiz {
   NOT_FOUND = "Quiz not found",
   INSUFFICIENT_QUESTIONS = "Quiz does not have enough questions (minimum 5 required)",
   INVALID_QUESTIONS = "Quiz has invalid questions (each question must have exactly 4 answers with 1 correct)",
@@ -52,7 +52,7 @@ export enum QuizError {
 /**
  * Question-related error messages
  */
-export enum QuestionError {
+export enum Question {
   NOT_FOUND = "Question not found",
   ID_REQUIRED = "Question ID is required",
   ID_NAN = "Question ID must be a number",
@@ -73,7 +73,7 @@ export enum QuestionError {
 /**
  * Answer-related error messages
  */
-export enum AnswerError {
+export enum Answer {
   NOT_FOUND = "Answer not found",
   TEXT_REQUIRED = "Answer text is required",
   TEXT_TOO_SHORT = `Answer text must be at least ${Length.Min.ANSWER_TEXT} character`,
@@ -91,7 +91,7 @@ export enum AnswerError {
 /**
  * Quiz attempt-related error messages
  */
-export enum AttemptError {
+export enum Attempt {
   NOT_FOUND = "Quiz attempt not found",
   COMPLETED = "Quiz attempt is already completed",
   NO_ACCESS = "You do not have permission to access this attempt",
@@ -100,7 +100,7 @@ export enum AttemptError {
 /**
  * Category-related error messages
  */
-export enum CategoryError {
+export enum Category {
   NOT_FOUND = "Category not found",
   INVALID = "Invalid category ID",
   NAME_REQUIRED = "Category name is required",
@@ -118,7 +118,7 @@ export enum CategoryError {
 /**
  * Permission-related error messages
  */
-export enum PermissionError {
+export enum Permission {
   USERNAME_REQUIRED = "Username is required to access this resource",
   NO_FIELD_TO_UPDATE = "At least one field to update is required",
 }
@@ -126,7 +126,7 @@ export enum PermissionError {
 /**
  * Player and manager role-specific error messages
  */
-export enum RoleError {
+export enum Role {
   FORBIDDEN_PLAYER = "Only Players can submit responses",
   FORBIDDEN_MANAGER = "Only Managers can create quizzes",
 }
@@ -134,7 +134,7 @@ export enum RoleError {
 /**
  * Token-related error messages
  */
-export enum TokenError {
+export enum Token {
   INVALID_FORMAT = "Invalid token format",
   INVALID_TOKEN = "Invalid Google token",
   MISSING_USER_ID = "Invalid Google token: missing user ID",
@@ -144,7 +144,7 @@ export enum TokenError {
 /**
  * Response-related error messages
  */
-export enum ResponseError {
+export enum Response {
   NOT_FOUND = "Response not found",
   UPDATE_FAILED = "Failed to update response",
 }
@@ -152,7 +152,7 @@ export enum ResponseError {
 /**
  * User-related error messages
  */
-export enum UserError {
+export enum User {
   NOT_FOUND = "User not found",
   GOOGLE_ID_EXISTS = "User with this Google ID already exists",
   USERNAME_TAKEN = "Username already taken",
@@ -170,7 +170,7 @@ export enum UserError {
 /**
  * Leaderboard-related error messages
  */
-export enum LeaderboardError {
+export enum Leaderboard {
   FETCH_RANK_FAILED = "Failed to fetch user rank",
   FETCH_TOP_FAILED = "Failed to fetch top players",
 }
@@ -178,7 +178,7 @@ export enum LeaderboardError {
 /**
  * Difficulty-related error messages
  */
-export enum DifficultyError {
+export enum Difficulty {
   INVALID_ID = "Invalid difficulty level ID",
   LEVEL_REQUIRED = "Difficulty level name is required",
   LEVEL_TOO_SHORT = `Difficulty level name must be at least ${Length.Min.DIFFICULTY_NAME} characters`,
@@ -195,4 +195,4 @@ export enum DifficultyError {
   NAME_EXISTS = "A difficulty level with this name already exists",
   NAME_EXISTS_OTHER = "Another difficulty level with this name already exists",
   USED_BY_QUESTIONS = "Cannot delete difficulty level as it is used by existing questions",
-} 
+}

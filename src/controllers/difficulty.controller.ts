@@ -30,7 +30,7 @@ export class DifficultyController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Difficulty.INVALID_ID);
       }
 
       const difficultyLevel = await DifficultyService.getDifficultyLevelById(
@@ -57,23 +57,29 @@ export class DifficultyController {
 
       // Validate required fields
       if (!difficulty_level) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.LEVEL_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.Difficulty.LEVEL_REQUIRED);
       }
 
       if (difficulty_level.length > 16) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.LEVEL_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.Difficulty.LEVEL_TOO_LONG);
       }
 
       if (time_limit_seconds === undefined) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.TIME_LIMIT_REQUIRED);
+        throw ErrorUtils.badRequest(
+          Message.Error.Difficulty.TIME_LIMIT_REQUIRED
+        );
       }
 
       if (points_on_correct === undefined) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_CORRECT_REQUIRED);
+        throw ErrorUtils.badRequest(
+          Message.Error.Difficulty.POINTS_CORRECT_REQUIRED
+        );
       }
 
       if (points_on_incorrect === undefined) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_INCORRECT_REQUIRED);
+        throw ErrorUtils.badRequest(
+          Message.Error.Difficulty.POINTS_INCORRECT_REQUIRED
+        );
       }
 
       const data: CreateDifficultyLevelDto = {
@@ -84,21 +90,27 @@ export class DifficultyController {
       };
 
       if (isNaN(data.time_limit_seconds) || data.time_limit_seconds <= 0) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.TIME_LIMIT_POSITIVE);
+        throw ErrorUtils.badRequest(
+          Message.Error.Difficulty.TIME_LIMIT_POSITIVE
+        );
       }
 
       if (isNaN(data.points_on_correct)) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_CORRECT_NUMBER);
+        throw ErrorUtils.badRequest(
+          Message.Error.Difficulty.POINTS_CORRECT_NUMBER
+        );
       }
 
       if (isNaN(data.points_on_incorrect)) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_INCORRECT_NUMBER);
+        throw ErrorUtils.badRequest(
+          Message.Error.Difficulty.POINTS_INCORRECT_NUMBER
+        );
       }
 
       const difficultyLevel = await DifficultyService.createDifficultyLevel(
         data
       );
-      response.status(Http.HttpStatus.CREATED).json(difficultyLevel);
+      response.status(Http.Status.CREATED).json(difficultyLevel);
     } catch (error) {
       next(error);
     }
@@ -113,7 +125,7 @@ export class DifficultyController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Difficulty.INVALID_ID);
       }
 
       const {
@@ -129,11 +141,13 @@ export class DifficultyController {
         points_on_correct === undefined &&
         points_on_incorrect === undefined
       ) {
-        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
+        throw ErrorUtils.badRequest(
+          Message.Error.Permission.NO_FIELD_TO_UPDATE
+        );
       }
 
       if (difficulty_level !== undefined && difficulty_level.length > 16) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.LEVEL_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.Difficulty.LEVEL_TOO_LONG);
       }
 
       const data: UpdateDifficultyLevelDto = {};
@@ -145,7 +159,9 @@ export class DifficultyController {
       if (time_limit_seconds !== undefined) {
         const parsedTimeLimit = parseInt(time_limit_seconds.toString());
         if (isNaN(parsedTimeLimit) || parsedTimeLimit <= 0) {
-          throw ErrorUtils.badRequest(Message.Error.DifficultyError.TIME_LIMIT_POSITIVE);
+          throw ErrorUtils.badRequest(
+            Message.Error.Difficulty.TIME_LIMIT_POSITIVE
+          );
         }
         data.time_limit_seconds = parsedTimeLimit;
       }
@@ -153,7 +169,9 @@ export class DifficultyController {
       if (points_on_correct !== undefined) {
         const parsedPointsOnCorrect = parseInt(points_on_correct.toString());
         if (isNaN(parsedPointsOnCorrect)) {
-          throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_CORRECT_NUMBER);
+          throw ErrorUtils.badRequest(
+            Message.Error.Difficulty.POINTS_CORRECT_NUMBER
+          );
         }
         data.points_on_correct = parsedPointsOnCorrect;
       }
@@ -163,7 +181,9 @@ export class DifficultyController {
           points_on_incorrect.toString()
         );
         if (isNaN(parsedPointsOnIncorrect)) {
-          throw ErrorUtils.badRequest(Message.Error.DifficultyError.POINTS_INCORRECT_NUMBER);
+          throw ErrorUtils.badRequest(
+            Message.Error.Difficulty.POINTS_INCORRECT_NUMBER
+          );
         }
         data.points_on_incorrect = parsedPointsOnIncorrect;
       }
@@ -187,7 +207,7 @@ export class DifficultyController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Difficulty.INVALID_ID);
       }
 
       await DifficultyService.deleteDifficultyLevel(id);

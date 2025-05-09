@@ -12,12 +12,12 @@ export const errorHandler = (
     return next(error);
   }
 
-  const status = error.status || Http.HttpStatus.INTERNAL_SERVER_ERROR;
-  const message = error.message || Message.Error.ApiError.SOMETHING_WENT_WRONG;
+  const status = error.status || Http.Status.INTERNAL_SERVER_ERROR;
+  const message = error.message || Message.Error.Api.SOMETHING_WENT_WRONG;
 
   if (error.code === Db.PgErrorCode.UNIQUE_VIOLATION) {
-    response.status(Http.HttpStatus.CONFLICT).json({
-      error: Message.Error.ApiError.DUPLICATE_RECORD,
+    response.status(Http.Status.CONFLICT).json({
+      error: Message.Error.Api.DUPLICATE_RECORD,
     });
     return;
   }
@@ -28,11 +28,12 @@ export const errorHandler = (
 };
 
 export const notFoundHandler = (request: Request, response: Response): void => {
-  const errorMessage = Message.Error.ApiError.ENDPOINT_NOT_FOUND
-    .replace("{method}", request.method)
-    .replace("{path}", request.path);
-    
-  response.status(Http.HttpStatus.NOT_FOUND).json({
+  const errorMessage = Message.Error.Api.ENDPOINT_NOT_FOUND.replace(
+    "{method}",
+    request.method
+  ).replace("{path}", request.path);
+
+  response.status(Http.Status.NOT_FOUND).json({
     error: errorMessage,
   });
 };

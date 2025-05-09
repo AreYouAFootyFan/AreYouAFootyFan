@@ -9,7 +9,7 @@ export class AnswerService {
     const question = await QuestionModel.findById(questionId);
 
     if (!question) {
-      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Question.NOT_FOUND);
     }
 
     return AnswerModel.findByQuestionId(questionId);
@@ -19,7 +19,7 @@ export class AnswerService {
     const answer = await AnswerModel.findById(id);
 
     if (!answer) {
-      throw ErrorUtils.notFound(Message.Error.AnswerError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Answer.NOT_FOUND);
     }
 
     return answer;
@@ -29,15 +29,13 @@ export class AnswerService {
     const question = await QuestionModel.findById(data.question_id);
 
     if (!question) {
-      throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
+      throw ErrorUtils.badRequest(Message.Error.Question.INVALID_ID);
     }
 
     const answerCount = await QuestionModel.countAnswers(data.question_id);
 
     if (answerCount >= 4) {
-      throw ErrorUtils.badRequest(
-        Message.Error.AnswerError.MAX_ANSWERS_REACHED
-      );
+      throw ErrorUtils.badRequest(Message.Error.Answer.MAX_ANSWERS_REACHED);
     }
 
     if (data.is_correct) {
@@ -61,7 +59,7 @@ export class AnswerService {
     const existingAnswer = await AnswerModel.findById(id);
 
     if (!existingAnswer) {
-      throw ErrorUtils.notFound(Message.Error.AnswerError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Answer.NOT_FOUND);
     }
 
     if (data.is_correct === true) {
@@ -77,7 +75,7 @@ export class AnswerService {
 
       if (correctAnswerCount === 1) {
         throw ErrorUtils.badRequest(
-          Message.Error.AnswerError.CANNOT_REMOVE_ONLY_CORRECT
+          Message.Error.Answer.CANNOT_REMOVE_ONLY_CORRECT
         );
       }
     }
@@ -85,7 +83,7 @@ export class AnswerService {
     const updatedAnswer = await AnswerModel.update(id, data);
 
     if (!updatedAnswer) {
-      throw ErrorUtils.internal(Message.Error.AnswerError.UPDATE_FAILED);
+      throw ErrorUtils.internal(Message.Error.Answer.UPDATE_FAILED);
     }
 
     return updatedAnswer;
@@ -95,7 +93,7 @@ export class AnswerService {
     const existingAnswer = await AnswerModel.findById(id);
 
     if (!existingAnswer) {
-      throw ErrorUtils.notFound(Message.Error.AnswerError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Answer.NOT_FOUND);
     }
 
     if (existingAnswer.is_correct) {
@@ -105,7 +103,7 @@ export class AnswerService {
 
       if (correctAnswerCount === 1) {
         throw ErrorUtils.badRequest(
-          Message.Error.AnswerError.CANNOT_DELETE_ONLY_CORRECT
+          Message.Error.Answer.CANNOT_DELETE_ONLY_CORRECT
         );
       }
     }
@@ -113,7 +111,7 @@ export class AnswerService {
     const deleted = await AnswerModel.delete(id);
 
     if (!deleted) {
-      throw ErrorUtils.internal(Message.Error.AnswerError.DELETE_FAILED);
+      throw ErrorUtils.internal(Message.Error.Answer.DELETE_FAILED);
     }
   }
 
@@ -121,7 +119,7 @@ export class AnswerService {
     const existingAnswer = await AnswerModel.findById(answerId);
 
     if (!existingAnswer) {
-      throw ErrorUtils.notFound(Message.Error.AnswerError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Answer.NOT_FOUND);
     }
 
     await AnswerModel.markAsCorrect(answerId, existingAnswer.question_id);

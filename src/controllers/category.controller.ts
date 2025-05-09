@@ -27,7 +27,7 @@ export class CategoryController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
+        throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
       }
 
       const category = await CategoryService.getCategoryById(id);
@@ -47,36 +47,40 @@ export class CategoryController {
         request.body as CreateCategoryDto;
 
       if (!category_name) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.Category.NAME_REQUIRED);
       }
 
       if (category_name.length < Length.Min.CATEGORY_NAME) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_TOO_SHORT);
+        throw ErrorUtils.badRequest(Message.Error.Category.NAME_TOO_SHORT);
       }
 
       if (category_name.length > Length.Max.CATEGORY_NAME) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.Category.NAME_TOO_LONG);
       }
 
       if (
         category_description &&
         category_description.length < Length.Min.CATEGORY_DESCRIPTION
       ) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.DESCRIPTION_TOO_SHORT);
+        throw ErrorUtils.badRequest(
+          Message.Error.Category.DESCRIPTION_TOO_SHORT
+        );
       }
 
       if (
         category_description &&
         category_description.length > Length.Max.CATEGORY_DESCRIPTION
       ) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.DESCRIPTION_TOO_LONG);
+        throw ErrorUtils.badRequest(
+          Message.Error.Category.DESCRIPTION_TOO_LONG
+        );
       }
 
       const category = await CategoryService.createCategory({
         category_name,
         category_description,
       });
-      response.status(Http.HttpStatus.CREATED).json(category);
+      response.status(Http.Status.CREATED).json(category);
     } catch (error) {
       next(error);
     }
@@ -91,33 +95,39 @@ export class CategoryController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
+        throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
       }
 
       const { category_name, category_description } =
         request.body as UpdateCategoryDto;
 
       if (category_name === undefined && category_description === undefined) {
-        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
+        throw ErrorUtils.badRequest(
+          Message.Error.Permission.NO_FIELD_TO_UPDATE
+        );
       }
 
       if (category_name) {
         if (category_name.length < Length.Min.CATEGORY_NAME) {
-          throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_TOO_SHORT);
+          throw ErrorUtils.badRequest(Message.Error.Category.NAME_TOO_SHORT);
         }
 
         if (category_name.length > Length.Max.CATEGORY_NAME) {
-          throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.Category.NAME_TOO_LONG);
         }
       }
 
       if (category_description) {
         if (category_description.length < Length.Min.CATEGORY_DESCRIPTION) {
-          throw ErrorUtils.badRequest(Message.Error.CategoryError.DESCRIPTION_TOO_SHORT);
+          throw ErrorUtils.badRequest(
+            Message.Error.Category.DESCRIPTION_TOO_SHORT
+          );
         }
 
         if (category_description.length > Length.Max.CATEGORY_DESCRIPTION) {
-          throw ErrorUtils.badRequest(Message.Error.CategoryError.DESCRIPTION_TOO_LONG);
+          throw ErrorUtils.badRequest(
+            Message.Error.Category.DESCRIPTION_TOO_LONG
+          );
         }
       }
 
@@ -140,7 +150,7 @@ export class CategoryController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
+        throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
       }
 
       await CategoryService.deleteCategory(id);

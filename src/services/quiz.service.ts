@@ -18,7 +18,7 @@ export class QuizService {
     const category = await CategoryModel.findById(categoryId);
 
     if (!category) {
-      throw ErrorUtils.notFound(Message.Error.CategoryError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Category.NOT_FOUND);
     }
 
     return QuizModel.findByCategory(categoryId);
@@ -28,7 +28,7 @@ export class QuizService {
     const quiz = await QuizModel.findByIdWithCategory(id);
 
     if (!quiz) {
-      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Quiz.NOT_FOUND);
     }
 
     const questionCount = await QuizModel.countQuestions(id);
@@ -42,14 +42,14 @@ export class QuizService {
     userRole: string
   ): Promise<Quiz> {
     if (userRole !== User.Role.MANAGER) {
-      throw ErrorUtils.forbidden(Message.Error.RoleError.FORBIDDEN_MANAGER);
+      throw ErrorUtils.forbidden(Message.Error.Role.FORBIDDEN_MANAGER);
     }
 
     if (data.category_id) {
       const category = await CategoryModel.findById(data.category_id);
 
       if (!category) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
+        throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
       }
     }
 
@@ -60,21 +60,21 @@ export class QuizService {
     const existingQuiz = await QuizModel.findById(id);
 
     if (!existingQuiz) {
-      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Quiz.NOT_FOUND);
     }
 
     if (data.category_id !== undefined && data.category_id !== null) {
       const category = await CategoryModel.findById(data.category_id);
 
       if (!category) {
-        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
+        throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
       }
     }
 
     const updatedQuiz = await QuizModel.update(id, data);
 
     if (!updatedQuiz) {
-      throw ErrorUtils.internal(Message.Error.QuizError.UPDATE_FAILED);
+      throw ErrorUtils.internal(Message.Error.Quiz.UPDATE_FAILED);
     }
 
     return updatedQuiz;
@@ -84,19 +84,19 @@ export class QuizService {
     const existingQuiz = await QuizModel.findById(id);
 
     if (!existingQuiz) {
-      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Quiz.NOT_FOUND);
     }
 
     const hasAttempts = await QuizModel.hasAttempts(id);
 
     if (hasAttempts) {
-      throw ErrorUtils.badRequest(Message.Error.QuizError.HAS_ATTEMPTS);
+      throw ErrorUtils.badRequest(Message.Error.Quiz.HAS_ATTEMPTS);
     }
 
     const deleted = await QuizModel.softDelete(id);
 
     if (!deleted) {
-      throw ErrorUtils.internal(Message.Error.QuizError.DELETE_FAILED);
+      throw ErrorUtils.internal(Message.Error.Quiz.DELETE_FAILED);
     }
   }
 
@@ -118,7 +118,9 @@ export class QuizService {
       );
 
       const allQuestionsValid = questions.every(
-        (question) => question.answer_count == Config.Value.DEFAULT_ANSWERS_PER_QUESTION && question.correct_answer_count == 1
+        (question) =>
+          question.answer_count == Config.Value.DEFAULT_ANSWERS_PER_QUESTION &&
+          question.correct_answer_count == 1
       );
 
       if (allQuestionsValid) {

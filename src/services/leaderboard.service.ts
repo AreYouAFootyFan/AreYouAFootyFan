@@ -26,7 +26,7 @@ export class LeaderboardService {
       }));
     } catch (error) {
       console.error("Error fetching leaderboard:", error);
-      throw ErrorUtils.internal(Message.Error.BaseError.INTERNAL_SERVER_ERROR);
+      throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
     }
   }
 

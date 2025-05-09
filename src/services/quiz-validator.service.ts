@@ -30,7 +30,7 @@ export class QuizValidatorService {
     const quiz = await QuizModel.findById(quizId);
 
     if (!quiz) {
-      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Quiz.NOT_FOUND);
     }
 
     const questions = await QuestionModel.findByQuizId(quizId);
@@ -65,7 +65,7 @@ export class QuizValidatorService {
     const question = await QuestionModel.findByIdWithDifficulty(questionId);
 
     if (!question) {
-      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Question.NOT_FOUND);
     }
 
     const answers = await AnswerModel.findByQuestionId(questionId);

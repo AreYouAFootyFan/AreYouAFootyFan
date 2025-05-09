@@ -30,7 +30,7 @@ export class AuthService {
       const decoded = jwt.decode(token, { complete: true });
 
       if (!decoded || typeof decoded !== "object" || !decoded.payload) {
-        throw ErrorUtils.unauthorized(Message.Error.TokenError.INVALID_FORMAT);
+        throw ErrorUtils.unauthorized(Message.Error.Token.INVALID_FORMAT);
       }
 
       const payload = decoded.payload as GoogleTokenPayload;
@@ -39,10 +39,10 @@ export class AuthService {
     } catch (error) {
       if (error instanceof Error) {
         throw ErrorUtils.unauthorized(
-          `${Message.Error.TokenError.INVALID_TOKEN}: ${error.message}`
+          `${Message.Error.Token.INVALID_TOKEN}: ${error.message}`
         );
       }
-      throw ErrorUtils.unauthorized(Message.Error.TokenError.INVALID_TOKEN);
+      throw ErrorUtils.unauthorized(Message.Error.Token.INVALID_TOKEN);
     }
   }
 
@@ -74,10 +74,10 @@ export class AuthService {
     } catch (error) {
       if (error instanceof Error) {
         throw ErrorUtils.unauthorized(
-          `${Message.Error.TokenError.INVALID_TOKEN}: ${error.message}`
+          `${Message.Error.Token.INVALID_TOKEN}: ${error.message}`
         );
       }
-      throw ErrorUtils.unauthorized(Message.Error.TokenError.INVALID_TOKEN);
+      throw ErrorUtils.unauthorized(Message.Error.Token.INVALID_TOKEN);
     }
   }
 
@@ -91,7 +91,7 @@ export class AuthService {
     const googleId = payload.sub;
 
     if (!googleId) {
-      throw ErrorUtils.unauthorized(Message.Error.TokenError.MISSING_USER_ID);
+      throw ErrorUtils.unauthorized(Message.Error.Token.MISSING_USER_ID);
     }
 
     const user = await UserService.findOrCreateUser(googleId);
@@ -115,7 +115,9 @@ export class AuthService {
       const user = await UserService.getUserByGoogleId(payload.sub);
 
       if (!user) {
-        throw ErrorUtils.unauthorized(Message.Error.BaseError.USER_NOT_AUTHENTICATED);
+        throw ErrorUtils.unauthorized(
+          Message.Error.Base.USER_NOT_AUTHENTICATED
+        );
       }
 
       const userWithRole = await UserService.getUserWithRoleById(user.user_id);
@@ -125,7 +127,7 @@ export class AuthService {
         role: userWithRole.role_name,
       };
     } catch (error) {
-      throw ErrorUtils.unauthorized(Message.Error.TokenError.EXPIRED);
+      throw ErrorUtils.unauthorized(Message.Error.Token.EXPIRED);
     }
   }
 }

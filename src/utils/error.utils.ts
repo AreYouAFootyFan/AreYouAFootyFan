@@ -7,7 +7,7 @@ export interface AppError extends Error {
 
 export function createError(
   message: string,
-  status: number = Http.HttpStatus.INTERNAL_SERVER_ERROR
+  status: number = Http.Status.INTERNAL_SERVER_ERROR
 ): AppError {
   const error: AppError = new Error(message);
   error.status = status;
@@ -15,16 +15,16 @@ export function createError(
 }
 
 export const ErrorUtils = {
-  badRequest: (message: string = Message.Error.BaseError.BAD_REQUEST) =>
-    createError(message, Http.HttpStatus.BAD_REQUEST),
-  unauthorized: (message: string = Message.Error.BaseError.UNAUTHORIZED) =>
-    createError(message, Http.HttpStatus.UNAUTHORIZED),
-  forbidden: (message: string = Message.Error.BaseError.FORBIDDEN) =>
-    createError(message, Http.HttpStatus.FORBIDDEN),
-  notFound: (message: string = Message.Error.BaseError.NOT_FOUND) =>
-    createError(message, Http.HttpStatus.NOT_FOUND),
-  conflict: (message: string = Message.Error.BaseError.CONFLICT) =>
-    createError(message, Http.HttpStatus.CONFLICT),
-  internal: (message: string = Message.Error.BaseError.INTERNAL_SERVER_ERROR) =>
-    createError(message, Http.HttpStatus.INTERNAL_SERVER_ERROR),
+  badRequest: (message: string = Message.Error.Base.BAD_REQUEST) =>
+    createError(message, Http.Status.BAD_REQUEST),
+  unauthorized: (message: string = Message.Error.Base.UNAUTHORIZED) =>
+    createError(message, Http.Status.UNAUTHORIZED),
+  forbidden: (message: string = Message.Error.Base.FORBIDDEN) =>
+    createError(message, Http.Status.FORBIDDEN),
+  notFound: (message: string = Message.Error.Base.NOT_FOUND) =>
+    createError(message, Http.Status.NOT_FOUND),
+  conflict: (message: string = Message.Error.Base.CONFLICT) =>
+    createError(message, Http.Status.CONFLICT),
+  internal: (message: string = Message.Error.Base.INTERNAL_SERVER_ERROR) =>
+    createError(message, Http.Status.INTERNAL_SERVER_ERROR),
 };

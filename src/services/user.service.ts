@@ -12,7 +12,7 @@ export class UserService {
     const user = await UserModel.findById(id);
 
     if (!user) {
-      throw ErrorUtils.notFound(Message.Error.BaseError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Base.NOT_FOUND);
     }
 
     return user;
@@ -22,7 +22,7 @@ export class UserService {
     const user = await UserModel.getUserWithRole(id);
 
     if (!user) {
-      throw ErrorUtils.notFound(Message.Error.BaseError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Base.NOT_FOUND);
     }
 
     return user;
@@ -36,13 +36,13 @@ export class UserService {
     const existingUser = await UserModel.findByGoogleId(data.google_id);
 
     if (existingUser) {
-      throw ErrorUtils.conflict(Message.Error.UserError.GOOGLE_ID_EXISTS);
+      throw ErrorUtils.conflict(Message.Error.User.GOOGLE_ID_EXISTS);
     }
 
     if (data.username) {
       const usernameExists = await UserModel.findByUsername(data.username);
       if (usernameExists) {
-        throw ErrorUtils.conflict(Message.Error.UserError.USERNAME_TAKEN);
+        throw ErrorUtils.conflict(Message.Error.User.USERNAME_TAKEN);
       }
     }
 
@@ -53,20 +53,20 @@ export class UserService {
     const existingUser = await UserModel.findById(id);
 
     if (!existingUser) {
-      throw ErrorUtils.notFound(Message.Error.BaseError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Base.NOT_FOUND);
     }
 
     if (data.username && data.username !== existingUser.username) {
       const usernameExists = await UserModel.findByUsername(data.username);
       if (usernameExists) {
-        throw ErrorUtils.conflict(Message.Error.UserError.USERNAME_TAKEN);
+        throw ErrorUtils.conflict(Message.Error.User.USERNAME_TAKEN);
       }
     }
 
     const updatedUser = await UserModel.update(id, data);
 
     if (!updatedUser) {
-      throw ErrorUtils.internal(Message.Error.UserError.UPDATE_FAILED);
+      throw ErrorUtils.internal(Message.Error.User.UPDATE_FAILED);
     }
 
     return updatedUser;
@@ -76,13 +76,13 @@ export class UserService {
     const existingUser = await UserModel.findById(id);
 
     if (!existingUser) {
-      throw ErrorUtils.notFound(Message.Error.BaseError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Base.NOT_FOUND);
     }
 
     const deactivated = await UserModel.deactivate(id);
 
     if (!deactivated) {
-      throw ErrorUtils.internal(Message.Error.UserError.DEACTIVATE_FAILED);
+      throw ErrorUtils.internal(Message.Error.User.DEACTIVATE_FAILED);
     }
   }
 

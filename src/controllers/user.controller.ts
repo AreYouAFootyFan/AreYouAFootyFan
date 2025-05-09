@@ -14,7 +14,9 @@ export class UserController {
       const userId = request.user?.id;
 
       if (!userId) {
-        throw ErrorUtils.unauthorized(Message.Error.BaseError.USER_NOT_AUTHENTICATED);
+        throw ErrorUtils.unauthorized(
+          Message.Error.Base.USER_NOT_AUTHENTICATED
+        );
       }
 
       const user = await UserService.getUserWithRoleById(userId);
@@ -33,21 +35,23 @@ export class UserController {
       const userId = request.user?.id;
 
       if (!userId) {
-        throw ErrorUtils.unauthorized(Message.Error.BaseError.USER_NOT_AUTHENTICATED);
+        throw ErrorUtils.unauthorized(
+          Message.Error.Base.USER_NOT_AUTHENTICATED
+        );
       }
 
       const { username } = request.body;
 
       if (!username || typeof username !== "string") {
-        throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.User.USERNAME_REQUIRED);
       }
 
       if (username.length < Length.Min.USERNAME) {
-        throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_TOO_SHORT);
+        throw ErrorUtils.badRequest(Message.Error.User.USERNAME_TOO_SHORT);
       }
-      
+
       if (username.length > Length.Max.USERNAME) {
-        throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.User.USERNAME_TOO_LONG);
       }
 
       const user = await UserService.updateUser(userId, { username });
@@ -66,7 +70,7 @@ export class UserController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.UserError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.User.INVALID_ID);
       }
 
       const user = await UserService.getUserWithRoleById(id);
@@ -85,36 +89,38 @@ export class UserController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.UserError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.User.INVALID_ID);
       }
 
       const { username, role_id } = request.body as UpdateUserDto;
 
       if (username === undefined && role_id === undefined) {
-        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
+        throw ErrorUtils.badRequest(
+          Message.Error.Permission.NO_FIELD_TO_UPDATE
+        );
       }
 
       const data: UpdateUserDto = {};
 
       if (username !== undefined) {
         if (typeof username !== "string") {
-          throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_REQUIRED);
+          throw ErrorUtils.badRequest(Message.Error.User.USERNAME_REQUIRED);
         }
-        
+
         if (username.length < Length.Min.USERNAME) {
-          throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_TOO_SHORT);
+          throw ErrorUtils.badRequest(Message.Error.User.USERNAME_TOO_SHORT);
         }
-        
+
         if (username.length > Length.Max.USERNAME) {
-          throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.User.USERNAME_TOO_LONG);
         }
-        
+
         data.username = username;
       }
 
       if (role_id !== undefined) {
         if (isNaN(parseInt(role_id.toString()))) {
-          throw ErrorUtils.badRequest(Message.Error.UserError.INVALID_ROLE_ID);
+          throw ErrorUtils.badRequest(Message.Error.User.INVALID_ROLE_ID);
         }
         data.role_id = parseInt(role_id.toString());
       }
@@ -135,7 +141,7 @@ export class UserController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.UserError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.User.INVALID_ID);
       }
 
       await UserService.deactivateUser(id);

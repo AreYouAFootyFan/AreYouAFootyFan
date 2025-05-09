@@ -26,13 +26,11 @@ export class QuizAttemptService {
     const attempt = await QuizAttemptModel.findByIdWithDetails(id);
 
     if (!attempt) {
-      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Attempt.NOT_FOUND);
     }
 
     if (attempt.user_id !== userId) {
-      throw ErrorUtils.forbidden(
-        Message.Error.AttemptError.NO_ACCESS
-      );
+      throw ErrorUtils.forbidden(Message.Error.Attempt.NO_ACCESS);
     }
     const questionsWithResponses =
       await QuizAttemptModel.getQuizQuestionsWithResponses(id);
@@ -46,19 +44,19 @@ export class QuizAttemptService {
     userRole: string
   ): Promise<any> {
     if (userRole !== User.Role.PLAYER) {
-      throw ErrorUtils.forbidden(Message.Error.RoleError.FORBIDDEN_PLAYER);
+      throw ErrorUtils.forbidden(Message.Error.Role.FORBIDDEN_PLAYER);
     }
 
     const quiz = await QuizModel.findById(data.quiz_id);
 
     if (!quiz) {
-      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Quiz.NOT_FOUND);
     }
 
     const questionCount = await QuizModel.countQuestions(data.quiz_id);
 
     if (questionCount < 5) {
-      throw ErrorUtils.badRequest(Message.Error.QuizError.INSUFFICIENT_QUESTIONS);
+      throw ErrorUtils.badRequest(Message.Error.Quiz.INSUFFICIENT_QUESTIONS);
     }
 
     const questions = await QuestionModel.findByQuizIdWithDetails(data.quiz_id);
@@ -68,7 +66,7 @@ export class QuizAttemptService {
     );
 
     if (invalidQuestions.length > 0) {
-      throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_QUESTIONS);
+      throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_QUESTIONS);
     }
 
     const attempt = await QuizAttemptModel.create(data);
@@ -89,11 +87,11 @@ export class QuizAttemptService {
     const attempt = await QuizAttemptModel.findById(attemptId);
 
     if (!attempt) {
-      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Attempt.NOT_FOUND);
     }
 
     if (attempt.end_time) {
-      throw ErrorUtils.badRequest(Message.Error.AttemptError.COMPLETED);
+      throw ErrorUtils.badRequest(Message.Error.Attempt.COMPLETED);
     }
 
     const questions = await QuizAttemptModel.getQuizQuestionsWithResponses(
@@ -113,18 +111,18 @@ export class QuizAttemptService {
     const attempt = await QuizAttemptModel.findById(attemptId);
 
     if (!attempt) {
-      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Attempt.NOT_FOUND);
     }
 
     if (attempt.end_time) {
-      throw ErrorUtils.badRequest(Message.Error.AttemptError.COMPLETED);
+      throw ErrorUtils.badRequest(Message.Error.Attempt.COMPLETED);
     }
 
     const completedAttempt = await QuizAttemptModel.complete(attemptId);
 
     if (!completedAttempt) {
       // TODO: Add a more specific error message
-      throw ErrorUtils.internal(Message.Error.BaseError.INTERNAL_SERVER_ERROR);
+      throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
     }
 
     const score = await QuizAttemptModel.calculateScore(attemptId);
@@ -151,7 +149,7 @@ export class QuizAttemptService {
     const attempt = await QuizAttemptModel.findByIdWithDetails(attemptId);
 
     if (!attempt) {
-      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Attempt.NOT_FOUND);
     }
 
     const questionsWithResponses =

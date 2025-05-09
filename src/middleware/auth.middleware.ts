@@ -24,7 +24,7 @@ export const authenticate = async (
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw ErrorUtils.unauthorized(Message.Error.BaseError.UNAUTHORIZED);
+      throw ErrorUtils.unauthorized(Message.Error.Base.UNAUTHORIZED);
     }
 
     const token = authHeader.split(" ")[1];
@@ -43,13 +43,15 @@ export const requireUsername = (
   next: NextFunction
 ): void => {
   if (!request.user) {
-    return next(ErrorUtils.unauthorized(Message.Error.BaseError.USER_NOT_AUTHENTICATED));
+    return next(
+      ErrorUtils.unauthorized(Message.Error.Base.USER_NOT_AUTHENTICATED)
+    );
   }
 
   UserService.isUsernameSet(request.user.id)
     .then((hasUsername) => {
       if (!hasUsername) {
-        next(ErrorUtils.forbidden(Message.Error.PermissionError.USERNAME_REQUIRED));
+        next(ErrorUtils.forbidden(Message.Error.Permission.USERNAME_REQUIRED));
       } else {
         next();
       }
@@ -60,7 +62,9 @@ export const requireUsername = (
 export const requireRole = (role: User.Role) => {
   return (request: Request, _response: Response, next: NextFunction): void => {
     if (!request.user) {
-      return next(ErrorUtils.unauthorized(Message.Error.BaseError.USER_NOT_AUTHENTICATED));
+      return next(
+        ErrorUtils.unauthorized(Message.Error.Base.USER_NOT_AUTHENTICATED)
+      );
     }
 
     if (request.user.role !== role) {

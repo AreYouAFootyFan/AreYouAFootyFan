@@ -14,7 +14,7 @@ export class AnswerController {
       const questionId = parseInt(request.params.questionId);
 
       if (isNaN(questionId)) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Question.INVALID_ID);
       }
 
       const answers = await AnswerService.getAnswersByQuestionId(questionId);
@@ -33,7 +33,7 @@ export class AnswerController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.AnswerError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Answer.INVALID_ID);
       }
 
       const answer = await AnswerService.getAnswerById(id);
@@ -53,23 +53,23 @@ export class AnswerController {
         request.body as CreateAnswerDto;
 
       if (!question_id) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.ID_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.Question.ID_REQUIRED);
       }
 
       if (!answer_text) {
-        throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.Answer.TEXT_REQUIRED);
       }
 
       if (answer_text.length < Length.Min.ANSWER_TEXT) {
-        throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_TOO_SHORT);
+        throw ErrorUtils.badRequest(Message.Error.Answer.TEXT_TOO_SHORT);
       }
 
       if (answer_text.length > Length.Max.ANSWER_TEXT) {
-        throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.Answer.TEXT_TOO_LONG);
       }
 
       if (is_correct === undefined) {
-        throw ErrorUtils.badRequest(Message.Error.AnswerError.IS_CORRECT_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.Answer.IS_CORRECT_REQUIRED);
       }
 
       const data: CreateAnswerDto = {
@@ -79,11 +79,11 @@ export class AnswerController {
       };
 
       if (isNaN(data.question_id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.ID_NAN);
+        throw ErrorUtils.badRequest(Message.Error.Question.ID_NAN);
       }
 
       const answer = await AnswerService.createAnswer(data);
-      response.status(Http.HttpStatus.CREATED).json(answer);
+      response.status(Http.Status.CREATED).json(answer);
     } catch (error) {
       next(error);
     }
@@ -98,22 +98,24 @@ export class AnswerController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.AnswerError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Answer.INVALID_ID);
       }
 
       const { answer_text, is_correct } = request.body as UpdateAnswerDto;
 
       if (answer_text === undefined && is_correct === undefined) {
-        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
+        throw ErrorUtils.badRequest(
+          Message.Error.Permission.NO_FIELD_TO_UPDATE
+        );
       }
 
       if (answer_text !== undefined) {
         if (answer_text.length < Length.Min.ANSWER_TEXT) {
-          throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_TOO_SHORT);
+          throw ErrorUtils.badRequest(Message.Error.Answer.TEXT_TOO_SHORT);
         }
-        
+
         if (answer_text.length > Length.Max.ANSWER_TEXT) {
-          throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.Answer.TEXT_TOO_LONG);
         }
       }
 
@@ -143,7 +145,7 @@ export class AnswerController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.AnswerError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Answer.INVALID_ID);
       }
 
       await AnswerService.deleteAnswer(id);
@@ -162,7 +164,7 @@ export class AnswerController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.AnswerError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Answer.INVALID_ID);
       }
 
       const answer = await AnswerService.markAsCorrect(id);

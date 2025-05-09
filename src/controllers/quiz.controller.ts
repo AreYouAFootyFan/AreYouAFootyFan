@@ -23,7 +23,7 @@ export class QuizController {
         const categoryId = parseInt(request.query.category as string);
 
         if (isNaN(categoryId)) {
-          throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
+          throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
         }
 
         const quizzes = await QuizService.getQuizzesByCategory(categoryId);
@@ -35,7 +35,7 @@ export class QuizController {
         const creatorId = parseInt(request.query.creator as string);
 
         if (isNaN(creatorId)) {
-          throw ErrorUtils.badRequest(Message.Error.UserError.INVALID_ID);
+          throw ErrorUtils.badRequest(Message.Error.User.INVALID_ID);
         }
 
         const quizzes = await QuizService.getQuizzesByCreator(creatorId);
@@ -58,7 +58,7 @@ export class QuizController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_ID);
       }
 
       const quiz = await QuizService.getQuizById(id);
@@ -78,24 +78,24 @@ export class QuizController {
         request.body as CreateQuizDto;
 
       if (!quiz_title) {
-        throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.Quiz.TITLE_REQUIRED);
       }
 
       if (quiz_title.length < Length.Min.QUIZ_TITLE) {
-        throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_TOO_SHORT);
+        throw ErrorUtils.badRequest(Message.Error.Quiz.TITLE_TOO_SHORT);
       }
 
       if (quiz_title.length > Length.Max.QUIZ_TITLE) {
-        throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.Quiz.TITLE_TOO_LONG);
       }
 
       if (quiz_description) {
         if (quiz_description.length < Length.Min.QUIZ_DESCRIPTION) {
-          throw ErrorUtils.badRequest(Message.Error.QuizError.DESCRIPTION_TOO_SHORT);
+          throw ErrorUtils.badRequest(Message.Error.Quiz.DESCRIPTION_TOO_SHORT);
         }
-        
+
         if (quiz_description.length > Length.Max.QUIZ_DESCRIPTION) {
-          throw ErrorUtils.badRequest(Message.Error.QuizError.DESCRIPTION_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.Quiz.DESCRIPTION_TOO_LONG);
         }
       }
 
@@ -109,7 +109,7 @@ export class QuizController {
         } else {
           const tempCategoryId = parseInt(category_id.toString());
           if (isNaN(tempCategoryId)) {
-            throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
+            throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
           }
           parsedCategoryId = tempCategoryId;
         }
@@ -125,7 +125,7 @@ export class QuizController {
         user_role
       );
 
-      response.status(Http.HttpStatus.CREATED).json(quiz);
+      response.status(Http.Status.CREATED).json(quiz);
     } catch (error) {
       next(error);
     }
@@ -140,7 +140,7 @@ export class QuizController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_ID);
       }
 
       const { quiz_title, quiz_description, category_id } =
@@ -151,26 +151,28 @@ export class QuizController {
         quiz_description === undefined &&
         category_id === undefined
       ) {
-        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
+        throw ErrorUtils.badRequest(
+          Message.Error.Permission.NO_FIELD_TO_UPDATE
+        );
       }
 
       if (quiz_title !== undefined) {
         if (quiz_title.length < Length.Min.QUIZ_TITLE) {
-          throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_TOO_SHORT);
+          throw ErrorUtils.badRequest(Message.Error.Quiz.TITLE_TOO_SHORT);
         }
-        
+
         if (quiz_title.length > Length.Max.QUIZ_TITLE) {
-          throw ErrorUtils.badRequest(Message.Error.QuizError.TITLE_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.Quiz.TITLE_TOO_LONG);
         }
       }
 
       if (quiz_description !== undefined) {
         if (quiz_description.length < Length.Min.QUIZ_DESCRIPTION) {
-          throw ErrorUtils.badRequest(Message.Error.QuizError.DESCRIPTION_TOO_SHORT);
+          throw ErrorUtils.badRequest(Message.Error.Quiz.DESCRIPTION_TOO_SHORT);
         }
-        
+
         if (quiz_description.length > Length.Max.QUIZ_DESCRIPTION) {
-          throw ErrorUtils.badRequest(Message.Error.QuizError.DESCRIPTION_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.Quiz.DESCRIPTION_TOO_LONG);
         }
       }
 
@@ -181,7 +183,7 @@ export class QuizController {
         } else {
           parsedCategoryId = parseInt(category_id.toString());
           if (isNaN(parsedCategoryId)) {
-            throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
+            throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
           }
         }
       }
@@ -207,7 +209,7 @@ export class QuizController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_ID);
       }
 
       await QuizService.deleteQuiz(id);
@@ -226,7 +228,7 @@ export class QuizController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_ID);
       }
 
       const quiz = await QuizService.getQuizById(id);

@@ -14,7 +14,7 @@ export class QuestionController {
       const quizId = parseInt(request.params.quizId);
 
       if (isNaN(quizId)) {
-        throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_ID);
       }
 
       const questions = await QuestionService.getQuestionsByQuizId(quizId);
@@ -33,7 +33,7 @@ export class QuestionController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Question.INVALID_ID);
       }
 
       const question = await QuestionService.getQuestionById(id);
@@ -53,23 +53,27 @@ export class QuestionController {
         request.body as CreateQuestionDto;
 
       if (!quiz_id) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.QUIZ_ID_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.Question.QUIZ_ID_REQUIRED);
       }
 
       if (!question_text) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.Question.TEXT_REQUIRED);
       }
 
       if (question_text.length < Length.Min.QUESTION_TEXT) {
-        throw ErrorUtils.badRequest(`Question text must be at least ${Length.Min.QUESTION_TEXT} characters`);
+        throw ErrorUtils.badRequest(
+          `Question text must be at least ${Length.Min.QUESTION_TEXT} characters`
+        );
       }
 
       if (question_text.length > Length.Max.QUESTION_TEXT) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.Question.TEXT_TOO_LONG);
       }
 
       if (!difficulty_id) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.DIFFICULTY_ID_REQUIRED);
+        throw ErrorUtils.badRequest(
+          Message.Error.Question.DIFFICULTY_ID_REQUIRED
+        );
       }
 
       const data: CreateQuestionDto = {
@@ -79,15 +83,15 @@ export class QuestionController {
       };
 
       if (isNaN(data.quiz_id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.QUIZ_ID_NAN);
+        throw ErrorUtils.badRequest(Message.Error.Question.QUIZ_ID_NAN);
       }
 
       if (isNaN(data.difficulty_id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.DIFFICULTY_ID_NAN);
+        throw ErrorUtils.badRequest(Message.Error.Question.DIFFICULTY_ID_NAN);
       }
 
       const question = await QuestionService.createQuestion(data);
-      response.status(Http.HttpStatus.CREATED).json(question);
+      response.status(Http.Status.CREATED).json(question);
     } catch (error) {
       next(error);
     }
@@ -102,23 +106,27 @@ export class QuestionController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Question.INVALID_ID);
       }
 
       const { question_text, difficulty_id } =
         request.body as UpdateQuestionDto;
 
       if (question_text === undefined && difficulty_id === undefined) {
-        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
+        throw ErrorUtils.badRequest(
+          Message.Error.Permission.NO_FIELD_TO_UPDATE
+        );
       }
 
       if (question_text !== undefined) {
         if (question_text.length < Length.Min.QUESTION_TEXT) {
-          throw ErrorUtils.badRequest(`Question text must be at least ${Length.Min.QUESTION_TEXT} characters`);
+          throw ErrorUtils.badRequest(
+            `Question text must be at least ${Length.Min.QUESTION_TEXT} characters`
+          );
         }
-        
+
         if (question_text.length > Length.Max.QUESTION_TEXT) {
-          throw ErrorUtils.badRequest(Message.Error.QuestionError.TEXT_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.Question.TEXT_TOO_LONG);
         }
       }
 
@@ -131,7 +139,7 @@ export class QuestionController {
       if (difficulty_id !== undefined) {
         const parsedDifficultyId = parseInt(difficulty_id.toString());
         if (isNaN(parsedDifficultyId)) {
-          throw ErrorUtils.badRequest(Message.Error.QuestionError.DIFFICULTY_ID_NAN);
+          throw ErrorUtils.badRequest(Message.Error.Question.DIFFICULTY_ID_NAN);
         }
         data.difficulty_id = parsedDifficultyId;
       }
@@ -152,7 +160,7 @@ export class QuestionController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Question.INVALID_ID);
       }
 
       await QuestionService.deleteQuestion(id);
@@ -171,7 +179,7 @@ export class QuestionController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Question.INVALID_ID);
       }
 
       const question = await QuestionService.getQuestionById(id);
@@ -181,7 +189,7 @@ export class QuestionController {
       response.json({
         question,
         validation,
-        message: Message.Success.QuestionSuccess.VALIDATE
+        message: Message.Success.QuestionSuccess.VALIDATE,
       });
     } catch (error) {
       next(error);

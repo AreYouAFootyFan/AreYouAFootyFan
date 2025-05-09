@@ -12,7 +12,7 @@ export class CategoryService {
     const category = await CategoryModel.findById(id);
 
     if (!category) {
-      throw ErrorUtils.notFound(Message.Error.CategoryError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Category.NOT_FOUND);
     }
 
     return category;
@@ -22,7 +22,7 @@ export class CategoryService {
     const existingCategory = await CategoryModel.findByName(data.category_name);
 
     if (existingCategory) {
-      throw ErrorUtils.conflict(Message.Error.CategoryError.NAME_EXISTS);
+      throw ErrorUtils.conflict(Message.Error.Category.NAME_EXISTS);
     }
 
     return CategoryModel.create(data);
@@ -35,7 +35,7 @@ export class CategoryService {
     const existingCategory = await CategoryModel.findById(id);
 
     if (!existingCategory) {
-      throw ErrorUtils.notFound(Message.Error.CategoryError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Category.NOT_FOUND);
     }
 
     if (
@@ -47,16 +47,14 @@ export class CategoryService {
       );
 
       if (categoryWithSameName) {
-        throw ErrorUtils.conflict(
-          Message.Error.CategoryError.NAME_EXISTS_OTHER
-        );
+        throw ErrorUtils.conflict(Message.Error.Category.NAME_EXISTS_OTHER);
       }
     }
 
     const updatedCategory = await CategoryModel.update(id, data);
 
     if (!updatedCategory) {
-      throw ErrorUtils.internal(Message.Error.CategoryError.UPDATE_FAILED);
+      throw ErrorUtils.internal(Message.Error.Category.UPDATE_FAILED);
     }
 
     return updatedCategory;
@@ -66,21 +64,19 @@ export class CategoryService {
     const existingCategory = await CategoryModel.findById(id);
 
     if (!existingCategory) {
-      throw ErrorUtils.notFound(Message.Error.CategoryError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Category.NOT_FOUND);
     }
 
     const isUsed = await CategoryModel.isUsedByQuizzes(id);
 
     if (isUsed) {
-      throw ErrorUtils.badRequest(
-        Message.Error.CategoryError.USED_BY_QUIZZES
-      );
+      throw ErrorUtils.badRequest(Message.Error.Category.USED_BY_QUIZZES);
     }
 
     const deleted = await CategoryModel.softDelete(id);
 
     if (!deleted) {
-      throw ErrorUtils.internal(Message.Error.CategoryError.DELETE_FAILED);
+      throw ErrorUtils.internal(Message.Error.Category.DELETE_FAILED);
     }
   }
 }

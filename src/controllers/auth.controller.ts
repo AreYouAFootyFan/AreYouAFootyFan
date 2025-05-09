@@ -14,7 +14,7 @@ export class AuthController {
       const code = request.body.code as string;
 
       if (!code) {
-        throw ErrorUtils.badRequest(Message.Error.AuthError.GOOGLE_CODE_REQUIRED);
+        throw ErrorUtils.badRequest(Message.Error.Auth.GOOGLE_CODE_REQUIRED);
       }
 
       const authResult = await AuthService.loginWithGoogle(code);
@@ -34,7 +34,9 @@ export class AuthController {
       const userId = request.user?.id;
 
       if (!userId) {
-        throw ErrorUtils.unauthorized(Message.Error.BaseError.USER_NOT_AUTHENTICATED);
+        throw ErrorUtils.unauthorized(
+          Message.Error.Base.USER_NOT_AUTHENTICATED
+        );
       }
 
       const hasUsername = await UserService.isUsernameSet(userId);

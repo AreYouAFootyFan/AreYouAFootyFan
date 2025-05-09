@@ -10,7 +10,7 @@ export class QuestionService {
     const quiz = await QuizModel.findById(quizId);
 
     if (!quiz) {
-      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Quiz.NOT_FOUND);
     }
 
     return QuestionModel.findByQuizIdWithDetails(quizId);
@@ -20,7 +20,7 @@ export class QuestionService {
     const question = await QuestionModel.findByIdWithDifficulty(id);
 
     if (!question) {
-      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Question.NOT_FOUND);
     }
 
     const answerCount = await QuestionModel.countAnswers(id);
@@ -36,7 +36,7 @@ export class QuestionService {
     const quiz = await QuizModel.findById(data.quiz_id);
 
     if (!quiz) {
-      throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_ID);
+      throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_ID);
     }
 
     const difficultyLevel = await DifficultyLevelModel.findById(
@@ -44,7 +44,7 @@ export class QuestionService {
     );
 
     if (!difficultyLevel) {
-      throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
+      throw ErrorUtils.badRequest(Message.Error.Difficulty.INVALID_ID);
     }
 
     return QuestionModel.create(data);
@@ -57,7 +57,7 @@ export class QuestionService {
     const existingQuestion = await QuestionModel.findById(id);
 
     if (!existingQuestion) {
-      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Question.NOT_FOUND);
     }
 
     if (data.difficulty_id !== undefined) {
@@ -66,14 +66,14 @@ export class QuestionService {
       );
 
       if (!difficultyLevel) {
-        throw ErrorUtils.badRequest(Message.Error.DifficultyError.INVALID_ID);
+        throw ErrorUtils.badRequest(Message.Error.Difficulty.INVALID_ID);
       }
     }
 
     const updatedQuestion = await QuestionModel.update(id, data);
 
     if (!updatedQuestion) {
-      throw ErrorUtils.internal(Message.Error.QuestionError.UPDATE_FAILED);
+      throw ErrorUtils.internal(Message.Error.Question.UPDATE_FAILED);
     }
 
     return updatedQuestion;
@@ -83,13 +83,13 @@ export class QuestionService {
     const existingQuestion = await QuestionModel.findById(id);
 
     if (!existingQuestion) {
-      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.Question.NOT_FOUND);
     }
 
     const deleted = await QuestionModel.delete(id);
 
     if (!deleted) {
-      throw ErrorUtils.internal(Message.Error.QuestionError.DELETE_FAILED);
+      throw ErrorUtils.internal(Message.Error.Question.DELETE_FAILED);
     }
   }
 
