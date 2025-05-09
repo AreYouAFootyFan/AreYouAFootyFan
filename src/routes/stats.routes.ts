@@ -5,13 +5,13 @@ import {
   requireUsername,
   requireRole,
 } from "../middleware/auth.middleware";
-import { UserRole } from "../utils/enums";
+import { User } from "../utils/enums";
 
 const router = express.Router();
 
 router.use(authenticate);
 router.use(requireUsername);
-router.use(requireRole(UserRole.MANAGER));
+router.use(requireRole(User.Role.MANAGER));
 
 router.get("/dashboard", StatsController.getDashboardStats);
 

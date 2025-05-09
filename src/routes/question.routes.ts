@@ -5,7 +5,7 @@ import {
   requireUsername,
   requireRole,
 } from "../middleware/auth.middleware";
-import { UserRole } from "../utils/enums";
+import { User } from "../utils/enums";
 
 const router = express.Router();
 
@@ -18,21 +18,21 @@ router.get("/:id", QuestionController.getQuestionById);
 router.post(
   "/",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   QuestionController.createQuestion
 );
 
 router.put(
   "/:id",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   QuestionController.updateQuestion
 );
 
 router.delete(
   "/:id",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   QuestionController.deleteQuestion
 );
 

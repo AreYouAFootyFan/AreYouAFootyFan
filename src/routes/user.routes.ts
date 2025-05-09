@@ -5,7 +5,7 @@ import {
   requireUsername,
   requireRole,
 } from "../middleware/auth.middleware";
-import { UserRole } from "../utils/enums";
+import { User } from "../utils/enums";
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.get(
   "/:id",
   authenticate,
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   UserController.getUserById
 );
 
@@ -24,7 +24,7 @@ router.put(
   "/:id",
   authenticate,
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   UserController.updateUser
 );
 
@@ -32,7 +32,7 @@ router.delete(
   "/:id",
   authenticate,
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   UserController.deactivateUser
 );
 
