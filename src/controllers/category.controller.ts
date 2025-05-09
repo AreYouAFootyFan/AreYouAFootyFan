@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { CategoryService } from "../services/category.service";
 import { CreateCategoryDto, UpdateCategoryDto } from "../DTOs/category.dto";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message, Http } from "../utils/enums";
 
 export class CategoryController {
   static async getAllCategories(
@@ -26,7 +27,7 @@ export class CategoryController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid category ID");
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
       }
 
       const category = await CategoryService.getCategoryById(id);
@@ -46,26 +47,25 @@ export class CategoryController {
         request.body as CreateCategoryDto;
 
       if (!category_name) {
-        throw ErrorUtils.badRequest("Category name is required");
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_REQUIRED);
       }
 
-      if (category_name.length > 32) {
-        throw ErrorUtils.badRequest(
-          "Category name cannot exceed 32 characters"
-        );
+      if (category_name.length > Message.Error.Length.MaxLength.CATEGORY_NAME) {
+        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_NAME_TOO_LONG);
       }
 
-      if (category_description && category_description.length > 64) {
-        throw ErrorUtils.badRequest(
-          "Category description cannot exceed 64 characters"
-        );
+      if (
+        category_description &&
+        category_description.length > Message.Error.Length.MaxLength.CATEGORY_DESCRIPTION
+      ) {
+        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_DESCRIPTION_TOO_LONG);
       }
 
       const category = await CategoryService.createCategory({
         category_name,
         category_description,
       });
-      response.status(201).json(category);
+      response.status(Http.HttpStatus.CREATED).json(category);
     } catch (error) {
       next(error);
     }
@@ -80,26 +80,25 @@ export class CategoryController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid category ID");
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
       }
 
       const { category_name, category_description } =
         request.body as UpdateCategoryDto;
 
       if (category_name === undefined && category_description === undefined) {
-        throw ErrorUtils.badRequest("At least one field to update is required");
+        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
       }
 
-      if (category_name && category_name.length > 32) {
-        throw ErrorUtils.badRequest(
-          "Category name cannot exceed 32 characters"
-        );
+      if (category_name && category_name.length > Message.Error.Length.MaxLength.CATEGORY_NAME) {
+        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_NAME_TOO_LONG);
       }
 
-      if (category_description && category_description.length > 64) {
-        throw ErrorUtils.badRequest(
-          "Category description cannot exceed 64 characters"
-        );
+      if (
+        category_description &&
+        category_description.length > Message.Error.Length.MaxLength.CATEGORY_DESCRIPTION
+      ) {
+        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_DESCRIPTION_TOO_LONG);
       }
 
       const category = await CategoryService.updateCategory(id, {
@@ -121,11 +120,11 @@ export class CategoryController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid category ID");
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
       }
 
       await CategoryService.deleteCategory(id);
-      response.json({ message: "Category deleted successfully" });
+      response.json({ message: Message.SuccessMessage.CATEGORY_DELETE });
     } catch (error) {
       next(error);
     }

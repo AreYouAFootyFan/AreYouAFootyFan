@@ -3,7 +3,7 @@ import { QuestionModel } from "../models/question.model";
 import { CategoryModel } from "../models/category.model";
 import { ErrorUtils } from "../utils/error.utils";
 import { CreateQuizDto, UpdateQuizDto } from "../DTOs/quiz.dto";
-import { UserRole, ErrorMessage } from "../utils/enums";
+import { User, Message } from "../utils/enums";
 
 export class QuizService {
   static async getAllQuizzes(): Promise<any[]> {
@@ -18,7 +18,7 @@ export class QuizService {
     const category = await CategoryModel.findById(categoryId);
 
     if (!category) {
-      throw ErrorUtils.notFound(ErrorMessage.CATEGORY_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.CategoryError.NOT_FOUND);
     }
 
     return QuizModel.findByCategory(categoryId);
@@ -28,7 +28,7 @@ export class QuizService {
     const quiz = await QuizModel.findByIdWithCategory(id);
 
     if (!quiz) {
-      throw ErrorUtils.notFound(ErrorMessage.QUIZ_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
     }
 
     const questionCount = await QuizModel.countQuestions(id);
@@ -41,15 +41,15 @@ export class QuizService {
     data: CreateQuizDto,
     userRole: string
   ): Promise<Quiz> {
-    if (userRole !== UserRole.MANAGER) {
-      throw ErrorUtils.forbidden(ErrorMessage.FORBIDDEN_MANAGER);
+    if (userRole !== User.Role.MANAGER) {
+      throw ErrorUtils.forbidden(Message.Error.RoleError.FORBIDDEN_MANAGER);
     }
 
     if (data.category_id) {
       const category = await CategoryModel.findById(data.category_id);
 
       if (!category) {
-        throw ErrorUtils.badRequest(ErrorMessage.INVALID_CATEGORY);
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
       }
     }
 
@@ -60,14 +60,14 @@ export class QuizService {
     const existingQuiz = await QuizModel.findById(id);
 
     if (!existingQuiz) {
-      throw ErrorUtils.notFound(ErrorMessage.QUIZ_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
     }
 
     if (data.category_id !== undefined && data.category_id !== null) {
       const category = await CategoryModel.findById(data.category_id);
 
       if (!category) {
-        throw ErrorUtils.badRequest(ErrorMessage.INVALID_CATEGORY);
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.INVALID);
       }
     }
 
@@ -84,13 +84,13 @@ export class QuizService {
     const existingQuiz = await QuizModel.findById(id);
 
     if (!existingQuiz) {
-      throw ErrorUtils.notFound(ErrorMessage.QUIZ_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
     }
 
     const hasAttempts = await QuizModel.hasAttempts(id);
 
     if (hasAttempts) {
-      throw ErrorUtils.badRequest(ErrorMessage.QUIZ_HAS_ATTEMPTS);
+      throw ErrorUtils.badRequest(Message.Error.QuizError.HAS_ATTEMPTS);
     }
 
     const deleted = await QuizModel.softDelete(id);
@@ -118,7 +118,7 @@ export class QuizService {
       );
 
       const allQuestionsValid = questions.every(
-        (q) => q.answer_count == 4 && q.correct_answer_count == 1
+        (question) => question.answer_count == 4 && question.correct_answer_count == 1
       );
 
       if (allQuestionsValid) {

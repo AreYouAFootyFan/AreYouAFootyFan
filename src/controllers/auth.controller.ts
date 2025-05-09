@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message } from "../utils/enums";
 
 export class AuthController {
   static async googleLogin(
@@ -13,7 +14,7 @@ export class AuthController {
       const code = request.body.code as string;
 
       if (!code) {
-        throw ErrorUtils.badRequest("Google code is required");
+        throw ErrorUtils.badRequest(Message.Error.AuthError.GOOGLE_CODE_REQUIRED);
       }
 
       const authResult = await AuthService.loginWithGoogle(code);
@@ -33,7 +34,7 @@ export class AuthController {
       const userId = request.user?.id;
 
       if (!userId) {
-        throw ErrorUtils.unauthorized("User not authenticated");
+        throw ErrorUtils.unauthorized(Message.Error.BaseError.USER_NOT_AUTHENTICATED);
       }
 
       const hasUsername = await UserService.isUsernameSet(userId);

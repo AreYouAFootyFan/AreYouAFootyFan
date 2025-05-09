@@ -1,6 +1,6 @@
 import db from "../config/db";
 import { ErrorUtils } from "../utils/error.utils";
-import { ErrorMessage, TableName } from "../utils/enums";
+import { Message } from "../utils/enums";
 
 export interface DashboardStats {
   active_quizzes: number;
@@ -17,15 +17,15 @@ export class StatsService {
       );
 
       const playersResult = await db.query(
-        `SELECT COUNT(*) FROM ${TableName.USERS} WHERE role_id = 1 AND deactivated_at IS NULL`
+        `SELECT COUNT(*) FROM users WHERE role_id = 1 AND deactivated_at IS NULL`
       );
 
       const completedQuizzesResult = await db.query(
-        `SELECT COUNT(*) FROM ${TableName.QUIZ_ATTEMPTS} WHERE end_time IS NOT NULL`
+        `SELECT COUNT(*) FROM quiz_attempts WHERE end_time IS NOT NULL`
       );
 
       const questionsAnsweredResult = await db.query(
-        `SELECT COUNT(*) FROM ${TableName.USER_RESPONSES}`
+        `SELECT COUNT(*) FROM user_responses`
       );
 
       return {
@@ -36,7 +36,7 @@ export class StatsService {
       };
     } catch (error) {
       console.error("Error fetching dashboard stats:", error);
-      throw ErrorUtils.internal(ErrorMessage.INTERNAL_SERVER_ERROR);
+      throw ErrorUtils.internal(Message.Error.BaseError.INTERNAL_SERVER_ERROR);
     }
   }
 }

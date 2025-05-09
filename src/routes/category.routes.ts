@@ -5,7 +5,7 @@ import {
   requireUsername,
   requireRole,
 } from "../middleware/auth.middleware";
-import { UserRole } from "../utils/enums";
+import { User } from "../utils/enums";
 
 const router = express.Router();
 
@@ -17,21 +17,21 @@ router.get("/:id", CategoryController.getCategoryById);
 router.post(
   "/",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   CategoryController.createCategory
 );
 
 router.put(
   "/:id",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   CategoryController.updateCategory
 );
 
 router.delete(
   "/:id",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   CategoryController.deleteCategory
 );
 

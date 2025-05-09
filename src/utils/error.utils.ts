@@ -1,4 +1,4 @@
-import { HttpStatus, ErrorMessage } from "./enums";
+import { Http, Message } from "./enums";
 
 export interface AppError extends Error {
   status?: number;
@@ -7,7 +7,7 @@ export interface AppError extends Error {
 
 export function createError(
   message: string,
-  status: number = HttpStatus.INTERNAL_SERVER_ERROR
+  status: number = Http.HttpStatus.INTERNAL_SERVER_ERROR
 ): AppError {
   const error: AppError = new Error(message);
   error.status = status;
@@ -15,16 +15,16 @@ export function createError(
 }
 
 export const ErrorUtils = {
-  badRequest: (message: string = ErrorMessage.BAD_REQUEST) =>
-    createError(message, HttpStatus.BAD_REQUEST),
-  unauthorized: (message: string = ErrorMessage.UNAUTHORIZED) =>
-    createError(message, HttpStatus.UNAUTHORIZED),
-  forbidden: (message: string = ErrorMessage.FORBIDDEN) =>
-    createError(message, HttpStatus.FORBIDDEN),
-  notFound: (message: string = ErrorMessage.NOT_FOUND) =>
-    createError(message, HttpStatus.NOT_FOUND),
-  conflict: (message: string = ErrorMessage.CONFLICT) =>
-    createError(message, HttpStatus.CONFLICT),
-  internal: (message: string = ErrorMessage.INTERNAL_SERVER_ERROR) =>
-    createError(message, HttpStatus.INTERNAL_SERVER_ERROR),
+  badRequest: (message: string = Message.Error.BaseError.BAD_REQUEST) =>
+    createError(message, Http.HttpStatus.BAD_REQUEST),
+  unauthorized: (message: string = Message.Error.BaseError.UNAUTHORIZED) =>
+    createError(message, Http.HttpStatus.UNAUTHORIZED),
+  forbidden: (message: string = Message.Error.BaseError.FORBIDDEN) =>
+    createError(message, Http.HttpStatus.FORBIDDEN),
+  notFound: (message: string = Message.Error.BaseError.NOT_FOUND) =>
+    createError(message, Http.HttpStatus.NOT_FOUND),
+  conflict: (message: string = Message.Error.BaseError.CONFLICT) =>
+    createError(message, Http.HttpStatus.CONFLICT),
+  internal: (message: string = Message.Error.BaseError.INTERNAL_SERVER_ERROR) =>
+    createError(message, Http.HttpStatus.INTERNAL_SERVER_ERROR),
 };

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AnswerService } from "../services/answer.service";
 import { CreateAnswerDto, UpdateAnswerDto } from "../DTOs/answer.dto";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message, Http } from "../utils/enums";
 
 export class AnswerController {
   static async getAnswersByQuestionId(
@@ -13,7 +14,7 @@ export class AnswerController {
       const questionId = parseInt(request.params.questionId);
 
       if (isNaN(questionId)) {
-        throw ErrorUtils.badRequest("Invalid question ID");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.INVALID_ID);
       }
 
       const answers = await AnswerService.getAnswersByQuestionId(questionId);
@@ -32,7 +33,7 @@ export class AnswerController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid answer ID");
+        throw ErrorUtils.badRequest(Message.Error.AnswerError.INVALID_ID);
       }
 
       const answer = await AnswerService.getAnswerById(id);
@@ -52,19 +53,19 @@ export class AnswerController {
         request.body as CreateAnswerDto;
 
       if (!question_id) {
-        throw ErrorUtils.badRequest("Question ID is required");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.ID_REQUIRED);
       }
 
       if (!answer_text) {
-        throw ErrorUtils.badRequest("Answer text is required");
+        throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_REQUIRED);
       }
 
-      if (answer_text.length > 128) {
-        throw ErrorUtils.badRequest("Answer text cannot exceed 128 characters");
+      if (answer_text.length > Message.Error.Length.MaxLength.ANSWER_TEXT) {
+        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.ANSWER_TOO_LONG);
       }
 
       if (is_correct === undefined) {
-        throw ErrorUtils.badRequest("is_correct flag is required");
+        throw ErrorUtils.badRequest(Message.Error.AnswerError.IS_CORRECT_REQUIRED);
       }
 
       const data: CreateAnswerDto = {
@@ -74,11 +75,11 @@ export class AnswerController {
       };
 
       if (isNaN(data.question_id)) {
-        throw ErrorUtils.badRequest("Question ID must be a number");
+        throw ErrorUtils.badRequest(Message.Error.QuestionError.ID_NAN);
       }
 
       const answer = await AnswerService.createAnswer(data);
-      response.status(201).json(answer);
+      response.status(Http.HttpStatus.CREATED).json(answer);
     } catch (error) {
       next(error);
     }
@@ -93,17 +94,20 @@ export class AnswerController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid answer ID");
+        throw ErrorUtils.badRequest(Message.Error.AnswerError.INVALID_ID);
       }
 
       const { answer_text, is_correct } = request.body as UpdateAnswerDto;
 
       if (answer_text === undefined && is_correct === undefined) {
-        throw ErrorUtils.badRequest("At least one field to update is required");
+        throw ErrorUtils.badRequest(Message.Error.PermissionError.NO_FIELD_TO_UPDATE);
       }
 
-      if (answer_text !== undefined && answer_text.length > 128) {
-        throw ErrorUtils.badRequest("Answer text cannot exceed 128 characters");
+      if (
+        answer_text !== undefined &&
+        answer_text.length > Message.Error.Length.MaxLength.ANSWER_TEXT
+      ) {
+        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.ANSWER_TOO_LONG);
       }
 
       const data: UpdateAnswerDto = {};
@@ -132,11 +136,11 @@ export class AnswerController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid answer ID");
+        throw ErrorUtils.badRequest(Message.Error.AnswerError.INVALID_ID);
       }
 
       await AnswerService.deleteAnswer(id);
-      response.json({ message: "Answer deleted successfully" });
+      response.json({ message: Message.SuccessMessage.ANSWER_DELETE });
     } catch (error) {
       next(error);
     }
@@ -151,7 +155,7 @@ export class AnswerController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid answer ID");
+        throw ErrorUtils.badRequest(Message.Error.AnswerError.INVALID_ID);
       }
 
       const answer = await AnswerService.markAsCorrect(id);

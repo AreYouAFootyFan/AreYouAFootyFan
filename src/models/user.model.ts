@@ -1,6 +1,6 @@
 import db from "../config/db";
 import { CreateUserDto, UpdateUserDto } from "../DTOs/user.dto";
-import { UserRole, ConfigValue } from "../utils/enums";
+import { User, Config } from "../utils/enums";
 
 export interface User {
   user_id: number;
@@ -63,7 +63,7 @@ export class UserModel {
       [
         data.google_id,
         data.username || null,
-        data.role_id || ConfigValue.DEFAULT_ROLE_ID,
+        data.role_id || Config.Value.DEFAULT_ROLE_ID,
       ] // Default role_id for Player
     );
 

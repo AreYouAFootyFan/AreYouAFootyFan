@@ -4,14 +4,15 @@ import { QuestionModel } from "../models/question.model";
 import { AnswerModel } from "../models/answer.model";
 import { ErrorUtils } from "../utils/error.utils";
 import { CreateUserResponseDto } from "../DTOs/user-response.dto";
-import { UserRole, ErrorMessage } from "../utils/enums";
+import { User, Message } from "../utils/enums";
+import { QuizAttemptService } from "./quiz-attempt.service";
 
 export class UserResponseService {
   static async getAttemptResponses(attemptId: number): Promise<any[]> {
     const attempt = await QuizAttemptModel.findById(attemptId);
 
     if (!attempt) {
-      throw ErrorUtils.notFound(ErrorMessage.ATTEMPT_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
     }
 
     const responses = await UserResponseModel.findByAttemptId(attemptId);
@@ -34,38 +35,38 @@ export class UserResponseService {
   ): Promise<any> {
     const attempt = await QuizAttemptModel.findById(data.attempt_id);
 
-    if (userRole !== UserRole.PLAYER) {
-      throw ErrorUtils.forbidden(ErrorMessage.FORBIDDEN_PLAYER);
+    if (userRole !== User.Role.PLAYER) {
+      throw ErrorUtils.forbidden(Message.Error.RoleError.FORBIDDEN_PLAYER);
     }
 
     if (!attempt) {
-      throw ErrorUtils.notFound(ErrorMessage.ATTEMPT_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
     }
 
     if (attempt.end_time) {
-      throw ErrorUtils.badRequest(ErrorMessage.ATTEMPT_COMPLETED);
+      throw ErrorUtils.badRequest(Message.Error.AttemptError.COMPLETED);
     }
 
     const question = await QuestionModel.findById(data.question_id);
 
     if (!question) {
-      throw ErrorUtils.notFound(ErrorMessage.QUESTION_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.QuestionError.NOT_FOUND);
     }
 
     if (question.quiz_id !== attempt.quiz_id) {
       throw ErrorUtils.badRequest(
-        "Question does not belong to the current quiz"
+        Message.Error.QuizError.QUESTION_NOT_BELONG
       );
     }
 
     const answer = await AnswerModel.findById(data.answer_id);
 
     if (!answer) {
-      throw ErrorUtils.notFound(ErrorMessage.ANSWER_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.AnswerError.NOT_FOUND);
     }
 
     if (answer.question_id !== data.question_id) {
-      throw ErrorUtils.badRequest("Answer does not belong to the question");
+      throw ErrorUtils.badRequest(Message.Error.AnswerError.NOT_BELONG_TO_QUESTION);
     }
 
     const existingResponse = await UserResponseModel.findByQuestionAndAttempt(
@@ -80,7 +81,7 @@ export class UserResponseService {
       );
 
       if (!updatedResponse) {
-        throw ErrorUtils.internal("Failed to update response");
+        throw ErrorUtils.internal(Message.Error.ResponseError.UPDATE_FAILED);
       }
 
       const responseDetails = await UserResponseModel.getResponseDetails(
@@ -116,11 +117,9 @@ export class UserResponseService {
     const response = await UserResponseModel.getResponseDetails(responseId);
 
     if (!response) {
-      throw ErrorUtils.notFound("Response not found");
+      throw ErrorUtils.notFound(Message.Error.ResponseError.NOT_FOUND);
     }
 
     return response;
   }
 }
-
-import { QuizAttemptService } from "./quiz-attempt.service";

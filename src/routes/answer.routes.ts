@@ -5,7 +5,7 @@ import {
   requireUsername,
   requireRole,
 } from "../middleware/auth.middleware";
-import { UserRole } from "../utils/enums";
+import { User } from "../utils/enums";
 
 const router = express.Router();
 
@@ -17,28 +17,28 @@ router.get("/:id", AnswerController.getAnswerById);
 router.post(
   "/",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   AnswerController.createAnswer
 );
 
 router.put(
   "/:id",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   AnswerController.updateAnswer
 );
 
 router.delete(
   "/:id",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   AnswerController.deleteAnswer
 );
 
 router.put(
   "/:id/mark-correct",
   requireUsername,
-  requireRole(UserRole.MANAGER),
+  requireRole(User.Role.MANAGER),
   AnswerController.markAsCorrect
 );
 

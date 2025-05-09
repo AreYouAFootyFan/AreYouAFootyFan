@@ -4,7 +4,7 @@ import { QuizModel } from "../models/quiz.model";
 import { QuestionModel } from "../models/question.model";
 import { ErrorUtils } from "../utils/error.utils";
 import { CreateQuizAttemptDto } from "../DTOs/quiz-attempt.dto";
-import { UserRole, ErrorMessage } from "../utils/enums";
+import { User, Message } from "../utils/enums";
 
 interface DifficultyScore {
   total: number;
@@ -26,12 +26,12 @@ export class QuizAttemptService {
     const attempt = await QuizAttemptModel.findByIdWithDetails(id);
 
     if (!attempt) {
-      throw ErrorUtils.notFound(ErrorMessage.ATTEMPT_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
     }
 
     if (attempt.user_id !== userId) {
       throw ErrorUtils.forbidden(
-        "You do not have permission to access this attempt"
+        Message.Error.AttemptError.NO_ACCESS
       );
     }
     const questionsWithResponses =
@@ -45,20 +45,20 @@ export class QuizAttemptService {
     data: CreateQuizAttemptDto,
     userRole: string
   ): Promise<any> {
-    if (userRole !== UserRole.PLAYER) {
-      throw ErrorUtils.forbidden(ErrorMessage.FORBIDDEN_PLAYER);
+    if (userRole !== User.Role.PLAYER) {
+      throw ErrorUtils.forbidden(Message.Error.RoleError.FORBIDDEN_PLAYER);
     }
 
     const quiz = await QuizModel.findById(data.quiz_id);
 
     if (!quiz) {
-      throw ErrorUtils.notFound(ErrorMessage.QUIZ_NOT_FOUND);
+      throw ErrorUtils.notFound(Message.Error.QuizError.NOT_FOUND);
     }
 
     const questionCount = await QuizModel.countQuestions(data.quiz_id);
 
     if (questionCount < 5) {
-      throw ErrorUtils.badRequest(ErrorMessage.INSUFFICIENT_QUESTIONS);
+      throw ErrorUtils.badRequest(Message.Error.QuizError.INSUFFICIENT_QUESTIONS);
     }
 
     const questions = await QuestionModel.findByQuizIdWithDetails(data.quiz_id);
@@ -68,7 +68,7 @@ export class QuizAttemptService {
     );
 
     if (invalidQuestions.length > 0) {
-      throw ErrorUtils.badRequest(ErrorMessage.INVALID_QUESTIONS);
+      throw ErrorUtils.badRequest(Message.Error.QuizError.INVALID_QUESTIONS);
     }
 
     const attempt = await QuizAttemptModel.create(data);
@@ -89,18 +89,18 @@ export class QuizAttemptService {
     const attempt = await QuizAttemptModel.findById(attemptId);
 
     if (!attempt) {
-      throw ErrorUtils.notFound("Quiz attempt not found");
+      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
     }
 
     if (attempt.end_time) {
-      throw ErrorUtils.badRequest("Quiz attempt is already completed");
+      throw ErrorUtils.badRequest(Message.Error.AttemptError.COMPLETED);
     }
 
     const questions = await QuizAttemptModel.getQuizQuestionsWithResponses(
       attemptId
     );
 
-    const nextQuestion = questions.find((q) => !q.response_id);
+    const nextQuestion = questions.find((question) => !question.response_id);
 
     if (!nextQuestion) {
       return null; // All questions answered
@@ -113,17 +113,18 @@ export class QuizAttemptService {
     const attempt = await QuizAttemptModel.findById(attemptId);
 
     if (!attempt) {
-      throw ErrorUtils.notFound("Quiz attempt not found");
+      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
     }
 
     if (attempt.end_time) {
-      throw ErrorUtils.badRequest("Quiz attempt is already completed");
+      throw ErrorUtils.badRequest(Message.Error.AttemptError.COMPLETED);
     }
 
     const completedAttempt = await QuizAttemptModel.complete(attemptId);
 
     if (!completedAttempt) {
-      throw ErrorUtils.internal("Failed to complete quiz attempt");
+      // TODO: Add a more specific error message
+      throw ErrorUtils.internal(Message.Error.BaseError.INTERNAL_SERVER_ERROR);
     }
 
     const score = await QuizAttemptModel.calculateScore(attemptId);
@@ -150,7 +151,7 @@ export class QuizAttemptService {
     const attempt = await QuizAttemptModel.findByIdWithDetails(attemptId);
 
     if (!attempt) {
-      throw ErrorUtils.notFound("Quiz attempt not found");
+      throw ErrorUtils.notFound(Message.Error.AttemptError.NOT_FOUND);
     }
 
     const questionsWithResponses =
