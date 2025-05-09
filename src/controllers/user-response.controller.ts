@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { UserResponseService } from "../services/user-response.service";
 import { CreateUserResponseDto } from "../DTOs/user-response.dto";
 import { ErrorUtils } from "../utils/error.utils";
+import { Message } from "../utils/enums";
 
 export class UserResponseController {
   static async getAttemptResponses(
@@ -13,7 +14,7 @@ export class UserResponseController {
       const attemptId = parseInt(request.params.attemptId);
 
       if (isNaN(attemptId)) {
-        throw ErrorUtils.badRequest("Invalid attempt ID");
+        throw ErrorUtils.badRequest(Message.Error.Attempt.INVALID_ID);
       }
 
       const responses = await UserResponseService.getAttemptResponses(
@@ -34,15 +35,15 @@ export class UserResponseController {
       const { attempt_id, question_id, answer_id } = request.body;
 
       if (!attempt_id) {
-        throw ErrorUtils.badRequest("Attempt ID is required");
+        throw ErrorUtils.badRequest(Message.Error.Attempt.ID_REQUIRED);
       }
 
       if (!question_id) {
-        throw ErrorUtils.badRequest("Question ID is required");
+        throw ErrorUtils.badRequest(Message.Error.Question.ID_REQUIRED);
       }
 
       if (!answer_id) {
-        throw ErrorUtils.badRequest("Answer ID is required");
+        throw ErrorUtils.badRequest(Message.Error.Answer.ID_REQUIRED);
       }
 
       const parsedAttemptId = parseInt(attempt_id.toString());
@@ -50,15 +51,15 @@ export class UserResponseController {
       const parsedAnswerId = parseInt(answer_id.toString());
 
       if (isNaN(parsedAttemptId)) {
-        throw ErrorUtils.badRequest("Invalid attempt ID");
+        throw ErrorUtils.badRequest(Message.Error.Attempt.INVALID_ID);
       }
 
       if (isNaN(parsedQuestionId)) {
-        throw ErrorUtils.badRequest("Invalid question ID");
+        throw ErrorUtils.badRequest(Message.Error.Question.INVALID_ID);
       }
 
       if (isNaN(parsedAnswerId)) {
-        throw ErrorUtils.badRequest("Invalid answer ID");
+        throw ErrorUtils.badRequest(Message.Error.Answer.INVALID_ID);
       }
 
       const data: CreateUserResponseDto = {
@@ -89,7 +90,7 @@ export class UserResponseController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid response ID");
+        throw ErrorUtils.badRequest(Message.Error.Response.INVALID_ID);
       }
 
       const userResponse = await UserResponseService.getResponseById(id);

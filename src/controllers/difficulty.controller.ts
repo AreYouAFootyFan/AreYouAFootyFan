@@ -211,7 +211,7 @@ export class DifficultyController {
       }
 
       await DifficultyService.deleteDifficultyLevel(id);
-      response.json({ message: Message.Success.DifficultySuccess.DELETE });
+      response.json({ message: Message.Success.Difficulty.DELETE });
     } catch (error) {
       next(error);
     }

@@ -140,7 +140,7 @@ export class QuizAttemptService {
       attemptId
     );
 
-    const allAnswered = questions.every((q) => q.response_id);
+    const allAnswered = questions.every((question) => question.response_id);
 
     return allAnswered;
   }
@@ -157,19 +157,19 @@ export class QuizAttemptService {
 
     const totalQuestions = questionsWithResponses.length;
     const answeredQuestions = questionsWithResponses.filter(
-      (q) => q.response_id
+      (question) => question.response_id
     ).length;
     const correctAnswers = questionsWithResponses.filter(
-      (q) => q.response_id && q.points_earned > 0
+      (question) => question.response_id && question.points_earned > 0
     ).length;
     const incorrectAnswers = answeredQuestions - correctAnswers;
 
     const scoreByDifficulty: ScoreByDifficulty = {};
 
-    questionsWithResponses.forEach((q) => {
-      if (q.response_id) {
-        if (!scoreByDifficulty[q.difficulty_level]) {
-          scoreByDifficulty[q.difficulty_level] = {
+    questionsWithResponses.forEach((question) => {
+      if (question.response_id) {
+        if (!scoreByDifficulty[question.difficulty_level]) {
+          scoreByDifficulty[question.difficulty_level] = {
             total: 0,
             correct: 0,
             incorrect: 0,
@@ -177,15 +177,15 @@ export class QuizAttemptService {
           };
         }
 
-        scoreByDifficulty[q.difficulty_level].total++;
+        scoreByDifficulty[question.difficulty_level].total++;
 
-        if (q.points_earned > 0) {
-          scoreByDifficulty[q.difficulty_level].correct++;
+        if (question.points_earned > 0) {
+          scoreByDifficulty[question.difficulty_level].correct++;
         } else {
-          scoreByDifficulty[q.difficulty_level].incorrect++;
+          scoreByDifficulty[question.difficulty_level].incorrect++;
         }
 
-        scoreByDifficulty[q.difficulty_level].points += q.points_earned;
+        scoreByDifficulty[question.difficulty_level].points += question.points_earned;
       }
     });
 

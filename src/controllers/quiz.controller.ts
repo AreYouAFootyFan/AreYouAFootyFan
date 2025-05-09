@@ -213,7 +213,7 @@ export class QuizController {
       }
 
       await QuizService.deleteQuiz(id);
-      response.json({ message: Message.Success.QuizSuccess.DELETE });
+      response.json({ message: Message.Success.Quiz.DELETE });
     } catch (error) {
       next(error);
     }

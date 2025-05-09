@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { QuizAttemptService } from "../services/quiz-attempt.service";
 import { CreateQuizAttemptDto } from "../DTOs/quiz-attempt.dto";
 import { ErrorUtils } from "../utils/error.utils";
+import { Http, Message } from "../utils/enums";
 
 export class QuizAttemptController {
   static async getUserAttempts(
@@ -28,7 +29,7 @@ export class QuizAttemptController {
       const id = parseInt(request.params.id);
 
       if (isNaN(id)) {
-        throw ErrorUtils.badRequest("Invalid attempt ID");
+        throw ErrorUtils.badRequest(Message.Error.Attempt.INVALID_ID);
       }
       const userId = request.user!.id;
 
@@ -48,7 +49,7 @@ export class QuizAttemptController {
       const { quiz_id } = request.body;
 
       if (!quiz_id) {
-        throw ErrorUtils.badRequest("Quiz ID is required");
+        throw ErrorUtils.badRequest(Message.Error.Quiz.ID_REQUIRED);
       }
 
       const userId = request.user!.id;
@@ -57,7 +58,7 @@ export class QuizAttemptController {
       const parsedQuizId = parseInt(quiz_id.toString());
 
       if (isNaN(parsedQuizId)) {
-        throw ErrorUtils.badRequest("Invalid quiz ID");
+        throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_ID);
       }
 
       const data: CreateQuizAttemptDto = {
@@ -66,7 +67,7 @@ export class QuizAttemptController {
       };
 
       const attempt = await QuizAttemptService.startQuiz(data, userRole);
-      response.status(201).json(attempt);
+      response.status(Http.Status.CREATED).json(attempt);
     } catch (error) {
       next(error);
     }
@@ -81,7 +82,7 @@ export class QuizAttemptController {
       const attemptId = parseInt(request.params.id);
 
       if (isNaN(attemptId)) {
-        throw ErrorUtils.badRequest("Invalid attempt ID");
+        throw ErrorUtils.badRequest(Message.Error.Attempt.INVALID_ID);
       }
 
       const question = await QuizAttemptService.getNextQuestion(attemptId);
@@ -108,7 +109,7 @@ export class QuizAttemptController {
       const attemptId = parseInt(request.params.id);
 
       if (isNaN(attemptId)) {
-        throw ErrorUtils.badRequest("Invalid attempt ID");
+        throw ErrorUtils.badRequest(Message.Error.Attempt.INVALID_ID);
       }
 
       const completedAttempt = await QuizAttemptService.completeQuiz(attemptId);
@@ -127,7 +128,7 @@ export class QuizAttemptController {
       const attemptId = parseInt(request.params.id);
 
       if (isNaN(attemptId)) {
-        throw ErrorUtils.badRequest("Invalid attempt ID");
+        throw ErrorUtils.badRequest(Message.Error.Attempt.INVALID_ID);
       }
 
       const summary = await QuizAttemptService.getAttemptSummary(attemptId);

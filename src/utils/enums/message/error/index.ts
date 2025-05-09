@@ -42,6 +42,7 @@ export enum Quiz {
   UPDATE_FAILED = "Failed to update quiz",
   DELETE_FAILED = "Failed to delete quiz",
   INVALID_ID = "Invalid quiz ID",
+  ID_REQUIRED = "Quiz ID is required",
   TITLE_REQUIRED = "Quiz title is required",
   TITLE_TOO_SHORT = `Quiz title must be at least ${Length.Min.QUIZ_TITLE} characters`,
   TITLE_TOO_LONG = `Quiz title cannot exceed ${Length.Max.QUIZ_TITLE} characters`,
@@ -79,6 +80,7 @@ export enum Answer {
   TEXT_TOO_SHORT = `Answer text must be at least ${Length.Min.ANSWER_TEXT} character`,
   TEXT_TOO_LONG = `Answer text cannot exceed ${Length.Max.ANSWER_TEXT} characters`,
   INVALID_ID = "Invalid Answer ID",
+  ID_REQUIRED = "Answer ID is required",
   IS_CORRECT_REQUIRED = "`is_correct` flag is required",
   NOT_BELONG_TO_QUESTION = "Answer does not belong to the question",
   UPDATE_FAILED = "Failed to update answer",
@@ -95,6 +97,8 @@ export enum Attempt {
   NOT_FOUND = "Quiz attempt not found",
   COMPLETED = "Quiz attempt is already completed",
   NO_ACCESS = "You do not have permission to access this attempt",
+  INVALID_ID = "Invalid attempt ID",
+  ID_REQUIRED = "Attempt ID is required",
 }
 
 /**
@@ -147,6 +151,7 @@ export enum Token {
 export enum Response {
   NOT_FOUND = "Response not found",
   UPDATE_FAILED = "Failed to update response",
+  INVALID_ID = "Invalid response ID",
 }
 
 /**

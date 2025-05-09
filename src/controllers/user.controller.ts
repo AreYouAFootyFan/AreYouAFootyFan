@@ -145,7 +145,7 @@ export class UserController {
       }
 
       await UserService.deactivateUser(id);
-      response.json({ message: Message.Success.UserSuccess.DEACTIVATE });
+      response.json({ message: Message.Success.User.DEACTIVATE });
     } catch (error) {
       next(error);
     }

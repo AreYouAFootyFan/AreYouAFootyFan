@@ -61,9 +61,7 @@ export class QuestionController {
       }
 
       if (question_text.length < Length.Min.QUESTION_TEXT) {
-        throw ErrorUtils.badRequest(
-          `Question text must be at least ${Length.Min.QUESTION_TEXT} characters`
-        );
+        throw ErrorUtils.badRequest(Message.Error.Question.TEXT_TOO_SHORT);
       }
 
       if (question_text.length > Length.Max.QUESTION_TEXT) {
@@ -120,9 +118,7 @@ export class QuestionController {
 
       if (question_text !== undefined) {
         if (question_text.length < Length.Min.QUESTION_TEXT) {
-          throw ErrorUtils.badRequest(
-            `Question text must be at least ${Length.Min.QUESTION_TEXT} characters`
-          );
+          throw ErrorUtils.badRequest(Message.Error.Question.TEXT_TOO_SHORT);
         }
 
         if (question_text.length > Length.Max.QUESTION_TEXT) {
@@ -164,7 +160,7 @@ export class QuestionController {
       }
 
       await QuestionService.deleteQuestion(id);
-      response.json({ message: Message.Success.QuestionSuccess.DELETE });
+      response.json({ message: Message.Success.Question.DELETE });
     } catch (error) {
       next(error);
     }
@@ -189,7 +185,7 @@ export class QuestionController {
       response.json({
         question,
         validation,
-        message: Message.Success.QuestionSuccess.VALIDATE,
+        message: Message.Success.Question.VALIDATE,
       });
     } catch (error) {
       next(error);

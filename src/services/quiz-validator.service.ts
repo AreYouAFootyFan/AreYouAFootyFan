@@ -42,7 +42,7 @@ export class QuizValidatorService {
       questionValidations.push(validation);
     }
 
-    const validQuestions = questionValidations.filter((q) => q.is_valid).length;
+    const validQuestions = questionValidations.filter((question) => question.is_valid).length;
 
     const isValid = validQuestions >= 5;
 
@@ -70,7 +70,7 @@ export class QuizValidatorService {
 
     const answers = await AnswerModel.findByQuestionId(questionId);
 
-    const correctAnswers = answers.filter((a) => a.is_correct);
+    const correctAnswers = answers.filter((answer) => answer.is_correct);
 
     const validationMessages: string[] = [];
 

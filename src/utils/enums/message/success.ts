@@ -1,14 +1,14 @@
 /**
  * Success messages for various operations
  */
-export enum DifficultySuccess {
+export enum Difficulty {
   DELETE = "Difficulty level deleted successfully",
 }
 
 /**
  * Question-related success messages
  */
-export enum QuestionSuccess {
+export enum Question {
   DELETE = "Question deleted successfully",
   VALIDATE = "Question validation completed",
 }
@@ -16,7 +16,7 @@ export enum QuestionSuccess {
 /**
  * User-related success messages
  */
-export enum UserSuccess {
+export enum User {
   DEACTIVATE = "User deactivated successfully",
   UPDATE = "User updated successfully",
 }
@@ -24,7 +24,7 @@ export enum UserSuccess {
 /**
  * Quiz-related success messages
  */
-export enum QuizSuccess {
+export enum Quiz {
   DELETE = "Quiz deleted successfully",
   UPDATE = "Quiz updated successfully",
   CREATE = "Quiz created successfully",
