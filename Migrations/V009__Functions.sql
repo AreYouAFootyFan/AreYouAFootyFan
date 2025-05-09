@@ -9,7 +9,8 @@ BEGIN
     RETURN QUERY
     SELECT a.answer_id, a.answer_text, a.is_correct
     FROM answers a
-    WHERE a.question_id = p_question_id;
+    WHERE a.question_id = p_question_id
+    ORDER BY a.answer_id;
 END;
 $$ LANGUAGE plpgsql;
 

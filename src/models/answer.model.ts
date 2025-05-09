@@ -11,7 +11,7 @@ export interface Answer {
 export class AnswerModel {
   static async findByQuestionId(questionId: number): Promise<Answer[]> {
     const result = await db.query(
-      "SELECT * FROM answers WHERE question_id = $1 ORDER BY answer_id",
+      "SELECT answer_id, answer_text, is_correct FROM get_answers($1)",
       [questionId]
     );
     return result.rows;
@@ -19,7 +19,7 @@ export class AnswerModel {
 
   static async findById(id: number): Promise<Answer | null> {
     const result = await db.query(
-      "SELECT * FROM answers WHERE answer_id = $1",
+      "SELECT answer_id, answer_text, is_correct FROM answers WHERE answer_id = $1",
       [id]
     );
 

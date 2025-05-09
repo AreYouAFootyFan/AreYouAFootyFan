@@ -5,7 +5,7 @@ WITH
         FROM
             roles
         WHERE
-            role_name = 'Player'
+            role_name = 'Manager'
     )
 INSERT INTO
     users (google_id, username, role_id)
@@ -19,7 +19,9 @@ VALUES
             FROM
                 role_id_query
         )
-    ) RETURNING user_id,
+    )
+RETURNING
+    user_id,
     username,
     role_id;
 
@@ -41,7 +43,9 @@ VALUES
         'Test your knowledge about the 2010 FIFA World Cup tournament in South Africa',
         6,
         1
-    ) RETURNING quiz_id;
+    )
+RETURNING
+    quiz_id;
 
 INSERT INTO
     questions (quiz_id, question_text, difficulty_id)
