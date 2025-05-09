@@ -13,9 +13,11 @@ class QuizTaking extends HTMLElement {
         this.timeLeft = 0;
         this.score = 0;
         this.isQuizCompleted = false;
+        this.styleSheet = new CSSStyleSheet();
     }
 
     connectedCallback() {
+        this.loadStyles();
         this.render();
         this.init();
         
@@ -27,81 +29,16 @@ class QuizTaking extends HTMLElement {
         this.cleanup();
         document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     }
+
+    async loadStyles() {        
+        const cssText = await fetch('./static/css/quizTaking/quizTaking.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+    }
     
     render() {
         const style = document.createElement('style');
-        style.textContent = `
-            :host {
-                display: block;
-                width: 100%;
-                font-family: var(--font-sans, 'Inter', sans-serif);
-                color: var(--gray-800);
-                background-color: var(--gray-100);
-                min-height: calc(100vh - 4rem);
-            }
-            
-            .quiz-container {
-                max-width: var(--container-max-width);
-                margin: 0 auto;
-                padding: 2rem 1rem;
-            }
-            
-            .loading-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 50vh;
-                font-size: 1.125rem;
-                color: var(--gray-600);
-            }
-            
-            .loading-spinner {
-                display: inline-block;
-                width: 1.5rem;
-                height: 1.5rem;
-                border: 0.125rem solid currentColor;
-                border-right-color: transparent;
-                border-radius: 50%;
-                margin-right: 0.5rem;
-                animation: spin 0.75s linear infinite;
-            }
-            
-            @keyframes spin {
-                to { transform: rotate(360deg); }
-            }
-            
-            .error-container {
-                background-color: white;
-                border-radius: 0.5rem;
-                box-shadow: var(--shadow);
-                padding: 2rem;
-                text-align: center;
-                max-width: 40rem;
-                margin: 2rem auto;
-            }
-            
-            .error-message {
-                color: var(--error);
-                margin-bottom: 1.5rem;
-            }
-            
-            .home-btn {
-                padding: 0.75rem 1.5rem;
-                border-radius: 0.5rem;
-                font-size: 1rem;
-                font-weight: 500;
-                background-color: var(--primary);
-                color: white;
-                text-decoration: none;
-                display: inline-block;
-                transition: all var(--transition-fast);
-            }
-            
-            .home-btn:hover {
-                background-color: var(--primary-dark);
-            }
-        `;
-        
+      
         const main = document.createElement('main');
         main.classList.add('quiz-container');
         

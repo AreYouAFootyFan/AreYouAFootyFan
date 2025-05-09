@@ -3,9 +3,11 @@ class QuizResults extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this._summary = null;
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
         this.setupEventListeners();
     }
@@ -17,6 +19,12 @@ class QuizResults extends HTMLElement {
     
     get summary() {
         return this._summary;
+    }
+
+    async loadStyles() {        
+        const cssText = await fetch('./static/css/quizTaking/quizResults.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
     }
     
     render() {
@@ -44,101 +52,6 @@ class QuizResults extends HTMLElement {
             : 0;
         
         const style = document.createElement('style');
-        style.textContent = `
-            :host {
-                display: block;
-                width: 100%;
-            }
-            
-            .loading {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 2rem;
-                color: var(--gray-500);
-            }
-            
-            .loading-spinner {
-                display: inline-block;
-                width: 1.5rem;
-                height: 1.5rem;
-                border: 0.125rem solid currentColor;
-                border-right-color: transparent;
-                border-radius: 50%;
-                margin-right: 0.5rem;
-                animation: spin 0.75s linear infinite;
-            }
-            
-            @keyframes spin {
-                to { transform: rotate(360deg); }
-            }
-            
-            article {
-                background-color: white;
-                border-radius: 0.5rem;
-                box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                padding: 2rem;
-                max-width: 40rem;
-                margin: 0 auto;
-                text-align: center;
-            }
-            
-            h2 {
-                color: var(--primary);
-                margin-bottom: 1.5rem;
-                font-size: 1.75rem;
-            }
-            
-            .final-score {
-                font-size: 1.25rem;
-                margin-bottom: 1rem;
-            }
-            
-            .percentage {
-                font-size: 3rem;
-                font-weight: 700;
-                color: var(--primary);
-                margin: 1.5rem 0;
-            }
-            
-            .stats-summary {
-                background-color: var(--gray-50);
-                border-radius: 0.5rem;
-                padding: 1.5rem;
-                margin-bottom: 2rem;
-                text-align: left;
-            }
-            
-            .stats-summary p {
-                margin-bottom: 0.5rem;
-            }
-            
-            .actions {
-                display: flex;
-                justify-content: center;
-                gap: 1rem;
-            }
-            
-            .home-btn {
-                padding: 0.75rem 1.5rem;
-                border-radius: 0.5rem;
-                font-size: 1rem;
-                font-weight: 500;
-                background-color: var(--primary);
-                color: white;
-                text-decoration: none;
-                display: inline-block;
-                transition: all var(--transition-fast);
-                border: none;
-                cursor: pointer;
-                font-family: inherit;
-            }
-            
-            .home-btn:hover {
-                background-color: var(--primary-dark);
-            }
-        `;
-        
         const article = document.createElement('article');
         
         const heading = document.createElement('h2');
