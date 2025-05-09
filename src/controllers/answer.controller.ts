@@ -61,11 +61,11 @@ export class AnswerController {
       }
 
       if (answer_text.length < Length.Min.ANSWER_TEXT) {
-        throw ErrorUtils.badRequest(`Answer text must be at least ${Length.Min.ANSWER_TEXT} character`);
+        throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_TOO_SHORT);
       }
 
       if (answer_text.length > Length.Max.ANSWER_TEXT) {
-        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.ANSWER_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_TOO_LONG);
       }
 
       if (is_correct === undefined) {
@@ -109,11 +109,11 @@ export class AnswerController {
 
       if (answer_text !== undefined) {
         if (answer_text.length < Length.Min.ANSWER_TEXT) {
-          throw ErrorUtils.badRequest(`Answer text must be at least ${Length.Min.ANSWER_TEXT} character`);
+          throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_TOO_SHORT);
         }
         
         if (answer_text.length > Length.Max.ANSWER_TEXT) {
-          throw ErrorUtils.badRequest(Message.Error.Length.LengthError.ANSWER_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.AnswerError.TEXT_TOO_LONG);
         }
       }
 

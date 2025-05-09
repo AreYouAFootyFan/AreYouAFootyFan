@@ -51,25 +51,25 @@ export class CategoryController {
       }
 
       if (category_name.length < Length.Min.CATEGORY_NAME) {
-        throw ErrorUtils.badRequest(`Category name must be at least ${Length.Min.CATEGORY_NAME} characters`);
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_TOO_SHORT);
       }
 
       if (category_name.length > Length.Max.CATEGORY_NAME) {
-        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_NAME_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_TOO_LONG);
       }
 
       if (
         category_description &&
         category_description.length < Length.Min.CATEGORY_DESCRIPTION
       ) {
-        throw ErrorUtils.badRequest(`Category description must be at least ${Length.Min.CATEGORY_DESCRIPTION} characters`);
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.DESCRIPTION_TOO_SHORT);
       }
 
       if (
         category_description &&
         category_description.length > Length.Max.CATEGORY_DESCRIPTION
       ) {
-        throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_DESCRIPTION_TOO_LONG);
+        throw ErrorUtils.badRequest(Message.Error.CategoryError.DESCRIPTION_TOO_LONG);
       }
 
       const category = await CategoryService.createCategory({
@@ -103,21 +103,21 @@ export class CategoryController {
 
       if (category_name) {
         if (category_name.length < Length.Min.CATEGORY_NAME) {
-          throw ErrorUtils.badRequest(`Category name must be at least ${Length.Min.CATEGORY_NAME} characters`);
+          throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_TOO_SHORT);
         }
 
         if (category_name.length > Length.Max.CATEGORY_NAME) {
-          throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_NAME_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.CategoryError.NAME_TOO_LONG);
         }
       }
 
       if (category_description) {
         if (category_description.length < Length.Min.CATEGORY_DESCRIPTION) {
-          throw ErrorUtils.badRequest(`Category description must be at least ${Length.Min.CATEGORY_DESCRIPTION} characters`);
+          throw ErrorUtils.badRequest(Message.Error.CategoryError.DESCRIPTION_TOO_SHORT);
         }
 
         if (category_description.length > Length.Max.CATEGORY_DESCRIPTION) {
-          throw ErrorUtils.badRequest(Message.Error.Length.LengthError.CATEGORY_DESCRIPTION_TOO_LONG);
+          throw ErrorUtils.badRequest(Message.Error.CategoryError.DESCRIPTION_TOO_LONG);
         }
       }
 

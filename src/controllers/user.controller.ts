@@ -42,10 +42,12 @@ export class UserController {
         throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_REQUIRED);
       }
 
-      if (username.length < Length.Min.USERNAME || username.length > Length.Max.USERNAME) {
-        throw ErrorUtils.badRequest(
-          Message.Error.UserError.USERNAME_LENGTH
-        );
+      if (username.length < Length.Min.USERNAME) {
+        throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_TOO_SHORT);
+      }
+      
+      if (username.length > Length.Max.USERNAME) {
+        throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_TOO_LONG);
       }
 
       const user = await UserService.updateUser(userId, { username });
@@ -95,15 +97,18 @@ export class UserController {
       const data: UpdateUserDto = {};
 
       if (username !== undefined) {
-        if (
-          typeof username !== "string" ||
-          username.length < Length.Min.USERNAME ||
-          username.length > Length.Max.USERNAME
-        ) {
-          throw ErrorUtils.badRequest(
-            Message.Error.UserError.USERNAME_LENGTH
-          );
+        if (typeof username !== "string") {
+          throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_REQUIRED);
         }
+        
+        if (username.length < Length.Min.USERNAME) {
+          throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_TOO_SHORT);
+        }
+        
+        if (username.length > Length.Max.USERNAME) {
+          throw ErrorUtils.badRequest(Message.Error.UserError.USERNAME_TOO_LONG);
+        }
+        
         data.username = username;
       }
 

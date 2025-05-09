@@ -1,12 +1,8 @@
 /**
- * Re-export all error enums
- */
-import * as Length from './length/index';
-export { Length };
-
-/**
  * Base error messages used throughout the application
  */
+import { Length } from '../../';
+
 export enum BaseError {
   UNAUTHORIZED = "Authentication token is required",
   USER_NOT_AUTHENTICATED = "User not authenticated",
@@ -47,10 +43,10 @@ export enum QuizError {
   DELETE_FAILED = "Failed to delete quiz",
   INVALID_ID = "Invalid quiz ID",
   TITLE_REQUIRED = "Quiz title is required",
-  TITLE_TOO_SHORT = "Quiz title must be at least 5 characters",
-  TITLE_TOO_LONG = "Quiz title cannot exceed 64 characters",
-  DESCRIPTION_TOO_SHORT = "Quiz description must be at least 10 characters",
-  DESCRIPTION_TOO_LONG = "Quiz description cannot exceed 256 characters",
+  TITLE_TOO_SHORT = `Quiz title must be at least ${Length.Min.QUIZ_TITLE} characters`,
+  TITLE_TOO_LONG = `Quiz title cannot exceed ${Length.Max.QUIZ_TITLE} characters`,
+  DESCRIPTION_TOO_SHORT = `Quiz description must be at least ${Length.Min.QUIZ_DESCRIPTION} characters`,
+  DESCRIPTION_TOO_LONG = `Quiz description cannot exceed ${Length.Max.QUIZ_DESCRIPTION} characters`,
 }
 
 /**
@@ -65,7 +61,8 @@ export enum QuestionError {
   DELETE_FAILED = "Failed to delete question",
   QUIZ_ID_REQUIRED = "Quiz ID is required",
   TEXT_REQUIRED = "Question text is required",
-  TEXT_TOO_LONG = "Question text cannot exceed 256 characters",
+  TEXT_TOO_SHORT = `Question text must be at least ${Length.Min.QUESTION_TEXT} characters`,
+  TEXT_TOO_LONG = `Question text cannot exceed ${Length.Max.QUESTION_TEXT} characters`,
   QUIZ_ID_NAN = "Quiz ID must be a number",
   DIFFICULTY_ID_REQUIRED = "Difficulty level ID is required",
   DIFFICULTY_ID_NAN = "Difficulty ID must be a number",
@@ -79,6 +76,8 @@ export enum QuestionError {
 export enum AnswerError {
   NOT_FOUND = "Answer not found",
   TEXT_REQUIRED = "Answer text is required",
+  TEXT_TOO_SHORT = `Answer text must be at least ${Length.Min.ANSWER_TEXT} character`,
+  TEXT_TOO_LONG = `Answer text cannot exceed ${Length.Max.ANSWER_TEXT} characters`,
   INVALID_ID = "Invalid Answer ID",
   IS_CORRECT_REQUIRED = "`is_correct` flag is required",
   NOT_BELONG_TO_QUESTION = "Answer does not belong to the question",
@@ -105,6 +104,10 @@ export enum CategoryError {
   NOT_FOUND = "Category not found",
   INVALID = "Invalid category ID",
   NAME_REQUIRED = "Category name is required",
+  NAME_TOO_SHORT = `Category name must be at least ${Length.Min.CATEGORY_NAME} characters`,
+  NAME_TOO_LONG = `Category name cannot exceed ${Length.Max.CATEGORY_NAME} characters`,
+  DESCRIPTION_TOO_SHORT = `Category description must be at least ${Length.Min.CATEGORY_DESCRIPTION} characters`,
+  DESCRIPTION_TOO_LONG = `Category description cannot exceed ${Length.Max.CATEGORY_DESCRIPTION} characters`,
   NAME_EXISTS = "A category with this name already exists",
   NAME_EXISTS_OTHER = "Another category with this name already exists",
   UPDATE_FAILED = "Failed to update category",
@@ -156,7 +159,10 @@ export enum UserError {
   UPDATE_FAILED = "Failed to update user",
   DEACTIVATE_FAILED = "Failed to deactivate user",
   USERNAME_REQUIRED = "Username is required",
-  USERNAME_LENGTH = "Username must be between 3 and 32 characters",
+  USERNAME_TOO_SHORT = `Username must be at least ${Length.Min.USERNAME} characters`,
+  USERNAME_TOO_LONG = `Username cannot exceed ${Length.Max.USERNAME} characters`,
+  PASSWORD_TOO_SHORT = `Password must be at least ${Length.Min.PASSWORD} characters`,
+  PASSWORD_TOO_LONG = `Password cannot exceed ${Length.Max.PASSWORD} characters`,
   INVALID_ID = "Invalid user ID",
   INVALID_ROLE_ID = "Invalid role ID",
 }
@@ -175,7 +181,8 @@ export enum LeaderboardError {
 export enum DifficultyError {
   INVALID_ID = "Invalid difficulty level ID",
   LEVEL_REQUIRED = "Difficulty level name is required",
-  LEVEL_TOO_LONG = "Difficulty level name cannot exceed 16 characters",
+  LEVEL_TOO_SHORT = `Difficulty level name must be at least ${Length.Min.DIFFICULTY_NAME} characters`,
+  LEVEL_TOO_LONG = `Difficulty level name cannot exceed ${Length.Max.DIFFICULTY_NAME} characters`,
   TIME_LIMIT_REQUIRED = "Time limit is required",
   POINTS_CORRECT_REQUIRED = "Points on correct is required",
   POINTS_INCORRECT_REQUIRED = "Points on incorrect is required",
