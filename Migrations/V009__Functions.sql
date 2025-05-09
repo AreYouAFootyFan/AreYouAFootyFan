@@ -2,6 +2,7 @@
 CREATE
 OR REPLACE FUNCTION get_answers (p_question_id INT) RETURNS TABLE (
     answer_id INT,
+    question_id INT,
     answer_text VARCHAR,
     is_correct BOOL
 ) AS $$

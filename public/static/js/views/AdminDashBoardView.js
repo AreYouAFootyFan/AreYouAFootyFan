@@ -1,19 +1,18 @@
 import AbstractView from "./AbstractView.js";
 import "../components/admin/AdminDashboard.js";
+import { Role } from "../enums/users.js";
 
 export default class AdminDashboardView extends AbstractView {
-    constructor() {
-        super();
-        this.setTitle("Admin Dashboard");
-    }
+  constructor() {
+    super();
+    this.setTitle(`${Role.Manager} Dashboard`);
+  }
 
-    async getHtml() {
-       return document.createElement('admin-dashboard');
-    }
+  async getHtml() {
+    return document.createElement("admin-dashboard");
+  }
 
-    async mount() {
-    }
-    
-    cleanup() {
-    }
+  async mount() {}
+
+  cleanup() {}
 }

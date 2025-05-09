@@ -1,10 +1,16 @@
+--   _____       _           
+--  |  __ \     | |          
+--  | |__) |___ | | ___  ___ 
+--  |  _  // _ \| |/ _ \/ __|
+--  | | \ \ (_) | |  __/\__ \
+--  |_|  \_\___/|_|\___||___/
+--
 -- Roles CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_role(
+CREATE
+OR REPLACE PROCEDURE create_role (
   p_role_name VARCHAR(32),
   INOUT p_role_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_error_message TEXT;
 BEGIN
@@ -27,11 +33,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_role(
-  p_role_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_role (p_role_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -57,12 +60,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_role(
-  p_role_id INT,
-  p_role_name VARCHAR(32)
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE update_role (p_role_id INT, p_role_name VARCHAR(32)) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -100,11 +99,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_role(
-  p_role_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_role (p_role_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -143,15 +139,21 @@ BEGIN
 END;
 $$;
 
+--   _    _                   
+--  | |  | |                  
+--  | |  | |___  ___ _ __ ___ 
+--  | |  | / __|/ _ \ '__/ __|
+--  | |__| \__ \  __/ |  \__ \
+--   \____/|___/\___|_|  |___/
+--
 -- Users CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_user(
+CREATE
+OR REPLACE PROCEDURE create_user (
   p_google_id VARCHAR(256),
   p_username VARCHAR(16) DEFAULT NULL,
   p_role_id INT DEFAULT 1,
   INOUT p_user_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -192,11 +194,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_user(
-  p_user_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_user (p_user_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -222,14 +221,13 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_user(
+CREATE
+OR REPLACE PROCEDURE update_user (
   p_user_id INT,
   p_username VARCHAR(16) DEFAULT NULL,
   p_role_id INT DEFAULT NULL,
   p_deactivated_at TIMESTAMP DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -280,11 +278,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_user(
-  p_user_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_user (p_user_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -317,14 +312,22 @@ BEGIN
 END;
 $$;
 
+--   ____            _                 
+--  |  _ \          | |                
+--  | |_) | __ _  __| | __ _  ___  ___ 
+--  |  _ < / _` |/ _` |/ _` |/ _ \/ __|
+--  | |_) | (_| | (_| | (_| |  __/\__ \
+--  |____/ \__,_|\__,_|\__, |\___||___/
+--                      __/ |          
+--                     |___/           
+--
 -- Badges CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_badge(
+CREATE
+OR REPLACE PROCEDURE create_badge (
   p_badge_name VARCHAR(32),
   p_minimum_points INT,
   INOUT p_badge_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_error_message TEXT;
 BEGIN
@@ -351,11 +354,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_badge(
-  p_badge_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_badge (p_badge_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -381,13 +381,12 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_badge(
+CREATE
+OR REPLACE PROCEDURE update_badge (
   p_badge_id INT,
   p_badge_name VARCHAR(32) DEFAULT NULL,
   p_minimum_points INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -427,11 +426,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_badge(
-  p_badge_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_badge (p_badge_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -470,15 +466,23 @@ BEGIN
 END;
 $$;
 
+--   ____            _              _    _ _     _                   
+--  |  _ \          | |            | |  | (_)   | |                  
+--  | |_) | __ _  __| | __ _  ___  | |__| |_ ___| |_ ___  _ __ _   _ 
+--  |  _ < / _` |/ _` |/ _` |/ _ \ |  __  | / __| __/ _ \| '__| | | |
+--  | |_) | (_| | (_| | (_| |  __/ | |  | | \__ \ || (_) | |  | |_| |
+--  |____/ \__,_|\__,_|\__, |\___| |_|  |_|_|___/\__\___/|_|   \__, |
+--                      __/ |                                   __/ |
+--                     |___/                                   |___/ 
+--
 -- Badge History CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_badge_history(
+CREATE
+OR REPLACE PROCEDURE create_badge_history (
   p_user_id INT,
   p_badge_id INT,
   p_achieved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INOUT p_badge_history_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -522,11 +526,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_badge_history(
-  p_badge_history_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_badge_history (p_badge_history_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -552,14 +553,13 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_badge_history(
+CREATE
+OR REPLACE PROCEDURE update_badge_history (
   p_badge_history_id INT,
   p_user_id INT DEFAULT NULL,
   p_badge_id INT DEFAULT NULL,
   p_achieved_at TIMESTAMP DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -616,11 +616,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_badge_history(
-  p_badge_history_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_badge_history (p_badge_history_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -651,14 +648,22 @@ BEGIN
 END;
 $$;
 
+--    _____      _                        _           
+--   / ____|    | |                      (_)          
+--  | |     __ _| |_ ___  __ _  ___  _ __ _  ___  ___ 
+--  | |    / _` | __/ _ \/ _` |/ _ \| '__| |/ _ \/ __|
+--  | |___| (_| | ||  __/ (_| | (_) | |  | |  __/\__ \
+--   \_____\__,_|\__\___|\__, |\___/|_|  |_|\___||___/
+--                        __/ |                       
+--                       |___/                        
+--
 -- Categories CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_category(
+CREATE
+OR REPLACE PROCEDURE create_category (
   p_category_name VARCHAR(32),
   p_category_description VARCHAR(64),
   INOUT p_category_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_error_message TEXT;
 BEGIN
@@ -683,11 +688,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_category(
-  p_category_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_category (p_category_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -713,14 +715,13 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_category(
+CREATE
+OR REPLACE PROCEDURE update_category (
   p_category_id INT,
   p_category_name VARCHAR(32) DEFAULT NULL,
   p_category_description VARCHAR(64) DEFAULT NULL,
   p_deactivated_at TIMESTAMP DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -763,11 +764,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_category(
-  p_category_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_category (p_category_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -806,16 +804,22 @@ BEGIN
 END;
 $$;
 
+--    ____        _                  
+--   / __ \      (_)                 
+--  | |  | |_   _ _ ___________  ___ 
+--  | |  | | | | | |_  /_  / _ \/ __|
+--  | |__| | |_| | |/ / / /  __/\__ \
+--   \___\_\\__,_|_/___/___\___||___/
+--
 -- Quizzes CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_quiz(
+CREATE
+OR REPLACE PROCEDURE create_quiz (
   p_quiz_title VARCHAR(64),
   p_quiz_description VARCHAR(128),
   p_category_id INT,
   p_created_by INT,
   INOUT p_quiz_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -879,11 +883,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_quiz(
-  p_quiz_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_quiz (p_quiz_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -909,15 +910,14 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_quiz(
+CREATE
+OR REPLACE PROCEDURE update_quiz (
   p_quiz_id INT,
   p_quiz_title VARCHAR(64) DEFAULT NULL,
   p_quiz_description VARCHAR(128) DEFAULT NULL,
   p_category_id INT DEFAULT NULL,
   p_deactivated_at TIMESTAMP DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -979,11 +979,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_quiz(
-  p_quiz_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_quiz (p_quiz_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1028,16 +1025,23 @@ BEGIN
 END;
 $$;
 
+--   _____  _  __  __ _            _ _           _                    _     
+--  |  __ \(_)/ _|/ _(_)          | | |         | |                  | |    
+--  | |  | |_| |_| |_ _  ___ _   _| | |_ _   _  | |     _____   _____| |___ 
+--  | |  | | |  _|  _| |/ __| | | | | __| | | | | |    / _ \ \ / / _ \ / __|
+--  | |__| | | | | | | | (__| |_| | | |_| |_| | | |___|  __/\ V /  __/ \__ \
+--  |_____/|_|_| |_| |_|\___|\__,_|_|\__|\__, | |______\___| \_/ \___|_|___/
+--                                        __/ |                             
+--                                       |___/                              
 -- Difficulty Levels CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_difficulty(
+CREATE
+OR REPLACE PROCEDURE create_difficulty (
   p_difficulty_level VARCHAR(16),
   p_time_limit_seconds INT DEFAULT 10,
   p_points_on_correct INT DEFAULT 10,
   p_points_on_incorrect INT DEFAULT -10,
   INOUT p_difficulty_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_error_message TEXT;
 BEGIN
@@ -1072,11 +1076,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_difficulty(
-  p_difficulty_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_difficulty (p_difficulty_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1102,15 +1103,14 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_difficulty(
+CREATE
+OR REPLACE PROCEDURE update_difficulty (
   p_difficulty_id INT,
   p_difficulty_level VARCHAR(16) DEFAULT NULL,
   p_time_limit_seconds INT DEFAULT NULL,
   p_points_on_correct INT DEFAULT NULL,
   p_points_on_incorrect INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1164,11 +1164,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_difficulty(
-  p_difficulty_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_difficulty (p_difficulty_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1207,15 +1204,21 @@ BEGIN
 END;
 $$;
 
+--    ____                  _   _                 
+--   / __ \                | | (_)                
+--  | |  | |_   _  ___  ___| |_ _  ___  _ __  ___ 
+--  | |  | | | | |/ _ \/ __| __| |/ _ \| '_ \/ __|
+--  | |__| | |_| |  __/\__ \ |_| | (_) | | | \__ \
+--   \___\_\\__,_|\___||___/\__|_|\___/|_| |_|___/
+--
 -- Questions CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_question(
+CREATE
+OR REPLACE PROCEDURE create_question (
   p_quiz_id INT,
   p_question_text VARCHAR(256),
   p_difficulty_id INT,
   INOUT p_question_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1271,11 +1274,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_question(
-  p_question_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_question (p_question_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1301,13 +1301,12 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_question(
+CREATE
+OR REPLACE PROCEDURE update_question (
   p_question_id INT,
   p_question_text VARCHAR(256) DEFAULT NULL,
   p_difficulty_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1357,11 +1356,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_question(
-  p_question_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_question (p_question_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1407,14 +1403,13 @@ END;
 $$;
 
 -- Answers CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_answer(
+CREATE
+OR REPLACE PROCEDURE create_answer (
   p_question_id INT,
   p_answer_text VARCHAR(128),
   p_is_correct BOOLEAN DEFAULT FALSE,
   INOUT p_answer_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_correct_count INT;
@@ -1463,11 +1458,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_answer(
-  p_answer_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_answer (p_answer_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1493,13 +1485,12 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_answer(
+CREATE
+OR REPLACE PROCEDURE update_answer (
   p_answer_id INT,
   p_answer_text VARCHAR(128) DEFAULT NULL,
   p_is_correct BOOLEAN DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_question_id INT;
@@ -1557,11 +1548,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_answer(
-  p_answer_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_answer (p_answer_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_is_correct BOOLEAN;
@@ -1619,14 +1607,13 @@ END;
 $$;
 
 -- Quiz Attempts CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_quiz_attempt(
+CREATE
+OR REPLACE PROCEDURE create_quiz_attempt (
   p_user_id INT,
   p_quiz_id INT,
   p_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INOUT p_attempt_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1682,11 +1669,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_quiz_attempt(
-  p_attempt_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_quiz_attempt (p_attempt_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1712,12 +1696,11 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_quiz_attempt(
+CREATE
+OR REPLACE PROCEDURE update_quiz_attempt (
   p_attempt_id INT,
   p_end_time TIMESTAMP DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_start_time TIMESTAMP;
@@ -1760,11 +1743,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_quiz_attempt(
-  p_attempt_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_quiz_attempt (p_attempt_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1804,15 +1784,14 @@ END;
 $$;
 
 -- User Responses CRUD Procedures
-CREATE OR REPLACE PROCEDURE create_user_response(
+CREATE
+OR REPLACE PROCEDURE create_user_response (
   p_attempt_id INT,
   p_question_id INT,
   p_chosen_answer INT,
   p_points_earned INT,
   INOUT p_response_id INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_quiz_id INT;
@@ -1900,11 +1879,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE read_user_response(
-  p_response_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE read_user_response (p_response_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
@@ -1930,13 +1906,12 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE update_user_response(
+CREATE
+OR REPLACE PROCEDURE update_user_response (
   p_response_id INT,
   p_chosen_answer INT DEFAULT NULL,
   p_points_earned INT DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
+) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_question_id INT;
@@ -1998,11 +1973,8 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE delete_user_response(
-  p_response_id INT
-)
-LANGUAGE plpgsql
-AS $$
+CREATE
+OR REPLACE PROCEDURE delete_user_response (p_response_id INT) LANGUAGE plpgsql AS $$
 DECLARE
   v_count INT;
   v_error_message TEXT;
