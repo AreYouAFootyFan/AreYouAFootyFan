@@ -4,224 +4,155 @@ class LoginForm extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.errorMessage = '';
         this.showUsernameForm = false;
+        this.styleSheet = new CSSStyleSheet();
     }
 
     connectedCallback() {
+        this.loadStyles();
         this.render();
-        this.setupEventListeners();
         this.checkAuthentication();
     }
     
-    render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .login-page {
-                    display: flex;
-                    flex-direction: column;
-                    min-height: 100vh;
-                    font-family: var(--font-sans, 'Inter', sans-serif);
-                }
-                
-                .auth-main {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    flex: 1;
-                    background: linear-gradient(to right, #f8fbff, #e9f1ff);
-                    padding: 2rem;
-                }
-                
-                .auth-container {
-                    background: #fff;
-                    padding: 2.5rem 2rem;
-                    max-width: 25rem;
-                    width: 100%;
-                    border-radius: 1rem;
-                    box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.05);
-                    text-align: center;
-                }
-                
-                .auth-header {
-                    margin-bottom: 2rem;
-                }
-                
-                .logo-icon {
-                    font-size: 3rem;
-                    margin-bottom: 1rem;
-                    display: block;
-                }
-                
-                h1 {
-                    font-size: 1.8rem;
-                    margin: 0.5rem 0;
-                    color: #333;
-                }
-                
-                p {
-                    color: #666;
-                    font-size: 0.95rem;
-                    margin-bottom: 1.5rem;
-                }
-                
-                #google-signin-button {
-                    margin-bottom: 2rem;
-                }
-                
-                #username-container {
-                    display: ${this.showUsernameForm ? 'block' : 'none'};
-                    text-align: left;
-                }
-                
-                #username-container h2 {
-                    font-size: 1.5rem;
-                    margin-bottom: 1rem;
-                    text-align: center;
-                }
-                
-                label {
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 500;
-                    color: #555;
-                }
-                
-                input {
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 0.0625rem solid #ccc;
-                    border-radius: 0.5rem;
-                    font-size: 1rem;
-                    margin-bottom: 1.5rem;
-                    font-family: inherit;
-                }
-                
-                .login-btn {
-                    background-color: var(--primary);
-                    color: white;
-                    border: none;
-                    border-radius: 0.5rem;
-                    padding: 0.75rem 1.5rem;
-                    font-size: 1rem;
-                    font-weight: 500;
-                    cursor: pointer;
-                    width: 100%;
-                    transition: background-color 0.3s;
-                    font-family: inherit;
-                }
-                
-                .login-btn:hover {
-                    background-color: var(--primary-dark);
-                }
-                
-                .error-message {
-                    color: var(--error);
-                    margin-top: 1rem;
-                    font-size: 0.875rem;
-                    display: ${this.errorMessage ? 'block' : 'none'};
-                }
-                
-                .auth-footer {
-                    padding: 1.5rem;
-                    text-align: center;
-                    background-color: #1e293b;
-                    color: #cbd5e1;
-                }
-                
-                #google-login-link {
-                    display: inline-block;
-                    padding: 0.75rem 1.5rem;
-                    background-color: white;
-                    color: #333;
-                    border: 0.0625rem solid #ddd;
-                    border-radius: 0.5rem;
-                    text-decoration: none;
-                    font-weight: 500;
-                    text-align: center;
-                    transition: all 0.3s;
-                    width: 100%;
-                    box-sizing: border-box;
-                }
-                
-                #google-login-link:hover {
-                    background-color: #f8f8f8;
-                    border-color: #ccc;
-                }
-                
-                .google-icon {
-                    margin-right: 0.5rem;
-                    vertical-align: middle;
-                }
-
-                i {
-                font-style: normal;
-                }
-            </style>
-            
-            <article class="login-page">
-                <main class="auth-main">
-                    <section class="auth-container">
-                        <header class="auth-header">
-                            <i class="logo-icon" aria-hidden="true">⚽</i>
-                            <h1>Welcome to Footy Quiz</h1>
-                            <p>Sign in to test your football knowledge</p>
-                        </header>
-            
-                        <section id="google-signin-button">
-                            <a href="#" id="google-login-link">
-                                <i class="google-icon">G</i>
-                                Sign in with Google
-                            </a>
-                        </section>
-            
-                        <form id="username-container">
-                            <h2>Set Your Username</h2>
-                            <p>Please choose a unique username to continue:</p>
-                            <label for="username">Username</label>
-                            <input 
-                                type="text" 
-                                id="username" 
-                                name="username" 
-                                placeholder="Choose a username" 
-                                minlength="3"
-                                maxlength="32"
-                                required
-                            />
-                            <button type="submit" class="login-btn">Save Username</button>
-                        </form>
-                        
-                        <p id="login-error" class="error-message">${this.errorMessage}</p>
-                    </section>
-                </main>
-                
-                <footer class="auth-footer">
-                    <p>&copy; 2025 Football Quiz Platform. All rights reserved.</p>
-                </footer>
-            </article>
-        `;
+    async loadStyles() {
+        const cssText = await fetch('./static/css/auth/loginform.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet]; 
     }
     
-    setupEventListeners() {
-        const googleLoginLink = this.shadowRoot.querySelector('#google-login-link');
-        if (googleLoginLink) {
-            googleLoginLink.href = window.authService ? window.authService.getAuthURL() : '#';
-            googleLoginLink.addEventListener('click', (e) => {
-                if (!window.authService) {
-                    e.preventDefault();
-                    this.showError('Authentication service not available');
-                }
-            });
+    render() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
         }
         
-        const usernameForm = this.shadowRoot.querySelector('#username-container');
-        if (usernameForm) {
-            usernameForm.addEventListener('submit', this.handleUsernameSubmit.bind(this));
+        const loginPage = document.createElement('article');
+        loginPage.className = 'login-page';
+        
+        const authMain = document.createElement('main');
+        authMain.className = 'auth-main';
+        
+        const authContainer = document.createElement('section');
+        authContainer.className = 'auth-container';
+        
+        const authHeader = document.createElement('header');
+        authHeader.className = 'auth-header';
+        
+        const logoIcon = document.createElement('i');
+        logoIcon.className = 'logo-icon';
+        logoIcon.setAttribute('aria-hidden', 'true');
+        logoIcon.textContent = '⚽';
+        
+        const h1 = document.createElement('h1');
+        h1.textContent = 'Welcome to Footy Quiz';
+        
+        const introText = document.createElement('p');
+        introText.textContent = 'Sign in to test your football knowledge';
+        
+        authHeader.appendChild(logoIcon);
+        authHeader.appendChild(h1);
+        authHeader.appendChild(introText);
+        
+        const googleSigninButton = document.createElement('section');
+        googleSigninButton.id = 'google-signin-button';
+        if (this.showUsernameForm) {
+            googleSigninButton.classList.add('hidden');
         }
         
+        const googleLoginLink = document.createElement('a');
+        googleLoginLink.href = '#';
+        googleLoginLink.id = 'google-login-link';
+        
+        const googleIcon = document.createElement('i');
+        googleIcon.className = 'google-icon';
+        googleIcon.textContent = 'G';
+        
+        googleLoginLink.appendChild(googleIcon);
+        googleLoginLink.appendChild(document.createTextNode(' Sign in with Google'));
+        
+        if (window.authService) {
+            googleLoginLink.href = window.authService.getAuthURL();
+        }
+        
+        googleLoginLink.addEventListener('click', (e) => {
+            if (!window.authService) {
+                e.preventDefault();
+                this.showError('Authentication service not available');
+            }
+        });
+        
+        googleSigninButton.appendChild(googleLoginLink);
+        
+        const usernameForm = document.createElement('form');
+        usernameForm.id = 'username-container';
+
+        if (!this.showUsernameForm) {
+            usernameForm.classList.add('hidden');
+        }
+        
+        const usernameTitle = document.createElement('h2');
+        usernameTitle.textContent = 'Set Your Username';
+        
+        const usernameInfo = document.createElement('p');
+        usernameInfo.textContent = 'Please choose a unique username to continue:';
+        
+        const usernameLabel = document.createElement('label');
+        usernameLabel.setAttribute('for', 'username');
+        usernameLabel.textContent = 'Username';
+        
+        const usernameInput = document.createElement('input');
+        usernameInput.type = 'text';
+        usernameInput.id = 'username';
+        usernameInput.name = 'username';
+        usernameInput.placeholder = 'Choose a username';
+        usernameInput.minLength = 3;
+        usernameInput.maxLength = 32;
+        usernameInput.required = true;
+        
+        const usernameButton = document.createElement('button');
+        usernameButton.type = 'submit';
+        usernameButton.className = 'login-btn';
+        usernameButton.textContent = 'Save Username';
+        
+        usernameForm.appendChild(usernameTitle);
+        usernameForm.appendChild(usernameInfo);
+        usernameForm.appendChild(usernameLabel);
+        usernameForm.appendChild(usernameInput);
+        usernameForm.appendChild(usernameButton);
+        
+        usernameForm.addEventListener('submit', this.handleUsernameSubmit.bind(this));
+        
+        const errorElement = document.createElement('p');
+        errorElement.id = 'login-error';
+        errorElement.className = 'error-message';
+
+        if (!this.errorMessage) {
+            errorElement.classList.add('hidden');
+        }
+        errorElement.textContent = this.errorMessage;
+        
+        authContainer.appendChild(authHeader);
+        authContainer.appendChild(googleSigninButton);
+        authContainer.appendChild(usernameForm);
+        authContainer.appendChild(errorElement);
+        
+        authMain.appendChild(authContainer);
+        
+        const authFooter = document.createElement('footer');
+        authFooter.className = 'auth-footer';
+        
+        const footerText = document.createElement('p');
+        footerText.textContent = '© 2025 Football Quiz Platform. All rights reserved.';
+        
+        authFooter.appendChild(footerText);
+        
+        loginPage.appendChild(authMain);
+        loginPage.appendChild(authFooter);
+        
+        this.shadowRoot.appendChild(loginPage);
+        
+        this.checkGoogleAuthCode();
+    }
+    
+    checkGoogleAuthCode() {
         const urlParams = new URLSearchParams(window.location.search);
         const googleCode = urlParams.get('code');
         
@@ -232,20 +163,29 @@ class LoginForm extends HTMLElement {
     }
     
     async checkAuthentication() {
+        console.log('Checking authentication status');
         if (!window.authService) return;
         
-        const isAuthenticated = await window.authService.checkAuthentication();
-        if (isAuthenticated) {
-            if (window.authService.hasUsername()) {
-                window.location.href = '/home';
+        try {
+            const isAuthenticated = await window.authService.checkAuthentication();
+            if (isAuthenticated) {
+                if (window.authService.hasUsername()) {
+                    window.location.href = '/home';
+                } else {
+                    this.displayUsernameForm();
+                }
             } else {
-                this.displayUsernameForm();
+                console.log('User is not authenticated');
             }
+        } catch (error) {
+            console.error('Error checking authentication:', error);
         }
     }
         
     async handleGoogleLogin(googleCode) {
         try {
+            this.showLoadingState('Authenticating...');
+            
             const result = await window.authService.loginWithGoogle(googleCode);
             
             if (result.requiresUsername) {
@@ -254,15 +194,68 @@ class LoginForm extends HTMLElement {
                 window.location.href = '/home';
             }
         } catch (error) {
-            console.error('Google login error:', error);
+            this.hideLoadingState();
             this.showError('Login failed. Please try again.');
+        }
+    }
+    
+    showLoadingState(message = 'Loading...') {
+        this.hideError();
+        
+        let loadingElement = this.shadowRoot.querySelector('.loading-indicator');
+        
+        if (!loadingElement) {
+            loadingElement = document.createElement('div');
+            loadingElement.className = 'loading-indicator';
+            
+            const container = this.shadowRoot.querySelector('.auth-container');
+            if (container) {
+                container.appendChild(loadingElement);
+            }
+        }
+        
+        loadingElement.textContent = message;
+        
+        const googleLoginLink = this.shadowRoot.querySelector('#google-login-link');
+        if (googleLoginLink) {
+            googleLoginLink.style.pointerEvents = 'none';
+            googleLoginLink.style.opacity = '0.7';
+        }
+        
+        const usernameForm = this.shadowRoot.querySelector('#username-container');
+        if (usernameForm) {
+            const inputs = usernameForm.querySelectorAll('input, button');
+            inputs.forEach(input => {
+                input.disabled = true;
+            });
+        }
+    }
+    
+    hideLoadingState() {
+        const loadingElement = this.shadowRoot.querySelector('.loading-indicator');
+        if (loadingElement) {
+            loadingElement.remove();
+        }
+        
+        const googleLoginLink = this.shadowRoot.querySelector('#google-login-link');
+        if (googleLoginLink) {
+            googleLoginLink.style.pointerEvents = '';
+            googleLoginLink.style.opacity = '';
+        }
+        const usernameForm = this.shadowRoot.querySelector('#username-container');
+        if (usernameForm) {
+            const inputs = usernameForm.querySelectorAll('input, button');
+            inputs.forEach(input => {
+                input.disabled = false;
+            });
         }
     }
     
     async handleUsernameSubmit(event) {
         event.preventDefault();
-        
         const usernameInput = this.shadowRoot.querySelector('#username');
+        if (!usernameInput) return;
+        
         const username = usernameInput.value.trim();
         
         if (username.length < 3 || username.length > 32) {
@@ -271,22 +264,52 @@ class LoginForm extends HTMLElement {
         }
         
         try {
+            this.showLoadingState('Setting username...');
             await window.authService.setUsername(username);
             window.location.href = '/home';
         } catch (error) {
             console.error('Set username error:', error);
+            this.hideLoadingState();
             this.showError('Failed to set username. It might already be taken.');
         }
     }
     
     displayUsernameForm() {
         this.showUsernameForm = true;
-        this.render();
+        
+        const usernameForm = this.shadowRoot.querySelector('#username-container');
+        if (usernameForm) {
+            usernameForm.classList.remove('hidden');
+        }
+        
+        const googleSigninButton = this.shadowRoot.querySelector('#google-signin-button');
+        if (googleSigninButton) {
+            googleSigninButton.classList.add('hidden');
+        }
+
+        this.hideLoadingState();
     }
     
     showError(message) {
+        console.error('Login error:', message);
         this.errorMessage = message;
-        this.render();
+        
+        const errorElement = this.shadowRoot.querySelector('#login-error');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+        
+        this.hideLoadingState();
+    }
+    
+    hideError() {
+        this.errorMessage = '';
+        
+        const errorElement = this.shadowRoot.querySelector('#login-error');
+        if (errorElement) {
+            errorElement.classList.add('hidden');
+        }
     }
 }
 

@@ -25,12 +25,13 @@ class QuizCreator extends HTMLElement {
         this.handleEditQuestion = this.handleEditQuestion.bind(this);
         this.handleDeleteQuestion = this.handleDeleteQuestion.bind(this);
         this.handleManageAnswers = this.handleManageAnswers.bind(this);
+        
+        this.styleSheet = new CSSStyleSheet();
     }
 
     connectedCallback() {
+        this.loadStyles();
         this.render();
-        this.setupEventListeners();
-        
         this.checkAuthorization();
     }
     
@@ -41,6 +42,305 @@ class QuizCreator extends HTMLElement {
         }
         localStorage.removeItem('selected_quiz_id');
         localStorage.removeItem('selected_quiz_title');
+    }
+    
+    async loadStyles() {
+        const cssText = await fetch('./static/css/quizCreation/quizCreator.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+    }
+    
+    render() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
+        const main = document.createElement('main');
+        main.className = 'quiz-creator';
+        
+        const creatorContainer = document.createElement('section');
+        creatorContainer.className = 'creator-container';
+        
+        const sidebar = this.createSidebar();
+        creatorContainer.appendChild(sidebar);
+        
+        const creatorContent = document.createElement('section');
+        creatorContent.className = 'creator-content';
+        
+        creatorContent.appendChild(this.createQuizFormView());
+        creatorContent.appendChild(this.createQuestionsView());
+        creatorContent.appendChild(this.createQuestionFormView());
+        creatorContent.appendChild(this.createAnswersView());
+        
+        creatorContainer.appendChild(creatorContent);
+        main.appendChild(creatorContainer);
+        
+        const notification = document.createElement('section');
+        notification.id = 'notification';
+        notification.className = 'notification';
+        
+        this.shadowRoot.appendChild(main);
+        this.shadowRoot.appendChild(notification);
+        
+        this.setupEventListeners();
+    }
+    
+    createSidebar() {
+        const sidebar = document.createElement('aside');
+        sidebar.className = 'creator-sidebar';
+        
+        const step1 = document.createElement('section');
+        step1.className = `step-indicator ${this.viewMode === 'quiz' ? 'active' : this.isEditing ? 'completed' : ''}`;
+        
+        const step1Number = document.createElement('p');
+        step1Number.className = 'step-number';
+        step1Number.textContent = '1';
+        
+        const step1Label = document.createElement('p');
+        step1Label.className = 'step-label';
+        step1Label.textContent = 'Quiz Details';
+        
+        step1.appendChild(step1Number);
+        step1.appendChild(step1Label);
+        sidebar.appendChild(step1);
+        
+        const connector1 = document.createElement('section');
+        connector1.className = 'step-connector';
+        sidebar.appendChild(connector1);
+        
+        const step2 = document.createElement('section');
+        step2.className = `step-indicator ${this.viewMode === 'questions' ? 'active' : ''}`;
+        
+        const step2Number = document.createElement('p');
+        step2Number.className = 'step-number';
+        step2Number.textContent = '2';
+        
+        const step2Label = document.createElement('p');
+        step2Label.className = 'step-label';
+        step2Label.textContent = 'Manage Questions';
+        
+        step2.appendChild(step2Number);
+        step2.appendChild(step2Label);
+        sidebar.appendChild(step2);
+        
+        const connector2 = document.createElement('section');
+        connector2.className = 'step-connector';
+        sidebar.appendChild(connector2);
+        
+        const step3 = document.createElement('section');
+        step3.className = `step-indicator ${this.viewMode === 'question-form' || this.viewMode === 'answers' ? 'active' : ''}`;
+        
+        const step3Number = document.createElement('p');
+        step3Number.className = 'step-number';
+        step3Number.textContent = '3';
+        
+        const step3Label = document.createElement('p');
+        step3Label.className = 'step-label';
+        step3Label.textContent = 'Question Details';
+        
+        step3.appendChild(step3Number);
+        step3.appendChild(step3Label);
+        sidebar.appendChild(step3);
+        
+        const sidebarActions = document.createElement('section');
+        sidebarActions.className = 'sidebar-actions';
+        
+        const backButton = document.createElement('a');
+        backButton.href = '/admin';
+        backButton.className = 'creator-btn secondary-btn';
+        backButton.dataset.link = '';
+        backButton.textContent = 'Back to Dashboard';
+        
+        sidebarActions.appendChild(backButton);
+        sidebar.appendChild(sidebarActions);
+        
+        return sidebar;
+    }
+    
+    createQuizFormView() {
+        const quizFormContainer = document.createElement('section');
+        quizFormContainer.id = 'quiz-form-container';
+        quizFormContainer.className = `creator-view ${this.viewMode === 'quiz' ? '' : 'hidden'}`;
+        
+        const header = document.createElement('header');
+        header.className = 'creator-header';
+        
+        const h1 = document.createElement('h1');
+        h1.textContent = this.isEditing ? 'Edit Quiz' : 'Create New Quiz';
+        header.appendChild(h1);
+        
+        quizFormContainer.appendChild(header);
+        
+        const quizForm = document.createElement('quiz-form');
+        quizForm.id = 'quiz-form';
+        quizForm.setAttribute('editing', this.isEditing.toString());
+        quizForm.setAttribute('quiz-id', this.quizId || '');
+        quizForm.setAttribute('quiz-title', this.quizTitle || '');
+        
+        quizForm.addEventListener('quiz-submit', this.handleQuizSubmit);
+        
+        quizFormContainer.appendChild(quizForm);
+        
+        return quizFormContainer;
+    }
+    
+    createQuestionsView() {
+        const questionsContainer = document.createElement('section');
+        questionsContainer.id = 'questions-container';
+        questionsContainer.className = `creator-view ${this.viewMode === 'questions' ? '' : 'hidden'}`;
+        
+        const header = document.createElement('header');
+        header.className = 'creator-header';
+        
+        const h1 = document.createElement('h1');
+        h1.textContent = 'Questions for ';
+        
+        const titleSpan = document.createElement('span');
+        titleSpan.id = 'current-quiz-title';
+        titleSpan.textContent = this.quizTitle || 'Quiz';
+        h1.appendChild(titleSpan);
+        
+        const quizStatus = document.createElement('section');
+        quizStatus.id = 'quiz-status';
+        quizStatus.className = 'quiz-status';
+        
+        header.appendChild(h1);
+        header.appendChild(quizStatus);
+        questionsContainer.appendChild(header);
+        
+        const questionsInfo = document.createElement('section');
+        questionsInfo.className = 'questions-info';
+        
+        const infoText = document.createElement('p');
+        infoText.textContent = 'Add at least 5 questions with 4 answer options each (1 correct) to make the quiz playable.';
+        questionsInfo.appendChild(infoText);
+        
+        questionsContainer.appendChild(questionsInfo);
+        
+        const questionsList = document.createElement('questions-list');
+        questionsList.id = 'questions-list';
+        
+        questionsList.addEventListener('add-question', () => this.showQuestionForm());
+        questionsList.addEventListener('edit-question', (e) => this.handleEditQuestion(e.detail.questionId));
+        questionsList.addEventListener('delete-question', (e) => this.handleDeleteQuestion(e.detail.questionId));
+        questionsList.addEventListener('manage-answers', (e) => this.handleManageAnswers(e.detail.questionId, e.detail.questionText));
+        
+        questionsContainer.appendChild(questionsList);
+        
+        const navActions = document.createElement('section');
+        navActions.className = 'navigation-actions';
+        
+        const backBtn = document.createElement('button');
+        backBtn.id = 'back-to-quiz-btn';
+        backBtn.className = 'creator-btn secondary-btn';
+        backBtn.textContent = 'Back to Quiz Details';
+        backBtn.addEventListener('click', () => this.showQuizForm());
+        
+        const dashboardLink = document.createElement('a');
+        dashboardLink.href = '/admin';
+        dashboardLink.className = 'creator-btn primary-btn';
+        dashboardLink.dataset.link = '';
+        dashboardLink.textContent = 'Back to Dashboard';
+        
+        navActions.appendChild(backBtn);
+        navActions.appendChild(dashboardLink);
+        questionsContainer.appendChild(navActions);
+        
+        return questionsContainer;
+    }
+    
+   createQuestionFormView() {
+    const questionFormContainer = document.createElement('section');
+    questionFormContainer.id = 'question-form-container';
+    questionFormContainer.className = `creator-view ${this.viewMode === 'question-form' ? '' : 'hidden'}`;
+    
+    const header = document.createElement('header');
+    header.className = 'creator-header';
+    
+    const questionId = this.currentQuestionId || localStorage.getItem('current_question_id');
+    const isEditing = !!questionId;
+    
+    console.log(`Creating question form view. Question ID: ${questionId}, isEditing: ${isEditing}`);
+    
+    const h1 = document.createElement('h1');
+    h1.textContent = isEditing ? 'Edit Question' : 'Add Question';
+    header.appendChild(h1);
+    
+    questionFormContainer.appendChild(header);
+    
+    if (isEditing) {
+        const debugInfo = document.createElement('p');
+        debugInfo.style.color = 'var(--info)';
+        debugInfo.style.padding = '0.5rem';
+        debugInfo.textContent = `Editing Question ID: ${questionId}`;
+        questionFormContainer.appendChild(debugInfo);
+    }
+    
+    const questionForm = document.createElement('question-form');
+    questionForm.id = 'question-form';
+    
+    questionForm.setAttribute('quiz-id', this.quizId || '');
+    
+    if (isEditing) {
+        questionForm.setAttribute('editing', 'true');
+        if (questionId) {
+            questionForm.setAttribute('question-id', questionId);
+        }
+    } else {
+        questionForm.setAttribute('editing', 'false');
+    }
+    
+    questionForm.addEventListener('question-submit', this.handleQuestionSubmit);
+    questionForm.addEventListener('cancel', () => this.showQuestionsView());
+    
+    questionFormContainer.appendChild(questionForm);
+    
+    return questionFormContainer;
+}
+
+    
+    createAnswersView() {
+        const answersContainer = document.createElement('section');
+        answersContainer.id = 'answers-container';
+        answersContainer.className = `creator-view ${this.viewMode === 'answers' ? '' : 'hidden'}`;
+        
+        const header = document.createElement('header');
+        header.className = 'creator-header';
+        
+        const h1 = document.createElement('h1');
+        h1.textContent = 'Answers for Question';
+        
+        const answerStatus = document.createElement('section');
+        answerStatus.id = 'answer-status';
+        answerStatus.className = 'answer-status';
+        
+        header.appendChild(h1);
+        header.appendChild(answerStatus);
+        answersContainer.appendChild(header);
+        
+        const answersList = document.createElement('answers-list');
+        answersList.id = 'answers-list';
+        answersList.setAttribute('question-id', this.currentQuestionId || '');
+        answersList.addEventListener('back-to-questions', () => this.showQuestionsView());
+        
+        answersContainer.appendChild(answersList);
+        
+        return answersContainer;
+    }
+    
+    setupEventListeners() {
+        const links = this.shadowRoot.querySelectorAll('[data-link]');
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                localStorage.removeItem('current_question_id');
+                localStorage.removeItem('current_question_text');
+                
+                window.history.pushState(null, null, link.getAttribute('href'));
+                window.dispatchEvent(new PopStateEvent('popstate'));
+            });
+        });
     }
     
     async checkAuthorization() {
@@ -87,8 +387,9 @@ class QuizCreator extends HTMLElement {
             this.showNotification('Failed to load data. Please try again later.', 'error');
         }
     }
-
+    
     async loadCategories() {
+        console.log("cat");
         try {
             const categoryService = window.categoryService;
             if (!categoryService) {
@@ -97,7 +398,7 @@ class QuizCreator extends HTMLElement {
             }
             
             this.categories = await categoryService.getAllCategories();
-            
+            console.log(this.categories);
             const quizForm = this.shadowRoot.querySelector('#quiz-form');
             if (quizForm) {
                 setTimeout(() => {
@@ -111,6 +412,7 @@ class QuizCreator extends HTMLElement {
     }
     
     async loadDifficulties() {
+        console.log("loading diff");
         try {
             const difficultyService = window.difficultyService;
             if (!difficultyService) {
@@ -119,385 +421,12 @@ class QuizCreator extends HTMLElement {
             }
             
             this.difficulties = await difficultyService.getAllDifficultyLevels();
-            
+            console.log(this.difficulties)
             const questionForm = this.shadowRoot.querySelector('#question-form');
             if (questionForm) {
                 setTimeout(() => {
                     questionForm.difficulties = this.difficulties;
                 }, 0);
-            }
-        } catch (error) {
-            console.error('Error loading difficulties:', error);
-            this.showNotification('Failed to load difficulty levels. Please try again.', 'error');
-        }
-    }
-    
-    render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .quiz-creator {
-                    width: 100%;
-                    min-height: calc(100vh - 8rem);
-                    background-color: var(--gray-100);
-                }
-                
-                .creator-container {
-                    display: flex;
-                    width: 100%;
-                    height: 100%;
-                }
-                
-                .creator-sidebar {
-                    width: 16rem;
-                    background-color: white;
-                    border-right: 0.0625rem solid var(--gray-200);
-                    padding: 2rem 1rem;
-                    display: flex;
-                    flex-direction: column;
-                }
-                
-                .step-indicator {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                    margin-bottom: 1rem;
-                    padding: 0.5rem;
-                    border-radius: 0.25rem;
-                    transition: background-color 0.2s;
-                }
-                
-                .step-indicator.active {
-                    background-color: var(--gray-100);
-                }
-                
-                .step-number {
-                    width: 2rem;
-                    height: 2rem;
-                    border-radius: 50%;
-                    background-color: var(--gray-200);
-                    color: var(--gray-700);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: 600;
-                    transition: all 0.2s;
-                }
-                
-                .step-indicator.active .step-number {
-                    background-color: var(--primary);
-                    color: white;
-                }
-                
-                .step-indicator.completed .step-number {
-                    background-color: var(--success);
-                    color: white;
-                }
-                
-                .step-label {
-                    font-weight: 500;
-                    color: var(--gray-700);
-                }
-                
-                .step-indicator.active .step-label {
-                    color: var(--gray-900);
-                    font-weight: 600;
-                }
-                
-                .step-connector {
-                    width: 0.125rem;
-                    height: 2rem;
-                    background-color: var(--gray-200);
-                    margin-left: 1rem;
-                }
-                
-                .sidebar-actions {
-                    margin-top: auto;
-                    padding-top: 2rem;
-                }
-                
-                .creator-content {
-                    flex: 1;
-                    padding: 2rem;
-                    overflow-x: auto;
-                }
-                
-                .creator-view {
-                    width: 100%;
-                }
-                
-                .creator-view.hidden {
-                    display: none;
-                }
-                
-                .creator-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 2rem;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                }
-                
-                .creator-header h1 {
-                    margin: 0;
-                    font-size: 1.75rem;
-                }
-                
-                .creator-btn {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0.5rem 1rem;
-                    border-radius: 0.25rem;
-                    font-weight: 500;
-                    font-size: 0.875rem;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    border: none;
-                    text-decoration: none;
-                    font-family: inherit;
-                }
-                
-                .primary-btn {
-                    background-color: var(--primary);
-                    color: white;
-                }
-                
-                .primary-btn:hover {
-                    background-color: var(--primary-dark);
-                }
-                
-                .secondary-btn {
-                    background-color: var(--gray-200);
-                    color: var(--gray-700);
-                }
-                
-                .secondary-btn:hover {
-                    background-color: var(--gray-300);
-                }
-                
-                .questions-info {
-                    background-color: var(--info-light);
-                    color: var(--info-dark);
-                    padding: 1rem;
-                    border-radius: 0.25rem;
-                    margin-bottom: 1.5rem;
-                }
-                
-                .navigation-actions {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-top: 2rem;
-                }
-                
-                .notification {
-                    position: fixed;
-                    bottom: 2rem;
-                    right: 2rem;
-                    padding: 1rem 1.5rem;
-                    border-radius: 0.25rem;
-                    color: white;
-                    z-index: 1000;
-                    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
-                    transition: opacity 0.3s, transform 0.3s;
-                    opacity: 0;
-                    transform: translateY(1rem);
-                    pointer-events: none;
-                }
-                
-                .notification.visible {
-                    opacity: 1;
-                    transform: translateY(0);
-                    pointer-events: auto;
-                }
-                
-                .notification.success {
-                    background-color: var(--success);
-                }
-                
-                .notification.error {
-                    background-color: var(--error);
-                }
-                
-                .loading {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 2rem;
-                    color: var(--gray-500);
-                }
-                
-                .loading-spinner {
-                    display: inline-block;
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    border: 0.125rem solid currentColor;
-                    border-right-color: transparent;
-                    border-radius: 50%;
-                    margin-right: 0.5rem;
-                    animation: spin 0.75s linear infinite;
-                }
-                
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-            </style>
-            
-            <main class="quiz-creator">
-                <section class="creator-container">
-                    <aside class="creator-sidebar">
-                        <section class="step-indicator ${this.viewMode === 'quiz' ? 'active' : this.isEditing ? 'completed' : ''}">
-                            <p class="step-number">1</p>
-                            <p class="step-label">Quiz Details</p>
-                        </section>
-                        <section class="step-connector"></section>
-                        <section class="step-indicator ${this.viewMode === 'questions' ? 'active' : ''}">
-                            <p class="step-number">2</p>
-                            <p class="step-label">Manage Questions</p>
-                        </section>
-                        <section class="step-connector"></section>
-                        <section class="step-indicator ${this.viewMode === 'question-form' || this.viewMode === 'answers' ? 'active' : ''}">
-                            <p class="step-number">3</p>
-                            <p class="step-label">Question Details</p>
-                        </section>
-                        
-                        <section class="sidebar-actions">
-                            <a href="/admin" class="creator-btn secondary-btn" data-link>Back to Dashboard</a>
-                        </section>
-                    </aside>
-
-                    <section class="creator-content">
-                        <section id="quiz-form-container" class="creator-view ${this.viewMode === 'quiz' ? '' : 'hidden'}">
-                            <header class="creator-header">
-                                <h1>${this.isEditing ? 'Edit Quiz' : 'Create New Quiz'}</h1>
-                            </header>
-                            
-                            <quiz-form 
-                                id="quiz-form"
-                                editing="${this.isEditing}"
-                                quiz-id="${this.quizId || ''}"
-                                quiz-title="${this.quizTitle || ''}"
-                                @quiz-submit="${this.handleQuizSubmit}"
-                            ></quiz-form>
-                        </section>
-                        
-                        <section id="questions-container" class="creator-view ${this.viewMode === 'questions' ? '' : 'hidden'}">
-                            <header class="creator-header">
-                                <h1>Questions for <span id="current-quiz-title">${this.quizTitle || 'Quiz'}</span></h1>
-                                <section id="quiz-status" class="quiz-status"></section>
-                            </header>
-                            
-                            <section class="questions-info">
-                                <p>Add at least 5 questions with 4 answer options each (1 correct) to make the quiz playable.</p>
-                            </section>
-                            
-                            <questions-list 
-                                id="questions-list" 
-                                @add-question="${() => this.showQuestionForm()}"
-                                @edit-question="${(e) => this.handleEditQuestion(e.detail.questionId)}"
-                                @delete-question="${(e) => this.handleDeleteQuestion(e.detail.questionId)}"
-                                @manage-answers="${(e) => this.handleManageAnswers(e.detail.questionId, e.detail.questionText)}"
-                            ></questions-list>
-                            
-                            <section class="navigation-actions">
-                                <button id="back-to-quiz-btn" class="creator-btn secondary-btn">Back to Quiz Details</button>
-                                <a href="/admin" class="creator-btn primary-btn" data-link>Back to Dashboard</a>
-                            </section>
-                        </section>
-                        
-                        <section id="question-form-container" class="creator-view ${this.viewMode === 'question-form' ? '' : 'hidden'}">
-                            <header class="creator-header">
-                                <h1>${this.currentQuestionId ? 'Edit Question' : 'Add Question'}</h1>
-                            </header>
-                            
-                            <question-form 
-                                id="question-form"
-                                editing="${!!this.currentQuestionId}"
-                                question-id="${this.currentQuestionId || ''}"
-                                quiz-id="${this.quizId || ''}"
-                                @question-submit="${this.handleQuestionSubmit}"
-                                @cancel="${() => this.showQuestionsView()}"
-                            ></question-form>
-                        </section>
-                        
-                        <section id="answers-container" class="creator-view ${this.viewMode === 'answers' ? '' : 'hidden'}">
-                            <header class="creator-header">
-                                <h1>Answers for Question</h1>
-                                <section id="answer-status" class="answer-status"></section>
-                            </header>
-                            
-                            <answers-list 
-                                id="answers-list" 
-                                question-id="${this.currentQuestionId || ''}"
-                                @back-to-questions="${() => this.showQuestionsView()}"
-                            ></answers-list>
-                        </section>
-                    </section>
-                </section>
-            </main>
-            
-            <section id="notification" class="notification"></section>
-        `;
-    }
-    
-    setupEventListeners() {
-        const backToQuizBtn = this.shadowRoot.querySelector('#back-to-quiz-btn');
-        if (backToQuizBtn) {
-            backToQuizBtn.addEventListener('click', () => this.showQuizForm());
-        }
-        
-        const links = this.shadowRoot.querySelectorAll('[data-link]');
-        links.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                localStorage.removeItem('current_question_id');
-                localStorage.removeItem('current_question_text');
-                
-                window.history.pushState(null, null, link.getAttribute('href'));
-                window.dispatchEvent(new PopStateEvent('popstate'));
-            });
-        });
-    }
-    
-    async loadCategories() {
-        try {
-            const categoryService = window.categoryService;
-            if (!categoryService) {
-                console.warn("Category service not available");
-                return;
-            }
-            
-            this.categories = await categoryService.getAllCategories();
-            
-            const quizForm = this.shadowRoot.querySelector('#quiz-form');
-            if (quizForm) {
-                quizForm.categories = this.categories;
-            }
-        } catch (error) {
-            console.error('Error loading categories:', error);
-            this.showNotification('Failed to load categories. Please try again.', 'error');
-        }
-    }
-    
-    async loadDifficulties() {
-        try {
-            const difficultyService = window.difficultyService;
-            if (!difficultyService) {
-                console.warn("Difficulty service not available");
-                return;
-            }
-            
-            this.difficulties = await difficultyService.getAllDifficultyLevels();
-            
-            const questionForm = this.shadowRoot.querySelector('#question-form');
-            if (questionForm) {
-                questionForm.difficulties = this.difficulties;
             }
         } catch (error) {
             console.error('Error loading difficulties:', error);
@@ -571,14 +500,51 @@ class QuizCreator extends HTMLElement {
         const statusContainer = this.shadowRoot.querySelector('#quiz-status');
         if (!statusContainer) return;
         
-        const isValid = validation ? validation.is_valid : this.questions.filter(q => q.is_valid).length >= 5;
-        const validQuestions = validation ? validation.valid_questions : this.questions.filter(q => q.is_valid).length;
+        while (statusContainer.firstChild) {
+            statusContainer.removeChild(statusContainer.firstChild);
+        }
         
-        statusContainer.innerHTML = `
-            <span class="status-badge ${isValid ? 'valid-status' : 'invalid-status'}">
-                ${isValid ? 'Quiz Ready' : `Quiz Not Ready (${validQuestions}/5 valid questions)`}
-            </span>
-        `;
+        let isValid = false;
+        let validQuestions = 0;
+        let validationMessage = '';
+        
+        if (validation) {
+            isValid = validation.is_valid;
+            validQuestions = validation.valid_questions;
+            
+            const hasInvalidAnswers = validation.questions && 
+                validation.questions.some(q => 
+                    !q.is_valid && 
+                    q.validation_messages && 
+                    q.validation_messages.some(msg => msg.includes('answer'))
+                );
+                
+            if (hasInvalidAnswers) {
+                isValid = false;
+                validationMessage = 'Some questions have invalid answers';
+            }
+        } else {
+            validQuestions = this.questions.filter(q => q.is_valid).length;
+            isValid = validQuestions >= 5 && 
+                    !this.questions.some(q => 
+                        !q.is_valid && 
+                        q.validation_messages && 
+                        q.validation_messages.some(msg => msg.includes('answer'))
+                    );
+        }
+        
+        const statusBadge = document.createElement('span');
+        statusBadge.className = `status-badge ${isValid ? 'status-valid' : 'status-invalid'}`;
+        
+        if (isValid) {
+            statusBadge.textContent = 'Quiz Ready';
+        } else if (validationMessage) {
+            statusBadge.textContent = `Quiz Not Ready (${validationMessage})`;
+        } else {
+            statusBadge.textContent = `Quiz Not Ready (${validQuestions}/5 valid questions)`;
+        }
+        
+        statusContainer.appendChild(statusBadge);
     }
     
     changeView(viewName) {
@@ -586,15 +552,40 @@ class QuizCreator extends HTMLElement {
         
         const views = this.shadowRoot.querySelectorAll('.creator-view');
         views.forEach(view => {
-            view.classList.add('hidden');
+            if (view.id === `${viewName}-container`) {
+                view.classList.remove('hidden');
+            } else {
+                view.classList.add('hidden');
+            }
         });
         
-        const activeView = this.shadowRoot.querySelector(`#${viewName}-container`);
-        if (activeView) {
-            activeView.classList.remove('hidden');
-        }
-        
         this.updateStepIndicators();
+    }
+    
+    updateStepIndicators() {
+        const stepIndicators = this.shadowRoot.querySelectorAll('.step-indicator');
+        
+        stepIndicators.forEach((step, index) => {
+            step.classList.remove('active', 'completed');
+            
+            if (index === 0) { 
+                if (this.viewMode === 'quiz') {
+                    step.classList.add('active');
+                } else if (this.isEditing) {
+                    step.classList.add('completed');
+                }
+            } else if (index === 1) { 
+                if (this.viewMode === 'questions') {
+                    step.classList.add('active');
+                } else if (this.viewMode === 'question-form' || this.viewMode === 'answers') {
+                    step.classList.add('completed');
+                }
+            } else if (index === 2) { 
+                if (this.viewMode === 'question-form' || this.viewMode === 'answers') {
+                    step.classList.add('active');
+                }
+            }
+        });
     }
     
     showQuizForm() {
@@ -627,39 +618,16 @@ class QuizCreator extends HTMLElement {
         const answersList = this.shadowRoot.querySelector('#answers-list');
         if (answersList) {
             answersList.setAttribute('question-id', questionId);
-            answersList.loadAnswers();
+            if (typeof answersList.loadAnswers === 'function') {
+                answersList.loadAnswers();
+            }
         }
         
         this.changeView('answers');
     }
     
-    updateStepIndicators() {
-        const stepIndicators = this.shadowRoot.querySelectorAll('.step-indicator');
-        
-        stepIndicators.forEach((step, index) => {
-            step.classList.remove('active', 'completed');
-            
-            if (index === 0) { 
-                if (this.viewMode === 'quiz-form') {
-                    step.classList.add('active');
-                } else if (this.isEditing) {
-                    step.classList.add('completed');
-                }
-            } else if (index === 1) { 
-                if (this.viewMode === 'questions') {
-                    step.classList.add('active');
-                } else if (this.viewMode === 'question-form' || this.viewMode === 'answers') {
-                    step.classList.add('completed');
-                }
-            } else if (index === 2) { 
-                if (this.viewMode === 'question-form' || this.viewMode === 'answers') {
-                    step.classList.add('active');
-                }
-            }
-        });
-    }
-    
     async handleQuizSubmit(event) {
+        console.log('QuizCreator: handleQuizSubmit called', event.detail);
         const { quiz, isNew } = event.detail;
         
         try {
@@ -702,59 +670,87 @@ class QuizCreator extends HTMLElement {
     }
     
     async handleQuestionSubmit(event) {
-        const { question, isNew } = event.detail;
-        
-        try {
-            const questionService = window.questionService;
-            if (!questionService) {
-                throw new Error('Question service not available');
-            }
-            
-            if (isNew) {
-                const newQuestion = await questionService.createQuestion({
-                    ...question,
-                    quiz_id: this.quizId
-                });
-                
-                this.currentQuestionId = newQuestion.question_id;
-                this.showNotification('Question created successfully');
-            } else {
-                await questionService.updateQuestion(this.currentQuestionId, question);
-                this.showNotification('Question updated successfully');
-            }
-            
-            this.showAnswersView(this.currentQuestionId);
-            
-        } catch (error) {
-            console.error('Error saving question:', error);
-            this.showNotification('Failed to save question: ' + (error.message || 'Unknown error'), 'error');
+    console.log('QuizCreator: handleQuestionSubmit called', event.detail);
+    const { question, isNew } = event.detail;
+    
+    try {
+        const questionService = window.questionService;
+        if (!questionService) {
+            throw new Error('Question service not available');
         }
+        
+        const questionId = this.currentQuestionId;
+        
+        console.log('Current question state:', {
+            isNew,
+            questionId,
+            localStorageId: localStorage.getItem('current_question_id'),
+            question
+        });
+        
+        if (isNew || !questionId) {
+            console.log('Creating new question with data:', question);
+            const newQuestion = await questionService.createQuestion({
+                ...question,
+                quiz_id: this.quizId
+            });
+            
+            this.currentQuestionId = newQuestion.question_id;
+            localStorage.setItem('current_question_id', newQuestion.question_id);
+            console.log(`Created question with ID ${newQuestion.question_id} and updated state`);
+            
+            this.showNotification('Question created successfully');
+        } else {
+            console.log(`Updating question ${questionId} with data:`, question);
+            await questionService.updateQuestion(questionId, question);
+            this.showNotification('Question updated successfully');
+        }
+        
+        this.showAnswersView(this.currentQuestionId);
+        
+    } catch (error) {
+        console.error('Error saving question:', error);
+        this.showNotification('Failed to save question: ' + (error.message || 'Unknown error'), 'error');
     }
+}
     
     async handleEditQuestion(questionId) {
-        try {
-            const questionService = window.questionService;
-            if (!questionService) {
-                throw new Error('Question service not available');
-            }
-            
-            const question = await questionService.getQuestionById(questionId);
-            
-            this.currentQuestionId = questionId;
-            
-            const questionForm = this.shadowRoot.querySelector('#question-form');
-            if (questionForm) {
-                questionForm.setQuestionData(question);
-                questionForm.setEditing(true);
-            }
-            
-            this.changeView('question-form');
-            
-        } catch (error) {
-            console.error('Error loading question:', error);
-            this.showNotification('Failed to load question: ' + (error.message || 'Unknown error'), 'error');
+    try {
+        console.log(`QuizCreator: Editing question with ID: ${questionId}`);
+        
+        this.currentQuestionId = questionId;
+        localStorage.setItem('current_question_id', questionId);
+        console.log(`Set currentQuestionId to ${questionId} and saved to localStorage`);
+        
+        const questionService = window.questionService;
+        if (!questionService) {
+            throw new Error('Question service not available');
         }
+        
+        const question = await questionService.getQuestionById(questionId);
+        console.log('Question data loaded for editing:', question);
+        
+        this.changeView('question-form');
+        
+        const questionForm = this.shadowRoot.querySelector('#question-form');
+        if (questionForm) {
+            questionForm.setAttribute('question-id', questionId);
+            console.log(`Set question-id attribute on form to ${questionId}`);
+            
+            questionForm.setAttribute('editing', 'true');
+            
+            questionForm.setQuestionData(question);
+            
+            console.log('Question form prepared for editing with ID:', questionId);
+        } else {
+            console.error('Question form element not found!');
+        }
+        
+    } catch (error) {
+        console.error('Error loading question for editing:', error);
+        this.showNotification('Failed to load question: ' + (error.message || 'Unknown error'), 'error');
     }
+}
     
     async handleDeleteQuestion(questionId) {
         try {
@@ -793,6 +789,10 @@ class QuizCreator extends HTMLElement {
     showNotification(message, type = 'success') {
         const notification = this.shadowRoot.querySelector('#notification');
         if (!notification) return;
+        
+        while (notification.firstChild) {
+            notification.removeChild(notification.firstChild);
+        }
         
         notification.textContent = message;
         notification.className = `notification ${type}`;

@@ -11,11 +11,12 @@ class AnswersList extends HTMLElement {
         this.error = null;
         this.showAnswerForm = true;
         this.questionInfo = null;
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
-        this.setupEventListeners();
         this.loadAnswers();
     }
     
@@ -25,411 +26,266 @@ class AnswersList extends HTMLElement {
         }
     }
     
+    async loadStyles() {
+        const cssText = await fetch('./static/css/quizCreation/answerList.css').then(r => r.text());
+        this.styleSheet.replaceSync(cssText);
+        this.shadowRoot.adoptedStyleSheets = [this.styleSheet];
+    }
+    
     render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .question-preview {
-                    background-color: white;
-                    padding: 1.5rem;
-                    border-radius: 0.5rem;
-                    margin-bottom: 1.5rem;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                }
-                
-                .question-preview h2 {
-                    margin: 0;
-                    font-size: 1.25rem;
-                    color: var(--gray-800);
-                }
-                
-                .answers-list {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-                    gap: 1rem;
-                    margin-bottom: 2rem;
-                }
-                
-                .answer-card {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    background-color: white;
-                    padding: 1rem;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                    transition: transform 0.2s ease;
-                }
-                
-                .answer-card:hover {
-                    transform: translateY(-0.125rem);
-                }
-                
-                .answer-card.correct {
-                    border-left: 0.25rem solid var(--success);
-                }
-                
-                .answer-content {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    flex: 1;
-                }
-                
-                .answer-marker {
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    border-radius: 50%;
-                    background-color: var(--gray-200);
-                    color: var(--success);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: bold;
-                }
-                
-                .answer-text {
-                    margin: 0;
-                }
-                
-                .answer-actions {
-                    display: flex;
-                    gap: 0.5rem;
-                }
-                
-                .action-btn {
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                    width: 2rem;
-                    height: 2rem;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: background-color 0.2s ease;
-                }
-                
-                .action-btn:hover {
-                    background-color: var(--gray-200);
-                }
-                
-                .answer-form {
-                    background-color: white;
-                    padding: 1.5rem;
-                    border-radius: 0.5rem;
-                    margin-bottom: 2rem;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                }
-                
-                .answer-form.hidden {
-                    display: none;
-                }
-                
-                .answer-form h3 {
-                    margin-top: 0;
-                    margin-bottom: 1.5rem;
-                    font-size: 1.25rem;
-                }
-                
-                .form-group {
-                    margin-bottom: 1.5rem;
-                }
-                
-                .form-group label {
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 500;
-                    color: var(--gray-700);
-                }
-                
-                .form-group input {
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 0.0625rem solid var(--gray-300);
-                    border-radius: 0.25rem;
-                    font-size: 1rem;
-                    background-color: white;
-                    transition: border-color 0.2s;
-                    font-family: inherit;
-                }
-                
-                .form-group input:focus {
-                    outline: none;
-                    border-color: var(--primary);
-                    box-shadow: 0 0 0 0.125rem rgba(59, 130, 246, 0.2);
-                }
-                
-                .form-help {
-                    font-size: 0.75rem;
-                    color: var(--gray-500);
-                    margin-top: 0.25rem;
-                }
-                
-                .form-check {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    margin-bottom: 1rem;
-                }
-                
-                .form-check input[type="checkbox"] {
-                    width: auto;
-                }
-                
-                .form-actions {
-                    display: flex;
-                    justify-content: flex-end;
-                    gap: 1rem;
-                    margin-top: 1.5rem;
-                }
-                
-                .navigation-actions {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-top: 2rem;
-                }
-                
-                .btn {
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 0.25rem;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    border: none;
-                    font-family: inherit;
-                    font-size: 0.875rem;
-                }
-                
-                .btn-secondary {
-                    background-color: var(--gray-200);
-                    color: var(--gray-700);
-                }
-                
-                .btn-secondary:hover {
-                    background-color: var(--gray-300);
-                }
-
-                .btn-primary {
-                    background-color: var(--primary);
-                    color: white;
-                }
-                
-                .btn-primary:hover {
-                    background-color: var(--primary-dark);
-                }
-                
-                .empty-message {
-                    text-align: center;
-                    padding: 3rem 1rem;
-                    background-color: var(--gray-50);
-                    border-radius: 0.5rem;
-                    margin-bottom: 2rem;
-                }
-                
-                .empty-title {
-                    font-size: 1.25rem;
-                    font-weight: 600;
-                    margin-bottom: 0.5rem;
-                    color: var(--gray-700);
-                }
-                
-                .empty-message-text {
-                    color: var(--gray-500);
-                    max-width: 30rem;
-                    margin: 0 auto;
-                }
-                
-                .loading {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 2rem;
-                    color: var(--gray-500);
-                }
-                
-                .loading-spinner {
-                    display: inline-block;
-                    width: 1.5rem;
-                    height: 1.5rem;
-                    border: 0.125rem solid currentColor;
-                    border-right-color: transparent;
-                    border-radius: 50%;
-                    margin-right: 0.5rem;
-                    animation: spin 0.75s linear infinite;
-                }
-                
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-                
-                .error-message {
-                    color: var(--error);
-                    text-align: center;
-                    padding: 1rem;
-                    background-color: var(--error-light);
-                    border-radius: 0.5rem;
-                    margin-bottom: 1rem;
-                }
-                
-                .status-badge {
-                    display: inline-block;
-                    padding: 0.25rem 0.5rem;
-                    border-radius: 0.25rem;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                }
-                
-                .status-valid {
-                    background-color: var(--success-light);
-                    color: var(--success-dark);
-                }
-                
-                .status-invalid {
-                    background-color: var(--error-light);
-                    color: var(--error-dark);
-                }
-            </style>
-            
-            <article class="question-preview">
-                <h2 id="current-question-text">${this.questionInfo?.question_text || 'Loading question...'}</h2>
-                ${this.questionInfo ? `
-                    <section id="answer-status" class="answer-status">
-                        <p class="status-badge ${this.questionInfo.is_valid ? 'status-valid' : 'status-invalid'}">
-                            ${this.questionInfo.is_valid ? 'Valid question' : this.questionInfo.validation_message || 'Invalid question'}
-                        </p>
-                    </section>
-                ` : ''}
-            </article>
-            
-            <section class="answers-content">
-                ${this.renderAnswersList()}
-                
-                ${this.showAnswerForm && this.answers.length < 4 ? `
-                    <form class="answer-form" id="add-answer-form">
-                        <h3>Add Answer Option</h3>
-                        <section class="form-group">
-                            <label for="answer-text">Answer Text</label>
-                            <input type="text" id="answer-text" required placeholder="Enter answer option" maxlength="128">
-                            <p class="form-help">Maximum 128 characters</p>
-                        </section>
-                        
-                        <section class="form-check">
-                            <input type="checkbox" id="answer-correct">
-                            <label for="answer-correct">Mark as correct answer</label>
-                        </section>
-                        
-                        <section class="form-actions">
-                            <button type="button" id="cancel-answer-btn" class="btn btn-secondary">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save Answer</button>
-                        </section>
-                    </form>
-                ` : ''}
-            </section>
-            
-            <section class="navigation-actions">
-                <button id="back-to-questions-btn" class="btn btn-secondary">Back to Questions</button>
-            </section>
-        `;
-    }
-    
-    renderAnswersList() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
+        const questionPreview = this.createQuestionPreview();
+        this.shadowRoot.appendChild(questionPreview);
+        
+        const answersContent = document.createElement('section');
+        answersContent.className = 'answers-content';
+        
         if (this.loading) {
-            return `
-                <section class="loading">
-                    <span class="loading-spinner"></span>
-                    <p>Loading answers...</p>
-                </section>
-            `;
-        }
-        
-        if (this.error) {
-            return `<p class="error-message">${this.error}</p>`;
-        }
-        
-        if (this.answers.length === 0) {
-            return `
-                <section class="empty-message">
-                    <h3 class="empty-title">No answers found</h3>
-                    <p class="empty-message-text">Add 4 answer options with 1 correct answer.</p>
-                </section>
-            `;
-        }
-        
-        return `
-            <section class="answers-list">
-                ${this.answers.map(answer => this.renderAnswerCard(answer)).join('')}
-            </section>
-        `;
-    }
-    
-    renderAnswerCard(answer) {
-        return `
-            <article class="answer-card ${answer.is_correct ? 'correct' : ''}" data-id="${answer.answer_id}">
-                <section class="answer-content">
-                    <span class="answer-marker">${answer.is_correct ? '✓' : ''}</span>
-                    <p class="answer-text">${answer.answer_text}</p>
-                </section>
-                <section class="answer-actions">
-                    ${!answer.is_correct ? `
-                        <button class="action-btn mark-correct" title="Mark as Correct" data-id="${answer.answer_id}">
-                            <span aria-hidden="true">✓</span>
-                        </button>
-                    ` : ''}
-                    <button class="action-btn delete-answer" title="Delete Answer" data-id="${answer.answer_id}">
-                        <span aria-hidden="true">🗑️</span>
-                    </button>
-                </section>
-            </article>
-        `;
-    }
-    
-    setupEventListeners() {
-        const backToQuestionsBtn = this.shadowRoot.querySelector('#back-to-questions-btn');
-        if (backToQuestionsBtn) {
-            backToQuestionsBtn.addEventListener('click', () => {
-                this.dispatchEvent(new CustomEvent('back-to-questions', {
-                    bubbles: true,
-                    composed: true
-                }));
+            answersContent.appendChild(this.createLoadingSection());
+        } else if (this.error) {
+            const errorMessage = document.createElement('p');
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = this.error;
+            answersContent.appendChild(errorMessage);
+        } else if (this.answers.length === 0) {
+            answersContent.appendChild(this.createEmptySection());
+        } else {
+            const answersList = document.createElement('section');
+            answersList.className = 'answers-list';
+            
+            this.answers.forEach(answer => {
+                answersList.appendChild(this.createAnswerCard(answer));
             });
+            
+            answersContent.appendChild(answersList);
         }
         
-        const answerForm = this.shadowRoot.querySelector('#add-answer-form');
-        if (answerForm) {
-            answerForm.addEventListener('submit', this.handleAddAnswer.bind(this));
+        if (this.showAnswerForm && this.answers.length < 4) {
+            answersContent.appendChild(this.createAnswerForm());
         }
         
-        const cancelAnswerBtn = this.shadowRoot.querySelector('#cancel-answer-btn');
-        if (cancelAnswerBtn) {
-            cancelAnswerBtn.addEventListener('click', () => {
-                const answerText = this.shadowRoot.querySelector('#answer-text');
-                const answerCorrect = this.shadowRoot.querySelector('#answer-correct');
-                
-                if (answerText) answerText.value = '';
-                if (answerCorrect) answerCorrect.checked = false;
-            });
-        }
+        this.shadowRoot.appendChild(answersContent);
         
-        const markCorrectButtons = this.shadowRoot.querySelectorAll('.mark-correct');
-        markCorrectButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const answerId = button.dataset.id;
-                this.handleMarkCorrect(answerId);
-            });
+        const navigationActions = document.createElement('section');
+        navigationActions.className = 'navigation-actions';
+        
+        const backButton = document.createElement('button');
+        backButton.id = 'back-to-questions-btn';
+        backButton.className = 'btn btn-secondary';
+        backButton.textContent = 'Back to Questions';
+        backButton.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('back-to-questions', {
+                bubbles: true,
+                composed: true
+            }));
         });
         
-        const deleteButtons = this.shadowRoot.querySelectorAll('.delete-answer');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const answerId = button.dataset.id;
-                this.handleDeleteAnswer(answerId);
+        navigationActions.appendChild(backButton);
+        this.shadowRoot.appendChild(navigationActions);
+    }
+    
+    createQuestionPreview() {
+        const questionPreview = document.createElement('article');
+        questionPreview.className = 'question-preview';
+        
+        const questionText = document.createElement('h2');
+        questionText.id = 'current-question-text';
+        questionText.textContent = this.questionInfo?.question_text || 'Loading question...';
+        
+        questionPreview.appendChild(questionText);
+        
+        if (this.questionInfo) {
+            const answerStatus = document.createElement('section');
+            answerStatus.id = 'answer-status';
+            answerStatus.className = 'answer-status';
+            
+            const statusBadge = document.createElement('p');
+            statusBadge.className = `status-badge ${this.questionInfo.is_valid ? 'status-valid' : 'status-invalid'}`;
+            statusBadge.textContent = this.questionInfo.is_valid 
+                ? 'Valid question' 
+                : this.questionInfo.validation_message || 'Invalid question';
+            
+            answerStatus.appendChild(statusBadge);
+            questionPreview.appendChild(answerStatus);
+        }
+        
+        return questionPreview;
+    }
+    
+    createLoadingSection() {
+        const loadingSection = document.createElement('section');
+        loadingSection.className = 'loading';
+        
+        const spinner = document.createElement('span');
+        spinner.className = 'loading-spinner';
+        
+        const loadingText = document.createElement('p');
+        loadingText.textContent = 'Loading answers...';
+        
+        loadingSection.appendChild(spinner);
+        loadingSection.appendChild(loadingText);
+        
+        return loadingSection;
+    }
+    
+    createEmptySection() {
+        const emptyMessage = document.createElement('section');
+        emptyMessage.className = 'empty-message';
+        
+        const title = document.createElement('h3');
+        title.className = 'empty-title';
+        title.textContent = 'No answers found';
+        
+        const message = document.createElement('p');
+        message.className = 'empty-message-text';
+        message.textContent = 'Add 4 answer options with 1 correct answer.';
+        
+        emptyMessage.appendChild(title);
+        emptyMessage.appendChild(message);
+        
+        return emptyMessage;
+    }
+    
+    createAnswerCard(answer) {
+        const answerCard = document.createElement('article');
+        answerCard.className = `answer-card ${answer.is_correct ? 'correct' : ''}`;
+        answerCard.dataset.id = answer.answer_id;
+        
+        const contentSection = document.createElement('section');
+        contentSection.className = 'answer-content';
+        
+        const marker = document.createElement('span');
+        marker.className = 'answer-marker';
+        marker.textContent = answer.is_correct ? '✓' : '';
+        
+        const text = document.createElement('p');
+        text.className = 'answer-text';
+        text.textContent = answer.answer_text;
+        
+        contentSection.appendChild(marker);
+        contentSection.appendChild(text);
+        
+        const actionsSection = document.createElement('section');
+        actionsSection.className = 'answer-actions';
+        
+        if (!answer.is_correct) {
+            const markCorrectBtn = document.createElement('button');
+            markCorrectBtn.className = 'action-btn mark-correct';
+            markCorrectBtn.title = 'Mark as Correct';
+            markCorrectBtn.dataset.id = answer.answer_id;
+            
+            const markIcon = document.createElement('span');
+            markIcon.setAttribute('aria-hidden', 'true');
+            markIcon.textContent = '✓';
+            
+            markCorrectBtn.appendChild(markIcon);
+            markCorrectBtn.addEventListener('click', () => {
+                this.handleMarkCorrect(answer.answer_id);
             });
+            
+            actionsSection.appendChild(markCorrectBtn);
+        }
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'action-btn delete-answer';
+        deleteBtn.title = 'Delete Answer';
+        deleteBtn.dataset.id = answer.answer_id;
+        
+        const deleteIcon = document.createElement('span');
+        deleteIcon.setAttribute('aria-hidden', 'true');
+        deleteIcon.textContent = '🗑️';
+        
+        deleteBtn.appendChild(deleteIcon);
+        deleteBtn.addEventListener('click', () => {
+            this.handleDeleteAnswer(answer.answer_id);
         });
+        
+        actionsSection.appendChild(deleteBtn);
+        
+        answerCard.appendChild(contentSection);
+        answerCard.appendChild(actionsSection);
+        
+        return answerCard;
+    }
+    
+    createAnswerForm() {
+        const form = document.createElement('form');
+        form.className = 'answer-form';
+        form.id = 'add-answer-form';
+        form.addEventListener('submit', this.handleAddAnswer.bind(this));
+        
+        const formTitle = document.createElement('h3');
+        formTitle.textContent = 'Add Answer Option';
+        
+        const textGroup = document.createElement('section');
+        textGroup.className = 'form-group';
+        
+        const textLabel = document.createElement('label');
+        textLabel.setAttribute('for', 'answer-text');
+        textLabel.textContent = 'Answer Text';
+        
+        const textInput = document.createElement('input');
+        textInput.type = 'text';
+        textInput.id = 'answer-text';
+        textInput.required = true;
+        textInput.placeholder = 'Enter answer option';
+        textInput.maxLength = 128;
+        
+        const textHelp = document.createElement('p');
+        textHelp.className = 'form-help';
+        textHelp.textContent = 'Maximum 128 characters';
+        
+        textGroup.appendChild(textLabel);
+        textGroup.appendChild(textInput);
+        textGroup.appendChild(textHelp);
+        
+        const checkGroup = document.createElement('section');
+        checkGroup.className = 'form-check';
+        
+        const checkInput = document.createElement('input');
+        checkInput.type = 'checkbox';
+        checkInput.id = 'answer-correct';
+        
+        const checkLabel = document.createElement('label');
+        checkLabel.setAttribute('for', 'answer-correct');
+        checkLabel.textContent = 'Mark as correct answer';
+        
+        checkGroup.appendChild(checkInput);
+        checkGroup.appendChild(checkLabel);
+        
+        const formActions = document.createElement('section');
+        formActions.className = 'form-actions';
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.id = 'cancel-answer-btn';
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.addEventListener('click', () => {
+            const answerText = this.shadowRoot.querySelector('#answer-text');
+            const answerCorrect = this.shadowRoot.querySelector('#answer-correct');
+            
+            if (answerText) answerText.value = '';
+            if (answerCorrect) answerCorrect.checked = false;
+        });
+        
+        const submitBtn = document.createElement('button');
+        submitBtn.type = 'submit';
+        submitBtn.className = 'btn btn-primary';
+        submitBtn.textContent = 'Save Answer';
+        
+        formActions.appendChild(cancelBtn);
+        formActions.appendChild(submitBtn);
+        
+        form.appendChild(formTitle);
+        form.appendChild(textGroup);
+        form.appendChild(checkGroup);
+        form.appendChild(formActions);
+        
+        return form;
     }
     
     async loadAnswers() {
@@ -463,7 +319,6 @@ class AnswersList extends HTMLElement {
             this.loading = false;
             this.showAnswerForm = this.answers.length < 4;
             this.render();
-            this.setupEventListeners();
             
         } catch (error) {
             console.error('Error loading answers:', error);

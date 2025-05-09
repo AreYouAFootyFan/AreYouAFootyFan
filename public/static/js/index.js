@@ -12,6 +12,8 @@ import quizAttemptService from "./services/quiz-attempt.service.js";
 import quizValidatorService from "./services/quiz-validator.service.js";
 import statsService from "./services/stats.service.js";
 import answerService from "./services/answer.service.js";
+import difficultyService from "./services/difficulty.service.js";
+import questionService from "./services/question.service.js";
 
 import "./services/api.service.js";
 import "./services/category.service.js";
@@ -22,6 +24,8 @@ import "./services/answer.service.js";
 import "./services/quiz-attempt.service.js";
 import "./services/quiz-validator.service.js";
 import "./services/stats.service.js";
+import "./services/difficulty.service.js";
+import "./services/question.service.js";
 
 window.authService = authService;
 window.categoryService = categoryService;
@@ -31,6 +35,8 @@ window.quizAttemptService = quizAttemptService;
 window.quizValidatorService = quizValidatorService;
 window.statsService = statsService;
 window.answerService = answerService;
+window.difficultyService = difficultyService;
+window.questionService = questionService;
 
 
 let currentView = null;
