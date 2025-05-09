@@ -1,0 +1,22 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.admin-page {
+    width: 100%;
+    min-height: calc(100vh - 8rem);
+    background-color: var(--gray-100);
+}
+
+.admin-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-x: auto;
+}

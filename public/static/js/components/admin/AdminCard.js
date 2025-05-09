@@ -6,11 +6,14 @@ class AdminCard extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
         this.setupEventListeners();
+        this.updateFullWidthStyle();
     }
     
     attributeChangedCallback(name, oldValue, newValue) {
@@ -19,73 +22,85 @@ class AdminCard extends HTMLElement {
         }
     }
     
+    async loadStyles() {
+         try {
+            const globalStylesResponse = await fetch('./static/css/styles.css');
+            const globalStyles = await globalStylesResponse.text();
+            const globalStyleSheet = new CSSStyleSheet();
+            globalStyleSheet.replaceSync(globalStyles);
+            
+            const adminSharedStylesResponse = await fetch('./static/css/admin/shared.css');
+            const adminSharedStyles = await adminSharedStylesResponse.text();
+            const adminSharedStyleSheet = new CSSStyleSheet();
+            adminSharedStyleSheet.replaceSync(adminSharedStyles);
+            
+            const componentStylesResponse = await fetch('./static/css/admin/admincard.css');
+            const componentStyles = await componentStylesResponse.text();
+            const componentStyleSheet = new CSSStyleSheet();
+            componentStyleSheet.replaceSync(componentStyles);
+            
+            this.shadowRoot.adoptedStyleSheets = [
+                globalStyleSheet, 
+                adminSharedStyleSheet, 
+                componentStyleSheet
+            ];
+        } catch (error) {
+            console.error('Error loading styles:', error);
+        }
+    }
+    
     render() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
         const title = this.getAttribute('title') || '';
         const action = this.getAttribute('action') || '';
         const actionView = this.getAttribute('action-view') || '';
         const fullWidth = this.hasAttribute('full-width');
+
+        const card = document.createElement('article');
+        card.className = 'admin-card';
         
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    ${fullWidth ? 'grid-column: 1 / -1;' : ''}
-                }
-                
-                .admin-card {
-                    background-color: white;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-                    overflow: hidden;
-                    margin-bottom: 1.5rem;
-                }
-                
-                .card-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 1rem;
-                    border-bottom: 0.0625rem solid var(--gray-200);
-                }
-                
-                .card-header h2 {
-                    margin: 0;
-                    font-size: 1.25rem;
-                    font-weight: 600;
-                }
-                
-                .text-btn {
-                    background: none;
-                    border: none;
-                    padding: 0.25rem 0.5rem;
-                    font-size: 0.875rem;
-                    color: var(--primary);
-                    cursor: pointer;
-                    font-family: inherit;
-                }
-                
-                .text-btn:hover {
-                    text-decoration: underline;
-                }
-                
-                .card-content {
-                    padding: 1.5rem;
-                }
-            </style>
+        if (title) {
+            const header = document.createElement('header');
+            header.className = 'card-header';
             
-            <article class="admin-card">
-                ${title ? `
-                    <header class="card-header">
-                        <h2>${title}</h2>
-                        ${action ? `<button class="text-btn" data-view="${actionView}">${action}</button>` : ''}
-                    </header>
-                ` : ''}
-                
-                <section class="card-content">
-                    <slot name="content"></slot>
-                </section>
-            </article>
-        `;
+            const heading = document.createElement('h2');
+            heading.textContent = title;
+            header.appendChild(heading);
+            
+            if (action) {
+                const actionBtn = document.createElement('button');
+                actionBtn.className = 'text-btn';
+                actionBtn.dataset.view = actionView;
+                actionBtn.textContent = action;
+                header.appendChild(actionBtn);
+            }
+            
+            card.appendChild(header);
+        }
+        
+        const content = document.createElement('section');
+        content.className = 'card-content';
+        
+        const slot = document.createElement('slot');
+        slot.name = 'content';
+        content.appendChild(slot);
+        
+        card.appendChild(content);
+        
+        this.shadowRoot.appendChild(card);
+    }
+
+    updateFullWidthStyle() {
+        const isFullWidth = this.hasAttribute('full-width');
+        
+        if (isFullWidth) {
+            this.classList.add('full-width');
+        } else {
+            this.classList.remove('full-width');
+        }
     }
     
     setupEventListeners() {

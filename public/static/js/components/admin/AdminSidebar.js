@@ -6,9 +6,11 @@ class AdminSidebar extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.styleSheet = new CSSStyleSheet();
     }
     
     connectedCallback() {
+        this.loadStyles();
         this.render();
         this.setupEventListeners();
     }
@@ -19,67 +21,86 @@ class AdminSidebar extends HTMLElement {
         }
     }
     
+    async loadStyles() {
+         try {
+            const globalStylesResponse = await fetch('./static/css/styles.css');
+            const globalStyles = await globalStylesResponse.text();
+            const globalStyleSheet = new CSSStyleSheet();
+            globalStyleSheet.replaceSync(globalStyles);
+            
+            const adminSharedStylesResponse = await fetch('./static/css/admin/shared.css');
+            const adminSharedStyles = await adminSharedStylesResponse.text();
+            const adminSharedStyleSheet = new CSSStyleSheet();
+            adminSharedStyleSheet.replaceSync(adminSharedStyles);
+            
+            const componentStylesResponse = await fetch('./static/css/admin/adminsidebar.css');
+            const componentStyles = await componentStylesResponse.text();
+            const componentStyleSheet = new CSSStyleSheet();
+            componentStyleSheet.replaceSync(componentStyles);
+            
+            this.shadowRoot.adoptedStyleSheets = [
+                globalStyleSheet, 
+                adminSharedStyleSheet, 
+                componentStyleSheet
+            ];
+        } catch (error) {
+            console.error('Error loading styles:', error);
+        }
+    }
+    
     render() {
+        while (this.shadowRoot.firstChild) {
+            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+        
         const activeView = this.getAttribute('active-view') || 'dashboard';
         
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 16rem;
-                }
-                
-                .admin-sidebar {
-                    background-color: white;
-                    border-right: 0.0625rem solid var(--gray-200);
-                    padding: 1.5rem 0;
-                    height: 100%;
-                }
-                
-                .admin-nav ul {
-                    list-style: none;
-                    margin: 0;
-                    padding: 0;
-                }
-                
-                .admin-nav-link {
-                    display: block;
-                    width: 100%;
-                    text-align: left;
-                    padding: 0.75rem 1.5rem;
-                    color: var(--gray-700);
-                    font-weight: 500;
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                    font-size: 1rem;
-                    transition: all 0.2s ease;
-                    font-family: inherit;
-                }
-                
-                .admin-nav-link:hover {
-                    background-color: var(--gray-100);
-                    color: var(--gray-900);
-                }
-                
-                .admin-nav-link.active {
-                    background-color: var(--gray-100);
-                    color: var(--primary);
-                    border-left: 0.1875rem solid var(--primary);
-                }
-            </style>
-            
-            <aside class="admin-sidebar">
-                <nav class="admin-nav">
-                    <ul>
-                        <li><button data-view="dashboard" class="admin-nav-link ${activeView === 'dashboard' ? 'active' : ''}">Dashboard</button></li>
-                        <li><button data-view="quizzes" class="admin-nav-link ${activeView === 'quizzes' ? 'active' : ''}">Quizzes</button></li>
-                        <li><button data-view="categories" class="admin-nav-link ${activeView === 'categories' ? 'active' : ''}">Categories</button></li>
-                        <li><a href="/create-quiz" class="admin-nav-link" data-link>Create Quiz</a></li>
-                    </ul>
-                </nav>
-            </aside>
-        `;
+        const sidebar = document.createElement('aside');
+        sidebar.className = 'admin-sidebar';
+        
+        const nav = document.createElement('nav');
+        nav.className = 'admin-nav';
+        
+        const navList = document.createElement('ul');
+        
+        const dashboardItem = document.createElement('li');
+        const dashboardButton = document.createElement('button');
+        dashboardButton.dataset.view = 'dashboard';
+        dashboardButton.className = `admin-nav-link ${activeView === 'dashboard' ? 'active' : ''}`;
+        dashboardButton.textContent = 'Dashboard';
+        dashboardItem.appendChild(dashboardButton);
+        
+        const quizzesItem = document.createElement('li');
+        const quizzesButton = document.createElement('button');
+        quizzesButton.dataset.view = 'quizzes';
+        quizzesButton.className = `admin-nav-link ${activeView === 'quizzes' ? 'active' : ''}`;
+        quizzesButton.textContent = 'Quizzes';
+        quizzesItem.appendChild(quizzesButton);
+        
+        const categoriesItem = document.createElement('li');
+        const categoriesButton = document.createElement('button');
+        categoriesButton.dataset.view = 'categories';
+        categoriesButton.className = `admin-nav-link ${activeView === 'categories' ? 'active' : ''}`;
+        categoriesButton.textContent = 'Categories';
+        categoriesItem.appendChild(categoriesButton);
+        
+        const createQuizItem = document.createElement('li');
+        const createQuizLink = document.createElement('a');
+        createQuizLink.href = '/create-quiz';
+        createQuizLink.className = 'admin-nav-link';
+        createQuizLink.dataset.link = '';
+        createQuizLink.textContent = 'Create Quiz';
+        createQuizItem.appendChild(createQuizLink);
+        
+        navList.appendChild(dashboardItem);
+        navList.appendChild(quizzesItem);
+        navList.appendChild(categoriesItem);
+        navList.appendChild(createQuizItem);
+        
+        nav.appendChild(navList);
+        sidebar.appendChild(nav);
+        
+        this.shadowRoot.appendChild(sidebar);
     }
     
     setupEventListeners() {
