@@ -5,44 +5,28 @@ import { ErrorUtils } from "../utils/error.utils";
 import { Message, Http, Length } from "../utils/enums";
 
 export class QuizController {
-  static async getAllQuizzes(
+
+  static async getQuizzes(
     request: Request,
     response: Response,
     next: NextFunction
   ): Promise<void> {
     try {
       const validOnly = request.query.valid === "true";
-
-      if (validOnly) {
-        const validQuizzes = await QuizService.getValidQuizzes();
-        response.json(validQuizzes);
-        return;
-      }
-
-      if (request.query.category) {
-        const categoryId = parseInt(request.query.category as string);
-
-        if (isNaN(categoryId)) {
-          throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
-        }
-
-        const quizzes = await QuizService.getQuizzesByCategory(categoryId);
-        response.json(quizzes);
-        return;
-      }
-
-      if (request.query.creator) {
-        const creatorId = parseInt(request.query.creator as string);
-
-        if (isNaN(creatorId)) {
-          throw ErrorUtils.badRequest(Message.Error.User.INVALID_ID);
-        }
-
-        const quizzes = await QuizService.getQuizzesByCreator(creatorId);
-        response.json(quizzes);
-        return;
-      }
-      const quizzes = await QuizService.getAllQuizzes();
+      const categoryId = request.query.category ? parseInt(request.query.category as string) : undefined;
+      const creatorId = request.query.creator ? parseInt(request.query.creator as string) : undefined;
+      
+      const userId = request.user?.id;
+      const userRole = request.user?.role;
+      
+      const quizzes = await QuizService.getQuizzes({
+        userId,
+        userRole,
+        categoryId,
+        creatorId,
+        validOnly
+      });
+      
       response.json(quizzes);
     } catch (error) {
       next(error);

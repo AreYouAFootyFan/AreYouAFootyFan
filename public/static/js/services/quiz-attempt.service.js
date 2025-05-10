@@ -36,6 +36,10 @@ class QuizAttemptService {
     async getResponseById(id) {
         return apiService.get(`/api/user-responses/${id}`);
     }
+
+    async submitNoAnswer(data) {
+        return apiService.post('/api/user-responses/submit-no-answer', data);
+    }
 }
 
 const quizAttemptService = new QuizAttemptService();

@@ -158,9 +158,7 @@ class QuestionForm extends HTMLElement {
     }
     
     handleSubmit(event) {
-        event.preventDefault();
-        console.log('QuestionForm: handleSubmit triggered');
-        
+        event.preventDefault();        
         const textInput = this.shadowRoot.querySelector('#question-text');
         const difficultySelect = this.shadowRoot.querySelector('#question-difficulty');
         

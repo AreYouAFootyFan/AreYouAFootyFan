@@ -664,8 +664,6 @@ class AdminDashboard extends HTMLElement {
       ];
 
       table.data = recentQuizzes.map((quiz) => {
-        console.log(quiz.valid_questions);
-        console.log(quiz.question_count);
         const isReady =
           (quiz.valid_questions || 0) >= 5 &&
           quiz.valid_questions == quiz.question_count;

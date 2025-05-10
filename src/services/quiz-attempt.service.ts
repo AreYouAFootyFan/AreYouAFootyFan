@@ -43,9 +43,6 @@ export class QuizAttemptService {
     data: CreateQuizAttemptDto,
     userRole: string
   ): Promise<any> {
-    if (userRole !== User.Role.PLAYER) {
-      throw ErrorUtils.forbidden(Message.Error.Role.FORBIDDEN_PLAYER);
-    }
 
     const quiz = await QuizModel.findById(data.quiz_id);
 
@@ -53,33 +50,51 @@ export class QuizAttemptService {
       throw ErrorUtils.notFound(Message.Error.Quiz.NOT_FOUND);
     }
 
-    const questionCount = await QuizModel.countQuestions(data.quiz_id);
-
-    if (questionCount < 5) {
-      throw ErrorUtils.badRequest(Message.Error.Quiz.INSUFFICIENT_QUESTIONS);
-    }
-
-    const questions = await QuestionModel.findByQuizIdWithDetails(data.quiz_id);
-
-    const invalidQuestions = questions.filter(
-      (q) => q.answer_count != 4 || q.correct_answer_count != 1
+    const existingAttempts = await QuizAttemptModel.findByUserIdAndQuizId(
+      data.user_id,
+      data.quiz_id
     );
 
-    if (invalidQuestions.length > 0) {
-      throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_QUESTIONS);
-    }
+    const incompleteAttempt = existingAttempts.find(a => a.end_time === null);
+    
+    let attempt;
+    
+    if (incompleteAttempt) {
+      attempt = incompleteAttempt;
+    } else {
+      const questionCount = await QuizModel.countQuestions(data.quiz_id);
 
-    const attempt = await QuizAttemptModel.create(data);
+      if (questionCount < 5) {
+        throw ErrorUtils.badRequest(Message.Error.Quiz.INSUFFICIENT_QUESTIONS);
+      }
+
+      const questions = await QuestionModel.findByQuizIdWithDetails(data.quiz_id);
+
+      const invalidQuestions = questions.filter(
+        (q) => q.answer_count != 4 || q.correct_answer_count != 1
+      );
+
+      if (invalidQuestions.length > 0) {
+        throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_QUESTIONS);
+      }
+
+      attempt = await QuizAttemptModel.create(data);
+    }
 
     const attemptWithDetails = await QuizAttemptModel.findByIdWithDetails(
       attempt.attempt_id
     );
-    const questionsWithAnswers =
+    
+    const questionsWithResponses =
       await QuizAttemptModel.getQuizQuestionsWithResponses(attempt.attempt_id);
 
+    const unansweredQuestions = questionsWithResponses.filter(
+      question => !question.response_id
+    );
+    
     return {
       ...attemptWithDetails,
-      questions: questionsWithAnswers,
+      questions: unansweredQuestions,
     };
   }
 
