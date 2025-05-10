@@ -1,4 +1,5 @@
 import { QuizModel, Quiz } from "../models/quiz.model";
+import { QuizAttemptModel } from "../models/quiz-attempt.model";
 import { QuestionModel } from "../models/question.model";
 import { CategoryModel } from "../models/category.model";
 import { ErrorUtils } from "../utils/error.utils";
@@ -6,24 +7,80 @@ import { CreateQuizDto, UpdateQuizDto } from "../DTOs/quiz.dto";
 import { User, Message, Config } from "../utils/enums";
 
 export class QuizService {
-  static async getAllQuizzes(): Promise<any[]> {
-    return QuizModel.findAllWithCategories();
-  }
 
-  static async getQuizzesByCreator(userId: number): Promise<Quiz[]> {
-    return QuizModel.findByCreator(userId);
-  }
-
-  static async getQuizzesByCategory(categoryId: number): Promise<Quiz[]> {
-    const category = await CategoryModel.findById(categoryId);
-
-    if (!category) {
-      throw ErrorUtils.notFound(Message.Error.Category.NOT_FOUND);
+static async getQuizzes(options: {
+    userId?: number;
+    categoryId?: number;
+    creatorId?: number;
+    validOnly?: boolean;
+    userRole?: string;
+  } = {}): Promise<any[]> {
+    
+    let quizzes = await QuizModel.findAllWithCategories();
+    
+    if (options.categoryId) {
+      const category = await CategoryModel.findById(options.categoryId);
+      if (!category) {
+        throw ErrorUtils.notFound(Message.Error.Category.NOT_FOUND);
+      }
+      quizzes = quizzes.filter(quiz => quiz.category_id === options.categoryId);
     }
-
-    return QuizModel.findByCategory(categoryId);
+    
+    if (options.creatorId) {
+      quizzes = quizzes.filter(quiz => quiz.created_by === options.creatorId);
+    }
+    
+    if (options.validOnly && options.userId) {
+      const validQuizzes = [];
+      
+      for (const quiz of quizzes) {
+        const questionCount = await QuizModel.countQuestions(quiz.quiz_id);
+        if (questionCount < Config.Value.MIN_QUESTIONS_PER_QUIZ) continue;
+        
+        const questions = await QuestionModel.findByQuizIdWithDetails(quiz.quiz_id);
+        const allQuestionsValid = questions.every(
+          (question) =>
+            question.answer_count == Config.Value.DEFAULT_ANSWERS_PER_QUESTION &&
+            question.correct_answer_count == 1
+        );
+        if (!allQuestionsValid) continue;
+        
+        if (options.userId && options.userRole !== User.Role.MANAGER) {
+          const attempts = await QuizAttemptModel.findByUserIdAndQuizId(
+            options.userId,
+            quiz.quiz_id
+          );
+          
+          const hasCompletedAttempt = attempts.some(attempt => attempt.end_time !== null);
+          if (hasCompletedAttempt) continue;
+          
+          const hasIncompleteAttempt = attempts.some(attempt => attempt.end_time === null);
+          validQuizzes.push({
+            ...quiz,
+            is_valid: true,
+            question_count: questionCount,
+            in_progress: hasIncompleteAttempt
+          });
+        } else {
+          validQuizzes.push({
+            ...quiz,
+            is_valid: true,
+            question_count: questionCount
+          });
+        }
+      }
+      
+      return validQuizzes;
+    }
+    
+    return Promise.all(quizzes.map(async quiz => {
+      const questionCount = await QuizModel.countQuestions(quiz.quiz_id);
+      return {
+        ...quiz,
+        question_count: questionCount
+      };
+    }));
   }
-
   static async getQuizById(id: number): Promise<any> {
     const quiz = await QuizModel.findByIdWithCategory(id);
 
@@ -103,35 +160,5 @@ export class QuizService {
   static async checkQuizQuestionCount(quizId: number): Promise<boolean> {
     const count = await QuizModel.countQuestions(quizId);
     return count >= Config.Value.MIN_QUESTIONS_PER_QUIZ;
-  }
-
-  static async getValidQuizzes(): Promise<any[]> {
-    const allQuizzes = await QuizModel.findAllWithCategories();
-    const validQuizzes = [];
-
-    for (const quiz of allQuizzes) {
-      const questionCount = await QuizModel.countQuestions(quiz.quiz_id);
-      if (questionCount < Config.Value.MIN_QUESTIONS_PER_QUIZ) continue;
-
-      const questions = await QuestionModel.findByQuizIdWithDetails(
-        quiz.quiz_id
-      );
-
-      const allQuestionsValid = questions.every(
-        (question) =>
-          question.answer_count == Config.Value.DEFAULT_ANSWERS_PER_QUESTION &&
-          question.correct_answer_count == 1
-      );
-
-      if (allQuestionsValid) {
-        validQuizzes.push({
-          ...quiz,
-          is_valid: true,
-          question_count: questionCount,
-        });
-      }
-    }
-
-    return validQuizzes;
   }
 }

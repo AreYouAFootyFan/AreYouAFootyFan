@@ -10,6 +10,7 @@ export interface DifficultyLevel {
   time_limit_seconds: number;
   points_on_correct: number;
   points_on_incorrect: number;
+  points_on_no_answer: number;
 }
 
 export class DifficultyLevelModel {
@@ -46,16 +47,15 @@ export class DifficultyLevelModel {
     return result.rows[0];
   }
 
-  static async create(
-    data: CreateDifficultyLevelDto
-  ): Promise<DifficultyLevel> {
+  static async create(data: CreateDifficultyLevelDto): Promise<DifficultyLevel> {
     const result = await db.query(
-      "INSERT INTO difficulty_levels (difficulty_level, time_limit_seconds, points_on_correct, points_on_incorrect) VALUES ($1, $2, $3, $4) RETURNING *",
+      "INSERT INTO difficulty_levels (difficulty_level, time_limit_seconds, points_on_correct, points_on_incorrect, points_on_no_answer) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [
         data.difficulty_level,
         data.time_limit_seconds,
         data.points_on_correct,
         data.points_on_incorrect,
+        data.points_on_no_answer
       ]
     );
 
@@ -73,7 +73,7 @@ export class DifficultyLevelModel {
     }
 
     const result = await db.query(
-      "UPDATE difficulty_levels SET difficulty_level = $1, time_limit_seconds = $2, points_on_correct = $3, points_on_incorrect = $4 WHERE difficulty_id = $5 RETURNING *",
+      "UPDATE difficulty_levels SET difficulty_level = $1, time_limit_seconds = $2, points_on_correct = $3, points_on_incorrect = $4, points_on_no_answer = $5 WHERE difficulty_id = $6 RETURNING *",
       [
         data.difficulty_level !== undefined
           ? data.difficulty_level
@@ -87,6 +87,9 @@ export class DifficultyLevelModel {
         data.points_on_incorrect !== undefined
           ? data.points_on_incorrect
           : difficulty.points_on_incorrect,
+        data.points_on_no_answer !== undefined
+          ? data.points_on_no_answer
+          : difficulty.points_on_no_answer,
         id,
       ]
     );

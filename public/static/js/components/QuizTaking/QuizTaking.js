@@ -1,5 +1,4 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
-import { Role } from "../../enums/users.js";
 
 class QuizTaking extends HTMLElement {
   constructor() {
@@ -78,13 +77,6 @@ class QuizTaking extends HTMLElement {
       return;
     }
 
-    if (authService.isQuizMaster && authService.isQuizMaster()) {
-      this.showError(
-        `${Role.Manager}s cannot take quizzes. Please use a ${Role.Player} account.`
-      );
-      return;
-    }
-
     if (this.quizId) {
       await this.startQuiz(this.quizId);
     } else {
@@ -101,13 +93,6 @@ class QuizTaking extends HTMLElement {
     }
   }
 
-  handleVisibilityChange() {
-    if (document.hidden) {
-      this.pauseTimer();
-    } else {
-      this.resumeTimer();
-    }
-  }
 
   async startQuiz(quizId) {
     try {
@@ -360,13 +345,14 @@ class QuizTaking extends HTMLElement {
     }
   }
 
-  handleTimeUp() {
+  async handleTimeUp() {
     const questionElement = this.shadowRoot.querySelector("quiz-question");
     if (!questionElement) return;
-
     if (this.selectedAnswer) {
       this.submitAnswer();
     } else {
+      await this.submitNoAnswer();
+      
       questionElement.setAttribute("time-up", "true");
 
       this.currentQuestion.answers.forEach((answer) => {
@@ -389,6 +375,34 @@ class QuizTaking extends HTMLElement {
           this.loadQuestion(this.currentQuestionIndex + 1)
         );
       }
+    }
+  }
+
+  async submitNoAnswer() {
+    try {
+      this.pauseTimer();
+      const questionElement = this.shadowRoot.querySelector("quiz-question");
+      if (questionElement) {
+        questionElement.setAttribute("submitting", "true");
+      }
+      if (!window.quizAttemptService) {
+        console.warn("User response service not available.");
+        return;
+      }
+      const response = await window.quizAttemptService.submitNoAnswer({
+        attempt_id: this.attempt.attempt_id,
+        question_id: this.currentQuestion.question_id,
+      });
+
+      this.score += response.points_earned;
+
+      questionElement.setAttribute("show-feedback", "true");
+      questionElement.setAttribute("feedback-points", response.points_earned);
+      questionElement.setAttribute("score", this.score);
+      questionElement.setAttribute("no-answer", "true");
+
+    } catch (error) {
+      console.error("Error submitting no-answer:", error);
     }
   }
 

@@ -58,7 +58,6 @@ class QuizCreator extends HTMLElement {
         }
 
         this.quizId = localStorage.getItem('selected_quiz_id');
-        console.log(this.quizId);
         this.quizTitle = localStorage.getItem('selected_quiz_title');
         this.isEditing = !!this.quizId;
         
@@ -183,7 +182,6 @@ class QuizCreator extends HTMLElement {
         const quizForm = document.createElement('quiz-form');
         quizForm.id = 'quiz-form';
         quizForm.setAttribute('editing', this.isEditing.toString());
-        console.log(this.quizId)
         quizForm.setAttribute('quiz-id', this.quizId || '');
         quizForm.setAttribute('quiz-title', this.quizTitle || '');
         
@@ -677,7 +675,6 @@ class QuizCreator extends HTMLElement {
     }
     
     async handleQuestionSubmit(event) {
-    console.log('QuizCreator: handleQuestionSubmit called', event.detail);
     const { question, isNew } = event.detail;
     
     try {
@@ -688,15 +685,8 @@ class QuizCreator extends HTMLElement {
         
         const questionId = this.currentQuestionId;
         
-        console.log('Current question state:', {
-            isNew,
-            questionId,
-            localStorageId: localStorage.getItem('current_question_id'),
-            question
-        });
         
         if (isNew || !questionId) {
-            console.log('Creating new question with data:', question);
             const newQuestion = await questionService.createQuestion({
                 ...question,
                 quiz_id: this.quizId
@@ -704,11 +694,9 @@ class QuizCreator extends HTMLElement {
             
             this.currentQuestionId = newQuestion.question_id;
             localStorage.setItem('current_question_id', newQuestion.question_id);
-            console.log(`Created question with ID ${newQuestion.question_id} and updated state`);
             
             this.showNotification('Question created successfully');
         } else {
-            console.log(`Updating question ${questionId} with data:`, question);
             await questionService.updateQuestion(questionId, question);
             this.showNotification('Question updated successfully');
         }

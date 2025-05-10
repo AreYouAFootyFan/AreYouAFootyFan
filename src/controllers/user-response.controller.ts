@@ -68,11 +68,8 @@ export class UserResponseController {
         answer_id: parsedAnswerId,
       };
 
-      const userRole = request.user!.role;
-
       const userResponse = await UserResponseService.submitResponse(
-        data,
-        userRole
+        data
       );
 
       response.json(userResponse);
@@ -94,6 +91,44 @@ export class UserResponseController {
       }
 
       const userResponse = await UserResponseService.getResponseById(id);
+      response.json(userResponse);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async submitNoAnswerResponse(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { attempt_id, question_id } = request.body;
+
+      if (!attempt_id) {
+        throw ErrorUtils.badRequest(Message.Error.Attempt.ID_REQUIRED);
+      }
+
+      if (!question_id) {
+        throw ErrorUtils.badRequest(Message.Error.Question.ID_REQUIRED);
+      }
+
+      const parsedAttemptId = parseInt(attempt_id.toString());
+      const parsedQuestionId = parseInt(question_id.toString());
+
+      if (isNaN(parsedAttemptId)) {
+        throw ErrorUtils.badRequest(Message.Error.Attempt.INVALID_ID);
+      }
+
+      if (isNaN(parsedQuestionId)) {
+        throw ErrorUtils.badRequest(Message.Error.Question.INVALID_ID);
+      }
+
+      const userResponse = await UserResponseService.submitNoAnswerResponse(
+        parsedAttemptId,
+        parsedQuestionId
+      );
+
       response.json(userResponse);
     } catch (error) {
       next(error);

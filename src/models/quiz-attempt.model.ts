@@ -1,7 +1,6 @@
 import db from "../config/db";
 import {
   CreateQuizAttemptDto,
-  CompleteQuizAttemptDto,
 } from "../DTOs/quiz-attempt.dto";
 
 export interface QuizAttempt {
@@ -110,6 +109,17 @@ export class QuizAttemptModel {
     );
 
     return parseInt(result.rows[0].count) > 0;
+  }
+
+  static async findByUserIdAndQuizId(
+    userId: number,
+    quizId: number
+  ): Promise<QuizAttempt[]> {
+    const result = await db.query(
+      "SELECT * FROM quiz_attempts WHERE user_id = $1 AND quiz_id = $2 ORDER BY start_time DESC",
+      [userId, quizId]
+    );
+    return result.rows;
   }
 
   static async calculateScore(id: number): Promise<number> {

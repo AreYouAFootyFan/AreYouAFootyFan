@@ -133,7 +133,7 @@ class QuizHome extends HTMLElement {
 
     const modalMessage = document.createElement("p");
     modalMessage.className = "modal-message";
-    modalMessage.textContent = `As a ${Role.Manager}, you can create and manage quizzes but cannot participate in them.\n\nWould you like to go to the ${Role.Manager} dashboard instead?`;
+    modalMessage.textContent = `As a ${Role.Manager}, you can partake in quizzes but will not be ranked.\n\nWould you like to proceed?`;
 
     const modalFooter = document.createElement("footer");
     modalFooter.className = "modal-actions";
@@ -144,10 +144,10 @@ class QuizHome extends HTMLElement {
     cancelButton.textContent = "Cancel";
 
     const adminLink = document.createElement("a");
-    adminLink.href = "/admin";
+    adminLink.href = "/quiz";
     adminLink.className = "primary-btn";
     adminLink.dataset.link = "";
-    adminLink.textContent = `Go to ${Role.Manager}`;
+    adminLink.textContent = 'Continue';
 
     modalFooter.appendChild(cancelButton);
     modalFooter.appendChild(adminLink);
@@ -319,11 +319,10 @@ class QuizHome extends HTMLElement {
     if (!authService) return;
 
     const isQuizMaster = authService.isQuizMaster && authService.isQuizMaster();
-
+    localStorage.setItem("selected_quiz_id", quizId);
     if (isQuizMaster) {
       this.showQuizMasterModal();
     } else {
-      localStorage.setItem("selected_quiz_id", quizId);
       window.location.href = "/quiz";
     }
   }

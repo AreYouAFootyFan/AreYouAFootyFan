@@ -139,12 +139,12 @@ export class UserResponseModel {
   static async getResponseDetails(responseId: number): Promise<any | null> {
     const result = await db.query(
       `SELECT ur.*, q.question_text, a.answer_text, a.is_correct,
-        d.difficulty_level, d.points_on_correct, d.points_on_incorrect
-       FROM user_responses ur
-       JOIN questions q ON ur.question_id = q.question_id
-       JOIN answers a ON ur.chosen_answer = a.answer_id
-       JOIN difficulty_levels d ON q.difficulty_id = d.difficulty_id
-       WHERE ur.response_id = $1`,
+        d.difficulty_level, d.points_on_correct, d.points_on_incorrect, d.points_on_no_answer
+      FROM user_responses ur
+      JOIN questions q ON ur.question_id = q.question_id
+      LEFT JOIN answers a ON ur.chosen_answer = a.answer_id
+      JOIN difficulty_levels d ON q.difficulty_id = d.difficulty_id
+      WHERE ur.response_id = $1`,
       [responseId]
     );
 

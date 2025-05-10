@@ -167,7 +167,6 @@ class LoginForm extends HTMLElement {
     }
     
     async checkAuthentication() {
-        console.log('Checking authentication status');
         if (!window.authService) return;
         
         try {
@@ -178,8 +177,6 @@ class LoginForm extends HTMLElement {
                 } else {
                     this.displayUsernameForm();
                 }
-            } else {
-                console.log('User is not authenticated');
             }
         } catch (error) {
             console.error('Error checking authentication:', error);

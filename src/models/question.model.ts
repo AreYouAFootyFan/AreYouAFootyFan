@@ -76,7 +76,7 @@ export class QuestionModel {
 
   static async findByIdWithDifficulty(id: number): Promise<any | null> {
     const result = await db.query(
-      `SELECT q.*, d.difficulty_level, d.time_limit_seconds, d.points_on_correct, d.points_on_incorrect 
+      `SELECT q.*, d.difficulty_level, d.time_limit_seconds, d.points_on_correct, d.points_on_incorrect, d.points_on_no_answer
        FROM questions q
        JOIN difficulty_levels d ON q.difficulty_id = d.difficulty_id
        WHERE q.question_id = $1`,

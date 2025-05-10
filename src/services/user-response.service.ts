@@ -4,8 +4,9 @@ import { QuestionModel } from "../models/question.model";
 import { AnswerModel } from "../models/answer.model";
 import { ErrorUtils } from "../utils/error.utils";
 import { CreateUserResponseDto } from "../DTOs/user-response.dto";
-import { User, Message } from "../utils/enums";
+import { Message } from "../utils/enums";
 import { QuizAttemptService } from "./quiz-attempt.service";
+import db from '../config/db';
 
 export class UserResponseService {
   static async getAttemptResponses(attemptId: number): Promise<any[]> {
@@ -30,14 +31,9 @@ export class UserResponseService {
   }
 
   static async submitResponse(
-    data: CreateUserResponseDto,
-    userRole: string
+    data: CreateUserResponseDto
   ): Promise<any> {
     const attempt = await QuizAttemptModel.findById(data.attempt_id);
-
-    if (userRole !== User.Role.PLAYER) {
-      throw ErrorUtils.forbidden(Message.Error.Role.FORBIDDEN_PLAYER);
-    }
 
     if (!attempt) {
       throw ErrorUtils.notFound(Message.Error.Attempt.NOT_FOUND);
@@ -104,6 +100,60 @@ export class UserResponseService {
     const shouldAutoComplete = await QuizAttemptService.checkAutoComplete(
       data.attempt_id
     );
+
+    return {
+      ...responseDetails,
+      quiz_completed: shouldAutoComplete,
+    };
+  }
+
+  static async submitNoAnswerResponse(
+    attemptId: number,
+    questionId: number,
+  ): Promise<any> {
+
+    const attempt = await QuizAttemptModel.findById(attemptId);
+
+    if (!attempt) {
+      throw ErrorUtils.notFound(Message.Error.Attempt.NOT_FOUND);
+    }
+
+    if (attempt.end_time) {
+      throw ErrorUtils.badRequest(Message.Error.Attempt.COMPLETED);
+    }
+
+    const question = await QuestionModel.findById(questionId);
+
+    if (!question) {
+      throw ErrorUtils.notFound(Message.Error.Question.NOT_FOUND);
+    }
+
+    if (question.quiz_id !== attempt.quiz_id) {
+      throw ErrorUtils.badRequest(Message.Error.Quiz.QUESTION_NOT_BELONG);
+    }
+
+    const existingResponse = await UserResponseModel.findByQuestionAndAttempt(
+      questionId,
+      attemptId
+    );
+
+    if (existingResponse) {
+      return UserResponseModel.getResponseDetails(existingResponse.response_id);
+    }
+
+    const questionDetails = await QuestionModel.findByIdWithDifficulty(questionId);
+    
+    const response = await db.query(
+      `INSERT INTO user_responses (attempt_id, question_id, chosen_answer, points_earned) 
+      VALUES ($1, $2, NULL, $3) 
+      RETURNING response_id`,
+      [attemptId, questionId ,questionDetails.points_on_no_answer]
+    );
+
+    const responseId = response.rows[0].response_id;
+    const responseDetails = await UserResponseModel.getResponseDetails(responseId);
+
+    const shouldAutoComplete = await QuizAttemptService.checkAutoComplete(attemptId);
 
     return {
       ...responseDetails,
