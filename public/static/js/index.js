@@ -4,8 +4,41 @@ import ProfileView from "./views/ProfileView.js";
 import QuizView from "./views/QuizView.js";
 import CreateQuizView from "./views/CreateQuizView.js";
 import LoginView from "./views/LoginView.js";
+import authService from "./services/auth.service.js";
+import categoryService from "./services/category.service.js";
+import quizService from "./services/quiz.service.js";
+import leaderboardService from "./services/leaderboard.service.js"
+import quizAttemptService from "./services/quiz-attempt.service.js";
+import quizValidatorService from "./services/quiz-validator.service.js";
+import statsService from "./services/stats.service.js";
+import answerService from "./services/answer.service.js";
+import difficultyService from "./services/difficulty.service.js";
+import questionService from "./services/question.service.js";
 
-// Keep track of the current view instance to handle cleanup
+import "./services/api.service.js";
+import "./services/category.service.js";
+import "./services/difficulty.service.js";
+import "./services/quiz.service.js";
+import "./services/question.service.js";
+import "./services/answer.service.js";
+import "./services/quiz-attempt.service.js";
+import "./services/quiz-validator.service.js";
+import "./services/stats.service.js";
+import "./services/difficulty.service.js";
+import "./services/question.service.js";
+
+window.authService = authService;
+window.categoryService = categoryService;
+window.quizService = quizService;
+window.leaderboardService = leaderboardService
+window.quizAttemptService = quizAttemptService;
+window.quizValidatorService = quizValidatorService;
+window.statsService = statsService;
+window.answerService = answerService;
+window.difficultyService = difficultyService;
+window.questionService = questionService;
+
+
 let currentView = null;
 
 const navigator = (url) => {
@@ -14,63 +47,111 @@ const navigator = (url) => {
 };
 
 const router = async () => {
-    // Clean up previous view if it exists
-    if (currentView && typeof currentView.cleanup === 'function') {
-        currentView.cleanup();
+  if (currentView && typeof currentView.cleanup === 'function') {
+    currentView.cleanup();
+  }
+
+  const routes = [
+    { path: '/', view: LoginView },
+    { path: '/home', view: HomeView },
+    { path: '/profile', view: ProfileView },
+    { path: '/quiz', view: QuizView },
+    { path: '/admin', view: AdminDashboardView },
+    { path: '/create-quiz', view: CreateQuizView },
+    { path: '/login', view: LoginView },
+  ];
+
+  const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+  
+  const getParams = match => {
+    const values = match.result.slice(1);
+    const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
+    
+    return Object.fromEntries(keys.map((key, i) => {
+      return [key, values[i]];
+    }));
+  };
+
+  const possibleRoutes = routes.map(route => {
+    return {
+      route: route,
+      result: location.pathname.match(pathToRegex(route.path))
     }
+  });
 
-    const routes = [
-        { path: '/', view:  LoginView},
-        { path: '/home', view:  HomeView},
-        { path: '/profile', view: ProfileView },
-        { path: '/quiz', view: QuizView },
-        { path: '/quizzes', view: QuizView },
-        { path: '/admin', view: AdminDashboardView },
-        { path: '/create-quiz', view: CreateQuizView },
-    ];
+  let currentRoute = possibleRoutes.find(possibleRoute => possibleRoute.result !== null);
 
-    // pathToRegex function to handle routes with parameters
-    const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
-    
-    // Get params from match
-    const getParams = match => {
-        const values = match.result.slice(1);
-        const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
-        
-        return Object.fromEntries(keys.map((key, i) => {
-            return [key, values[i]];
-        }));
+  if(!currentRoute){
+    currentRoute = {
+      route: routes[0],
+      result: [location.pathname]
     };
+  }
+  
+  const view = new currentRoute.route.view(getParams(currentRoute));
+  currentView = view;
 
-    // Find the matching route
-    const possibleRoutes = routes.map(route => {
-        return {
-            route: route,
-            result: location.pathname.match(pathToRegex(route.path))
-        }
-    });
-
-    let currentRoute = possibleRoutes.find(possibleRoute => possibleRoute.result !== null);
-
-    if(!currentRoute){
-        currentRoute = {
-            route: routes[0], //need custom 404
-            result: [location.pathname]
-        };
-    };
-    
-    // Create the view instance
-    const view = new currentRoute.route.view(getParams(currentRoute));
-    currentView = view;
-
-    // Render the view
-    document.querySelector("#app").innerHTML = await view.getHtml();
-    
-    // Mount the view if it has a mount method
-    if (typeof view.mount === 'function') {
-        view.mount();
+  const isLoginPage = currentRoute.route.view === LoginView;
+  const header = document.querySelector('football-quiz-header');
+  const footer = document.querySelector('football-quiz-footer');
+  
+  if (header) {
+    header.style.display = isLoginPage ? 'none' : 'block';
+    // Update header UI after view is loaded
+    if (!isLoginPage) {
+      // We need to update the header UI twice:
+      // 1. Immediately to catch the current auth state
+      // 2. After a short delay to ensure everything is loaded
+      updateHeaderUI();
+      setTimeout(updateHeaderUI, 100);
     }
+  }
+  
+  if (footer) {
+    footer.style.display = isLoginPage ? 'none' : 'block';
+  }
+
+  const app = document.querySelector("#app");
+  const htmlContent = await view.getHtml();
+  app.replaceChildren(htmlContent);
+  
+  if (typeof view.mount === 'function') {
+    view.mount();
+  }
 };
+
+// Global function to update header UI - can be called from anywhere
+function updateHeaderUI() {
+  const header = document.querySelector('football-quiz-header');
+  if (header && typeof header.updateUserUI === 'function') {
+    header.updateUserUI();
+  }
+  if (header && typeof header.updateActiveNavLink === 'function') {
+    header.updateActiveNavLink();
+  }
+}
+
+// Make updateHeaderUI accessible globally
+window.updateHeaderUI = updateHeaderUI;
+
+// Listen for auth state changes in the authService
+const originalLoginWithGoogle = authService.loginWithGoogle;
+if (originalLoginWithGoogle) {
+  authService.loginWithGoogle = async function(...args) {
+    const result = await originalLoginWithGoogle.apply(this, args);
+    updateHeaderUI();
+    return result;
+  };
+}
+
+const originalLogout = authService.logout;
+if (originalLogout) {
+  authService.logout = function(...args) {
+    const result = originalLogout.apply(this, args);
+    updateHeaderUI();
+    return result;
+  };
+}
 
 window.addEventListener("popstate", router);
 
@@ -82,118 +163,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // const script = document.createElement('script');
+    // script.src = 'https://accounts.google.com/gsi/client';
+    // script.async = true;
+    // script.defer = true;
+    // document.head.appendChild(script);
+
     router();
 });
-
-export const appState = {
-  currentUser: null,
-  isLoggedIn: false,
-  currentPage: "home",
-  currentAdminPage: "dashboard",
-  quizzes: [
-    {
-      id: 1,
-      title: "World Cup History",
-      category: "world-cup",
-      description: "Test your knowledge about World Cup history with these beginner-friendly questions.",
-      questions: 10,
-      timeEstimate: "5 min",
-    },
-    {
-      id: 2,
-      title: "Premier League Legends",
-      category: "premier-league",
-      description: "How well do you know the greatest players in Premier League history?",
-      questions: 15,
-      timeEstimate: "10 min",
-    },
-    {
-      id: 3,
-      title: "Champions League Trivia",
-      category: "champions-league",
-      description: "Only true football experts will ace this challenging Champions League quiz.",
-      questions: 20,
-      timeEstimate: "15 min",
-    },
-    {
-      id: 4,
-      title: "Football Stars",
-      category: "players",
-      description: "Test your knowledge about the biggest football stars of all time.",
-      questions: 15,
-      timeEstimate: "8 min",
-    },
-    {
-      id: 5,
-      title: "Premier League Basics",
-      category: "premier-league",
-      description: "New to football? Start with these basic Premier League questions.",
-      questions: 10,
-      timeEstimate: "5 min",
-    },
-    {
-      id: 6,
-      title: "World Cup Deep Dive",
-      category: "world-cup",
-      description: "Only the most dedicated football historians will know these World Cup facts.",
-      questions: 20,
-      timeEstimate: "15 min",
-    },
-  ],
-  categories: [
-    { id: "world-cup", name: "World Cup" },
-    { id: "premier-league", name: "Premier League" },
-    { id: "champions-league", name: "Champions League" },
-    { id: "players", name: "Players" },
-    { id: "teams", name: "Teams" },
-    { id: "history", name: "History" },
-    { id: "tactics", name: "Tactics" },
-    { id: "referees", name: "Referees" },
-    { id: "stadiums", name: "Stadiums" },
-  ],
-  leaderboardData: [
-    {
-      rank: 1,
-      name: "FootballMaster",
-      elo: 1845,
-      quizzes: 42,
-      accuracy: 94
-    },
-    {
-      rank: 2,
-      name: "SoccerQueen",
-      elo: 1788,
-      quizzes: 38,
-      accuracy: 91
-    },
-    {
-      rank: 3,
-      name: "GoalMachine",
-      elo: 1756,
-      quizzes: 45,
-      accuracy: 89
-    },
-    {
-      rank: 4,
-      name: "FootballFan22",
-      elo: 1702,
-      quizzes: 36,
-      accuracy: 87
-    },
-    {
-      rank: 5,
-      name: "KickingKing",
-      elo: 1689,
-      quizzes: 31,
-      accuracy: 85
-    }
-  ],
-  currentQuiz: null,
-  currentQuestion: 0,
-  userAnswers: [],
-  quizTimer: null,
-  questionTimer: null,
-  timeLeft: 30,
-  score: 0,
-  streak: 0,
-}

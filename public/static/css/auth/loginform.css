@@ -1,0 +1,133 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.login-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: var(--font-sans, 'Inter', sans-serif);
+}
+
+.auth-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    background: linear-gradient(to right, #f8fbff, #e9f1ff);
+    padding: 2rem;
+}
+
+.auth-container {
+    background: #fff;
+    padding: 2.5rem 2rem;
+    max-width: 25rem;
+    width: 100%;
+    border-radius: 1rem;
+    box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.auth-header {
+    margin-bottom: 2rem;
+}
+
+.logo-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+h1 {
+    font-size: 1.8rem;
+    margin: 0.5rem 0;
+    color: #333;
+}
+
+p {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+#google-signin-button {
+    margin-bottom: 2rem;
+}
+
+#username-container {
+    text-align: left;
+}
+
+#username-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #555;
+}
+
+input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 0.0625rem solid #ccc;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    font-family: inherit;
+}
+
+.login-btn {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+    font-family: inherit;
+}
+
+.login-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.auth-footer {
+    padding: 1.5rem;
+    text-align: center;
+    background-color: #1e293b;
+    color: #cbd5e1;
+}
+
+#google-login-link {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: white;
+    color: #333;
+    border: 0.0625rem solid #ddd;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#google-login-link:hover {
+    background-color: #f8f8f8;
+    border-color: #ccc;
+}
+
+.google-icon {
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}

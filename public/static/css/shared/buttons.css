@@ -1,0 +1,80 @@
+.btn, 
+.admin-btn, 
+.primary-btn, 
+.secondary-btn, 
+.danger-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-family: inherit;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.btn-primary, 
+.primary-btn {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover, 
+.primary-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-secondary, 
+.secondary-btn {
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+}
+
+.btn-secondary:hover, 
+.secondary-btn:hover {
+    background-color: var(--gray-300);
+}
+
+.danger-btn {
+    background-color: var(--error);
+    color: white;
+}
+
+.danger-btn:hover {
+    background-color: var(--error-dark);
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.action-btn:hover {
+    background-color: var(--gray-200);
+}
+
+.text-btn {
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    color: var(--primary);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.text-btn:hover {
+    text-decoration: underline;
+}

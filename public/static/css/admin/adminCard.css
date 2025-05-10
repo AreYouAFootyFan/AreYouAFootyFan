@@ -1,0 +1,33 @@
+:host {
+    display: block;
+}
+
+:host(.full-width) {
+    grid-column: 1 / -1;
+}
+
+.admin-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 0.0625rem solid var(--gray-200);
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.card-content {
+    padding: 1.5rem;
+}

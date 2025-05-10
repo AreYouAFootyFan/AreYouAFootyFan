@@ -1,0 +1,81 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.hero {
+    background-color: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 4rem 1rem;
+    margin-bottom: 2rem;
+}
+
+.hero-content {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    color: white;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    max-width: 36rem;
+    margin: 0 auto;
+}
+
+.content-section {
+    max-width: var(--container-max-width);
+    margin: 0 auto 2rem auto;
+    padding: 0 1rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.notification {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto 2rem auto;
+    background-color: #fff7ed;
+    border-left: 0.25rem solid #f97316;
+    padding: 1rem;
+    border-radius: 0 0.25rem 0.25rem 0;
+    display: none;
+}
+
+.notification-title {
+    color: #9a3412;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.notification-message {
+    color: #7c2d12;
+    font-size: 0.875rem;
+}
+
+.quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}

@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../utils/error.utils';
+import { Request, Response, NextFunction } from "express";
+import { AppError } from "../utils/error.utils";
+import { Message, Http, Db } from "../utils/enums";
 
 export const errorHandler = (
   error: AppError,
@@ -11,23 +12,28 @@ export const errorHandler = (
     return next(error);
   }
 
-  const status = error.status || 500;
-  const message = error.message || 'Something went wrong';
+  const status = error.status || Http.Status.INTERNAL_SERVER_ERROR;
+  const message = error.message || Message.Error.Api.SOMETHING_WENT_WRONG;
 
-  if (error.code === '23505') { 
-    response.status(409).json({
-      error: 'A record with this information already exists'
+  if (error.code === Db.PgErrorCode.UNIQUE_VIOLATION) {
+    response.status(Http.Status.CONFLICT).json({
+      error: Message.Error.Api.DUPLICATE_RECORD,
     });
     return;
   }
   response.status(status).json({
     error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
   });
 };
 
 export const notFoundHandler = (request: Request, response: Response): void => {
-  response.status(404).json({
-    error: `Cannot ${request.method} ${request.path}`
+  const errorMessage = Message.Error.Api.ENDPOINT_NOT_FOUND.replace(
+    "{method}",
+    request.method
+  ).replace("{path}", request.path);
+
+  response.status(Http.Status.NOT_FOUND).json({
+    error: errorMessage,
   });
 };

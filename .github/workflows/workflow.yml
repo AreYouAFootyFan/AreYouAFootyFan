@@ -4,8 +4,6 @@ on:
     push: 
         branches: 
             - main
-            - development
-            - tevlen/pipeline
 
 jobs:
     terraform:
@@ -56,6 +54,7 @@ jobs:
           run: terraform apply -auto-approve
 
     migrate:
+        name: "Run Flyway Migrations"
         runs-on: ubuntu-latest
         needs: terraform
         steps:
@@ -92,3 +91,37 @@ jobs:
                 -connectRetriesInterval=10 \
                 -locations=filesystem:/flyway/sql/Migrations \
                 migrate
+
+    deploy:
+      name: "Deploy to EC2"
+      runs-on: ubuntu-latest
+      needs: migrate
+      steps:
+        - name: "Checkout Code"
+          uses: actions/checkout@v4
+
+        - name: "Deploy to EC2 via SSH"
+          uses: appleboy/ssh-action@v1.0.3
+          with:
+            host: ${{ secrets.EC2_HOST }}
+            username: ubuntu
+            key: ${{ secrets.EC2_SSH_KEY }}
+            script: |
+              cd /home/ubuntu/footy-app
+              npm install ts-node
+              cat > .env << EOF
+              PGHOST=${{ secrets.DB_HOST }}
+              PGUSER=${{ secrets.DB_USERNAME }}
+              PGDATABASE=${{ secrets.DB_NAME }}
+              PGPASSWORD=${{ secrets.DB_PASSWORD }}
+              PGPORT=${{ secrets.DB_PORT }}
+              PORT=${{ secrets.PORT }}
+              NODE_ENV=development
+              GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+              GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+              GOOGLE_REDIRECT_URL=${{ secrets.GOOGLE_REDIRECT_URL }}
+              EOF
+              git pull origin ${{ github.ref_name }}
+              npm install
+              npm run build
+              pm2 restart footy-app || pm2 start dist/app.js --name "footy-app" 

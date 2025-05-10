@@ -5,4 +5,4 @@ export interface CreateQuizAttemptDto {
 
 export interface CompleteQuizAttemptDto {
   end_time: Date;
-} 
+}

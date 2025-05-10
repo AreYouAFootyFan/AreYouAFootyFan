@@ -70,3 +70,9 @@ variable "publicly_accessible" {
   default     = false
   description = "Whether the RDS instance should be publicly accessible"
 }
+
+variable "key_name" {
+  description = "The name of the key pair to associate with the EC2 instance."
+  type        = string
+  default     = null
+}

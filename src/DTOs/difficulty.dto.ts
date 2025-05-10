@@ -3,6 +3,7 @@ export interface CreateDifficultyLevelDto {
   time_limit_seconds: number;
   points_on_correct: number;
   points_on_incorrect: number;
+  points_on_no_answer?: number; 
 }
 
 export interface UpdateDifficultyLevelDto {
@@ -10,4 +11,5 @@ export interface UpdateDifficultyLevelDto {
   time_limit_seconds?: number;
   points_on_correct?: number;
   points_on_incorrect?: number;
-} 
+  points_on_no_answer?: number;
+}
