@@ -130,21 +130,43 @@ ORDER BY
     category_name ASC;
 
 /*
+View: active_questions
+ */
+CREATE OR REPLACE VIEW
+    active_questions AS
+SELECT
+    question_id,
+    quiz_id,
+    question_text,
+    difficulty_id
+FROM
+    questions
+WHERE
+    deactivated_at IS NULL;
+
+
+/*
 View: active_quizzes
-Shows all active quizzes (not deactivated) ordered by creation date descending
+Shows all active quizzes (not deactivated) that belong to active categories, 
+ordered by creation date descending
  */
 CREATE OR REPLACE VIEW
     active_quizzes AS
 SELECT
-    quiz_id,
-    quiz_title,
-    quiz_description,
-    category_id,
-    created_by,
-    created_at
+    q.quiz_id,
+    q.quiz_title,
+    q.quiz_description,
+    q.category_id,
+    q.created_by,
+    q.created_at,
+    c.category_name,
+    c.category_description 
 FROM
-    quizzes
+    quizzes q
+LEFT JOIN
+    categories c ON q.category_id = c.category_id
 WHERE
-    deactivated_at IS NULL
+    q.deactivated_at IS NULL
+    AND (c.deactivated_at IS NULL OR q.category_id IS NULL)
 ORDER BY
-    created_at DESC;
+    q.created_at DESC;

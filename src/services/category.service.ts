@@ -67,12 +67,6 @@ export class CategoryService {
       throw ErrorUtils.notFound(Message.Error.Category.NOT_FOUND);
     }
 
-    const isUsed = await CategoryModel.isUsedByQuizzes(id);
-
-    if (isUsed) {
-      throw ErrorUtils.badRequest(Message.Error.Category.USED_BY_QUIZZES);
-    }
-
     const deleted = await CategoryModel.softDelete(id);
 
     if (!deleted) {

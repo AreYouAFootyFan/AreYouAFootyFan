@@ -749,7 +749,7 @@ class QuizCreator extends HTMLElement {
                 throw new Error('Question service not available');
             }
             
-            if (!confirm('Are you sure you want to delete this question? All associated answers will be deleted as well.')) {
+            if (!confirm('Are you sure you want to delete this question?')) {
                 return;
             }
             

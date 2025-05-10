@@ -84,13 +84,4 @@ export class CategoryModel {
     return result.rows.length > 0;
   }
 
-  static async isUsedByQuizzes(id: number): Promise<boolean> {
-    // This will be implemented later when we have the quizzes table
-    const result = await db.query(
-      "SELECT COUNT(*) FROM quizzes WHERE category_id = $1",
-      [id]
-    );
-
-    return parseInt(result.rows[0].count) > 0;
-  }
 }
