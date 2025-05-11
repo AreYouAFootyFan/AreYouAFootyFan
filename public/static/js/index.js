@@ -14,7 +14,8 @@ import statsService from "./services/stats.service.js";
 import answerService from "./services/answer.service.js";
 import difficultyService from "./services/difficulty.service.js";
 import questionService from "./services/question.service.js";
-
+import GameModeView from "./views/GameModeView.js";
+import PlayQuizView from "./views/PlayQuizVuew.js";
 import "./services/api.service.js";
 import "./services/category.service.js";
 import "./services/difficulty.service.js";
@@ -54,6 +55,8 @@ const router = async () => {
   const routes = [
     { path: '/', view: LoginView },
     { path: '/home', view: HomeView },
+    { path: '/game-modes', view: GameModeView },
+    { path: '/play-quiz', view: PlayQuizView },
     { path: '/profile', view: ProfileView },
     { path: '/quiz', view: QuizView },
     { path: '/admin', view: AdminDashboardView },

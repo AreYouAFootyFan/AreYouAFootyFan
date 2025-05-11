@@ -1,4 +1,5 @@
 import { StyleLoaderStatic } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class QuizCard extends HTMLElement {
     static {
         this.styleSheet = null;
@@ -35,7 +36,7 @@ class QuizCard extends HTMLElement {
     
     async render() {
         const shadow = this.shadowRoot;
-        shadow.innerHTML = '';
+        clearDOM(shadow)
 
         if (!this.quiz) {
             const paragraph = document.createElement('p');

@@ -1,80 +1,66 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
-import { Role } from "../../enums/users.js";
-import { clearDOM } from "../../utils/domHelpers.js";
 
-class QuizHome extends HTMLElement {
+/**
+ * GameModes component displays available quizzes and filters by category
+ */
+class Quizzes extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.quizzes = [];
     this.categories = [];
     this.selectedCategory = "";
-    this.styleSheet = new CSSStyleSheet();
   }
 
+  /**
+   * Lifecycle callback when element is added to DOM
+   */
   async connectedCallback() {
     await this.loadStyles();
-    this.shadowRoot.innerHTML = "";
+    this.clearDOM(this.shadowRoot);
     await this.render();
     this.setupEventListeners();
     await this.loadData();
     this.checkUserRole();
   }
 
+  /**
+   * Clear all child nodes from a DOM element
+   * @param {HTMLElement} element - Element to clear
+   */
+  clearDOM(element) {
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
+  }
+
+  /**
+   * Load component stylesheets
+   */
   async loadStyles() {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
-      "./static/css/home/home.css"
+      "./static/css/playQuiz/playQuiz.css"
     );
   }
 
+  /**
+   * Render component content
+   */
   async render() {
     const shadow = this.shadowRoot;
     const homeContent = this.buildMainContent();
     shadow.appendChild(homeContent);
   }
 
+  /**
+   * Build main content structure
+   * @returns {HTMLElement} Main content element
+   */
   buildMainContent() {
     const main = document.createElement("main");
 
-    // Hero Section
-    const hero = document.createElement("section");
-    hero.className = "hero";
-
-    const heroContent = document.createElement("section");
-    heroContent.className = "hero-content";
-
-    const heroTitle = document.createElement("h2");
-    heroTitle.className = "hero-title";
-    heroTitle.textContent = "Test Your Football Knowledge";
-
-    const heroSubtitle = document.createElement("p");
-    heroSubtitle.className = "hero-subtitle";
-    heroSubtitle.textContent =
-      "Choose from a variety of quizzes and compete with players worldwide";
-
-    heroContent.appendChild(heroTitle);
-    heroContent.appendChild(heroSubtitle);
-    hero.appendChild(heroContent);
-    main.appendChild(hero);
-
-    // Notification
-    const notification = document.createElement("section");
-    notification.className = "notification";
-    notification.id = "quiz-maker-note";
-
-    const noteTitle = document.createElement("h3");
-    noteTitle.className = "notification-title";
-    noteTitle.textContent = `${Role.Manager} Account`;
-
-    const noteMessage = document.createElement("p");
-    noteMessage.className = "notification-message";
-    noteMessage.textContent = `As a ${Role.Manager}, you can take quizzes, but won't be ranked. Use a ${Role.Player} account to compete.`;
-
-    notification.appendChild(noteTitle);
-    notification.appendChild(noteMessage);
-    main.appendChild(notification);
 
     // Content Section
     const contentSection = document.createElement("section");
@@ -85,7 +71,7 @@ class QuizHome extends HTMLElement {
 
     const sectionTitle = document.createElement("h2");
     sectionTitle.className = "section-title";
-    sectionTitle.textContent = "Quizzes for you";
+    sectionTitle.textContent = "Choose a Quiz to test your Knowledge! ";
 
     const filter = document.createElement("quiz-category-filter");
     filter.id = "category-filter";
@@ -114,55 +100,14 @@ class QuizHome extends HTMLElement {
     contentSection.appendChild(quizGrid);
 
     main.appendChild(contentSection);
-
-    // Leaderboard
-    const leaderboard = document.createElement("quiz-leaderboard");
-    leaderboard.id = "leaderboard";
-    main.appendChild(leaderboard);
-
-    // Modal
-    const modal = document.createElement("section");
-    modal.id = "quiz-master-modal";
-    modal.className = "modal";
-
-    const modalContent = document.createElement("article");
-    modalContent.className = "modal-content";
-
-    const modalTitle = document.createElement("h3");
-    modalTitle.className = "modal-title";
-    modalTitle.textContent = `${Role.Manager} Account`;
-
-    const modalMessage = document.createElement("p");
-    modalMessage.className = "modal-message";
-    modalMessage.textContent = `As a ${Role.Manager}, you can partake in quizzes but will not be ranked.\n\nWould you like to proceed?`;
-
-    const modalFooter = document.createElement("footer");
-    modalFooter.className = "modal-actions";
-
-    const cancelButton = document.createElement("button");
-    cancelButton.id = "close-modal-btn";
-    cancelButton.className = "secondary-btn";
-    cancelButton.textContent = "Cancel";
-
-    const adminLink = document.createElement("a");
-    adminLink.href = "/quiz";
-    adminLink.className = "primary-btn";
-    adminLink.dataset.link = "";
-    adminLink.textContent = 'Continue';
-
-    modalFooter.appendChild(cancelButton);
-    modalFooter.appendChild(adminLink);
-
-    modalContent.appendChild(modalTitle);
-    modalContent.appendChild(modalMessage);
-    modalContent.appendChild(modalFooter);
-    modal.appendChild(modalContent);
-
-    main.appendChild(modal);
-
+    
     return main;
   }
 
+  /**
+   * Create empty state message when no quizzes match filter
+   * @returns {HTMLElement} Empty state element
+   */
   createEmptyQuizMessage() {
     const article = document.createElement("article");
     article.className = "empty-state";
@@ -187,6 +132,9 @@ class QuizHome extends HTMLElement {
     return article;
   }
 
+  /**
+   * Set up event listeners
+   */
   setupEventListeners() {
     const categoryFilter = this.shadowRoot.querySelector("#category-filter");
     if (categoryFilter) {
@@ -195,31 +143,11 @@ class QuizHome extends HTMLElement {
         this.renderQuizzes();
       });
     }
-
-    const leaderboard = this.shadowRoot.querySelector("#leaderboard");
-    if (leaderboard) {
-      leaderboard.addEventListener("view-full-leaderboard", () => {
-        leaderboard.showFullLeaderboard();
-      });
-    }
-
-    const closeModalBtn = this.shadowRoot.querySelector("#close-modal-btn");
-    if (closeModalBtn) {
-      closeModalBtn.addEventListener("click", () => {
-        this.hideQuizMasterModal();
-      });
-    }
-
-    const quizMasterModal = this.shadowRoot.querySelector("#quiz-master-modal");
-    if (quizMasterModal) {
-      quizMasterModal.addEventListener("click", (event) => {
-        if (event.target === quizMasterModal) {
-          this.hideQuizMasterModal();
-        }
-      });
-    }
   }
 
+  /**
+   * Load quiz and category data
+   */
   async loadData() {
     try {
       const dataPromises = [];
@@ -243,7 +171,7 @@ class QuizHome extends HTMLElement {
           window.quizService
             .getValidQuizzes()
             .then((quizzes) => {
-              this.quizzes = quizzes.slice(0,2);
+              this.quizzes = quizzes;
               this.renderQuizzes();
             })
             .catch((error) => {
@@ -252,19 +180,15 @@ class QuizHome extends HTMLElement {
         );
       }
 
-      if (window.leaderboardService) {
-        const leaderboard = this.shadowRoot.querySelector("#leaderboard");
-        if (leaderboard) {
-          leaderboard.loadLeaderboardData();
-        }
-      }
-
       await Promise.all(dataPromises);
     } catch (error) {
       console.error("Error loading data:", error);
     }
   }
 
+  /**
+   * Populate category filter with available categories
+   */
   populateCategoryFilter() {
     const categoryFilter = this.shadowRoot.querySelector("#category-filter");
     if (categoryFilter) {
@@ -272,6 +196,9 @@ class QuizHome extends HTMLElement {
     }
   }
 
+  /**
+   * Render quizzes based on selected category
+   */
   renderQuizzes() {
     const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
     if (!quizGrid) return;
@@ -282,14 +209,13 @@ class QuizHome extends HTMLElement {
         )
       : this.quizzes;
 
+    this.clearDOM(quizGrid);
+
     if (filteredQuizzes.length === 0) {
-      quizGrid.innerHTML = "";
       const emptyQuiz = this.createEmptyQuizMessage();
       quizGrid.appendChild(emptyQuiz);
       return;
     }
-
-    quizGrid.innerHTML = "";
 
     filteredQuizzes.forEach((quiz) => {
       const quizCard = document.createElement("quiz-card");
@@ -299,21 +225,11 @@ class QuizHome extends HTMLElement {
       });
       quizGrid.appendChild(quizCard);
     });
-    const buttonContainer = document.createElement("div");
-
-    buttonContainer.className = "quiz-grid-button-container";
-    const moreButton = document.createElement("button");
-    moreButton.className = "more-quizzes-button";
-    moreButton.textContent = "View All Quizzes";
-    moreButton.onclick = () => {
-      window.location.href = "/play-quiz";
-    };
-
-    buttonContainer.appendChild(moreButton);
-    quizGrid.appendChild(buttonContainer);
-
   }
 
+  /**
+   * Check user role to enable additional functionality
+   */
   checkUserRole() {
     const authService = window.authService;
     if (!authService) return;
@@ -326,6 +242,11 @@ class QuizHome extends HTMLElement {
     }
   }
 
+  /**
+   * Handle starting a quiz
+   * @param {Event} event - Click event
+   * @param {string|number} quizId - ID of selected quiz
+   */
   handleStartQuiz(event, quizId) {
     event.preventDefault();
 
@@ -333,7 +254,8 @@ class QuizHome extends HTMLElement {
     if (!authService) return;
 
     const isQuizMaster = authService.isQuizMaster && authService.isQuizMaster();
-    localStorage.setItem("selected_quiz_to_play_id", quizId);
+    localStorage.setItem("selected_quiz_id", quizId);
+    
     if (isQuizMaster) {
       this.showQuizMasterModal();
     } else {
@@ -341,21 +263,20 @@ class QuizHome extends HTMLElement {
     }
   }
 
+  /**
+   * Display quiz master modal for quiz masters
+   */
   showQuizMasterModal() {
-    const modal = this.shadowRoot.querySelector("#quiz-master-modal");
-    if (modal) {
-      modal.classList.add("visible");
-    }
-  }
-
-  hideQuizMasterModal() {
-    const modal = this.shadowRoot.querySelector("#quiz-master-modal");
-    if (modal) {
-      modal.classList.remove("visible");
-    }
+    // Implementation would go here
+    // Could show a modal asking if they want to play or edit
+    console.log("Quiz master modal would show here");
+    
+    // Placeholder implementation - redirect to quiz page
+    window.location.href = "/quiz";
   }
 }
 
-customElements.define("quiz-home", QuizHome);
+// Register the component with the correct name
+customElements.define("play-quizzes", Quizzes);
 
-export default QuizHome;
+export default Quizzes;
