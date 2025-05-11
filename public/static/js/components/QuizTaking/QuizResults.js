@@ -25,9 +25,9 @@ class QuizResults extends HTMLElement {
     async loadStyles() {        
         await StyleLoader(
             this.shadowRoot,
-            './static/css/styles.css',
-            './static/css/shared/components.css',
-            './static/css/quizTaking/quizResults.css'
+            '/static/css/styles.css',
+            '/static/css/shared/components.css',
+            '/static/css/quizTaking/quizResults.css'
         );
     }
     
@@ -57,48 +57,94 @@ class QuizResults extends HTMLElement {
         
         const style = document.createElement('style');
         const article = document.createElement('article');
+        article.classList.add('card');
         
         const heading = document.createElement('h2');
         heading.textContent = 'Quiz Complete!';
         
-        const finalScore = document.createElement('p');
-        finalScore.classList.add('final-score');
-        finalScore.innerHTML = `Your score: <strong>${this._summary.total_points}</strong> points`;
+        // Create percentage container
+        const percentageContainer = document.createElement('div');
+        percentageContainer.classList.add('percentage-container');
         
         const percentage = document.createElement('p');
         percentage.classList.add('percentage');
         percentage.textContent = `${accuracyPercent}%`;
         
+        const finalScore = document.createElement('p');
+        finalScore.classList.add('final-score');
+        finalScore.innerHTML = `Your score: <strong>${this._summary.total_points}</strong> points`;
+        
+        percentageContainer.appendChild(percentage);
+        percentageContainer.appendChild(finalScore);
+
+        
         const statsSummary = document.createElement('section');
         statsSummary.classList.add('stats-summary');
         
-        const questions = document.createElement('p');
-        questions.innerHTML = `<strong>Questions:</strong> ${this._summary.answered_questions}/${this._summary.total_questions} (${answeredPercent}% completed)`;
+        // First stat item - Questions completed
+        const questionsItem = document.createElement('div');
+        questionsItem.classList.add('stat-item');
         
-        const correctAnswers = document.createElement('p');
-        correctAnswers.innerHTML = `<strong>Correct answers:</strong> ${this._summary.correct_answers}/${this._summary.answered_questions}`;
+        const questionsLabel = document.createElement('div');
+        questionsLabel.classList.add('stat-label');
+        questionsLabel.textContent = 'Questions';
         
-        const incorrectAnswers = document.createElement('p');
-        incorrectAnswers.innerHTML = `<strong>Incorrect answers:</strong> ${this._summary.incorrect_answers}`;
+        const questionsValue = document.createElement('div');
+        questionsValue.classList.add('stat-value');
+        questionsValue.textContent = `${this._summary.answered_questions}/${this._summary.total_questions}`;
         
-        statsSummary.appendChild(questions);
-        statsSummary.appendChild(correctAnswers);
-        statsSummary.appendChild(incorrectAnswers);
+        questionsItem.appendChild(questionsLabel);
+        questionsItem.appendChild(questionsValue);
+        
+        // Second stat item - Correct answers
+        const correctItem = document.createElement('div');
+        correctItem.classList.add('stat-item', 'correct-stat');
+        
+        const correctLabel = document.createElement('div');
+        correctLabel.classList.add('stat-label');
+        correctLabel.textContent = 'Correct';
+        
+        const correctValue = document.createElement('div');
+        correctValue.classList.add('stat-value');
+        correctValue.textContent = `${this._summary.correct_answers}`;
+        
+        correctItem.appendChild(correctLabel);
+        correctItem.appendChild(correctValue);
+        
+        // Third stat item - Incorrect answers
+        const incorrectItem = document.createElement('div');
+        incorrectItem.classList.add('stat-item', 'incorrect-stat');
+        
+        const incorrectLabel = document.createElement('div');
+        incorrectLabel.classList.add('stat-label');
+        incorrectLabel.textContent = 'Incorrect';
+        
+        const incorrectValue = document.createElement('div');
+        incorrectValue.classList.add('stat-value');
+        incorrectValue.textContent = `${this._summary.incorrect_answers}`;
+        
+        incorrectItem.appendChild(incorrectLabel);
+        incorrectItem.appendChild(incorrectValue);
+        
+        // Add all stat items to the summary
+        statsSummary.appendChild(questionsItem);
+        statsSummary.appendChild(correctItem);
+        statsSummary.appendChild(incorrectItem);
         
         const actions = document.createElement('section');
-        actions.classList.add('actions');
+        actions.classList.add('actions', 'button-container');
         
         const homeButton = document.createElement('a');
         homeButton.href = '/home';
         homeButton.classList.add('home-btn');
         homeButton.setAttribute('data-link', '');
-        homeButton.textContent = 'Back to Home';
+        homeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>Back to Home`;
         
         actions.appendChild(homeButton);
         
+        // Assemble the final structure - ultra minimal version
         article.appendChild(heading);
-        article.appendChild(finalScore);
-        article.appendChild(percentage);
+        article.appendChild(percentageContainer);
         article.appendChild(statsSummary);
         article.appendChild(actions);
         
