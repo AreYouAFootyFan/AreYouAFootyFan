@@ -13,6 +13,10 @@ class QuizService {
         return apiService.get(`/api/quizzes?category=${categoryId}`);
     }
 
+    async getValidQuizzesByCategory(categoryId) {
+        return apiService.get(`/api/quizzes?category=${categoryId}&valid=true`);
+    }
+
     async getQuizzesByCreator(creatorId) {
         return apiService.get(`/api/quizzes?creator=${creatorId}`);
     }

@@ -1,18 +1,16 @@
 .game-mode-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-  
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
   .game-mode-card {
     display: flex;
     flex-direction: column;
-    background-color: #fff;
+    background-color: var(--gray-100);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    /* transition: transform 0.3s ease, box-shadow 0.3s ease; */
     padding: 1.5rem;
     cursor: pointer;
     position: relative;
@@ -20,14 +18,13 @@
   
   .hero {
     padding: 1rem;
-    background-color: #f9fafb; /* Light gray background */
-    color: #1f2937;             /* Neutral dark text */
+    background-color: var(--gray-50); 
+    color: var(--gray-900);         
     margin-bottom: 1rem;
-    border-bottom: 1px solid #e5e7eb; /* Light border to separate */
+    border-bottom: 1px solid var(--gray-100);
   }
   
   .hero-content {
-    max-width: 640px;
     margin: 0 auto;
     text-align: center;
   }
@@ -35,15 +32,8 @@
   .hero-title {
     font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 0.25rem;
-    color:#122c50
-  }
-  
-  .hero-subtitle {
-    font-size: 0.9rem;
-    font-weight: 400;
-    color: #4b5563; /* Subtle gray for subtitle */
-    margin: 0;
+    margin-bottom: 0.5rem;
+    color:var(--gray-800)
   }
   
  
@@ -54,9 +44,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 64px;
-    height: 64px;
-    background-color: #f8f9fa;
+    width: 10rem;
+    height: 10rem;
+    background-color: var(--gray-50);
     border-radius: 50%;
   }
   
@@ -73,15 +63,15 @@
   
   .mode-description {
     font-size: 0.875rem;
-    color: #666;
+    color: var(--gray-700);
     margin-bottom: 1.5rem;
   }
   
   .mode-play-button {
-    background-color: #4a6cf7;
+    background-color:var(--info);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 60px;
     padding: 0.75rem 1.5rem;
     font-weight: 600;
     cursor: pointer;
@@ -90,5 +80,5 @@
   }
   
   .mode-play-button:hover {
-    background-color: #3451b2;
+    background-color: var(--primary-dark);
   }

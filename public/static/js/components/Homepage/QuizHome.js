@@ -243,7 +243,7 @@ class QuizHome extends HTMLElement {
           window.quizService
             .getValidQuizzes()
             .then((quizzes) => {
-              this.quizzes = quizzes.slice(0,2);
+              this.quizzes = quizzes;
               this.renderQuizzes();
             })
             .catch((error) => {
@@ -299,17 +299,11 @@ class QuizHome extends HTMLElement {
       });
       quizGrid.appendChild(quizCard);
     });
-    const buttonContainer = document.createElement("div");
+    const buttonContainer = document.createElement("article");
 
     buttonContainer.className = "quiz-grid-button-container";
     const moreButton = document.createElement("button");
-    moreButton.className = "more-quizzes-button";
-    moreButton.textContent = "View All Quizzes";
-    moreButton.onclick = () => {
-      window.location.href = "/play-quiz";
-    };
-
-    buttonContainer.appendChild(moreButton);
+  
     quizGrid.appendChild(buttonContainer);
 
   }

@@ -206,7 +206,7 @@ class LoginForm extends HTMLElement {
         let loadingElement = this.shadowRoot.querySelector('.loading-indicator');
         
         if (!loadingElement) {
-            loadingElement = document.createElement('div');
+            loadingElement = document.createElement('section');
             loadingElement.className = 'loading-indicator';
             
             const container = this.shadowRoot.querySelector('.auth-container');

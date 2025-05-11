@@ -89,7 +89,7 @@ class QuizResults extends HTMLElement {
         actions.classList.add('actions');
         
         const homeButton = document.createElement('a');
-        homeButton.href = '/home';
+        homeButton.href = '/game-modes';
         homeButton.classList.add('home-btn');
         homeButton.setAttribute('data-link', '');
         homeButton.textContent = 'Back to Home';

@@ -1,3 +1,5 @@
+import categoryService from "../../services/category.service.js";
+import quizService from "../../services/quiz.service.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
 
 /**
@@ -7,43 +9,9 @@ class GameModes extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.gameModes = [
-        {
-            id: "quiz",
-            title: "Quizzes",
-            description: "Test your knowledge across various categories",
-            icon: "🧠"
-        },
-        {
-            id: "fill-in-the-blank",
-            title: "Fill In The Blank",
-            description: "Complete the sentences with the correct words",
-            icon: "✏️"
-        },
-        {
-            id: "true-false",
-            title: "True Or False",
-            description: "Challenge yourself in a true or false quiz",
-            icon: "✅"
-        },
-        {
-            id: "higher-lower",
-            title: "Higher Or Lower",
-            description: "Guess if the next answer is higher or lower",
-            icon: "📊"
-        },
-        {
-            id:"football-personality",
-            title: "Football Personality",
-            description: "Discover your football personality",
-            icon: "⚽"
-        },
-    ];
+    this.gameModes; 
   }
 
-  /**
-   * Lifecycle callback when element is added to DOM
-   */
   async connectedCallback() {
     await this.loadStyles();
     this.clearDOM(this.shadowRoot);
@@ -51,19 +19,14 @@ class GameModes extends HTMLElement {
     this.setupEventListeners();
   }
 
-  /**
-   * Clear all child nodes from a DOM element
-   * @param {HTMLElement} element - Element to clear
-   */
+
   clearDOM(element) {
     while (element.firstChild) {
       element.removeChild(element.firstChild);
     }
   }
 
-  /**
-   * Load component stylesheets
-   */
+
   async loadStyles() {
     await StyleLoader(
       this.shadowRoot,
@@ -73,19 +36,13 @@ class GameModes extends HTMLElement {
     );
   }
 
-  /**
-   * Render component content
-   */
   async render() {
     const shadow = this.shadowRoot;
     const homeContent = this.buildMainContent();
     shadow.appendChild(homeContent);
   }
 
-  /**
-   * Build main content structure
-   * @returns {HTMLElement} Main content element
-   */
+
   buildMainContent() {
     const main = document.createElement("main");
 
@@ -98,15 +55,10 @@ class GameModes extends HTMLElement {
 
     const heroTitle = document.createElement("h2");
     heroTitle.className = "hero-title";
-    heroTitle.textContent = "Select Game Mode";
+    heroTitle.textContent =  "Choose from a variety of game modes and challenge yourself";
 
-    const heroSubtitle = document.createElement("p");
-    heroSubtitle.className = "hero-subtitle";
-    heroSubtitle.textContent =
-      "Choose from a variety of game modes and challenge yourself";
-
+  
     heroContent.appendChild(heroTitle);
-    heroContent.appendChild(heroSubtitle);
     hero.appendChild(heroContent);
     main.appendChild(hero);
 
@@ -137,41 +89,34 @@ class GameModes extends HTMLElement {
     return main;
   }
 
-  /**
-   * Render game mode cards
-   * @param {HTMLElement} container - Container element for cards
-   */
-  renderGameModeCards(container) {
+  async renderGameModeCards(container) {
+    this.gameModes = await categoryService.getAllCategories()
     this.gameModes.forEach(gameMode => {
       const card = this.createGameModeCard(gameMode);
       container.appendChild(card);
     });
   }
 
-  /**
-   * Create a game mode card
-   * @param {Object} gameMode - Game mode data
-   * @returns {HTMLElement} Game mode card element
-   */
+
   createGameModeCard(gameMode) {
     const card = document.createElement("article");
     card.className = "game-mode-card";
-    card.dataset.modeId = gameMode.id;
+    card.dataset.modeId = gameMode.category_id;
 
-    const iconContainer = document.createElement("div");
+    const iconContainer = document.createElement("section");
     iconContainer.className = "mode-icon";
     iconContainer.textContent = gameMode.icon;
     
-    const content = document.createElement("div");
+    const content = document.createElement("section");
     content.className = "mode-content";
     
     const title = document.createElement("h3");
     title.className = "mode-title";
-    title.textContent = gameMode.title;
+    title.textContent = gameMode.category_name;
     
     const description = document.createElement("p");
     description.className = "mode-description";
-    description.textContent = gameMode.description;
+    description.textContent = gameMode.category_description;
     
     const playButton = document.createElement("button");
     playButton.className = "mode-play-button";
@@ -180,16 +125,12 @@ class GameModes extends HTMLElement {
     content.appendChild(title);
     content.appendChild(description);
     
-    card.appendChild(iconContainer);
     card.appendChild(content);
     card.appendChild(playButton);
     
     return card;
   }
 
-  /**
-   * Set up event listeners
-   */
   setupEventListeners() {
     this.shadowRoot.addEventListener("click", (event) => {
       // Check if clicked element is a play button or inside a game mode card
@@ -203,20 +144,13 @@ class GameModes extends HTMLElement {
     });
   }
 
-  /**
-   * Handle game mode selection
-   * @param {string} modeId - Selected game mode ID
-   */
+
   handleGameModeSelection(modeId) {
-    // Store the selected game mode in localStorage if needed
-    localStorage.setItem("selected_game_mode", modeId);
-    
     // Redirect to the game modes page
-    window.location.href = "/play-quiz";
+    window.location.href = `/play-quiz?modeId=${encodeURIComponent(modeId)}`;
   }
 }
 
-// Register the component with the correct name
 customElements.define("game-modes", GameModes);
 
 export default GameModes;
