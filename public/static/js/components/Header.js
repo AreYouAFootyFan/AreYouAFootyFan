@@ -25,6 +25,7 @@ class FootballQuizHeader extends HTMLElement {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
+      "./static/css/shared/components.css",
       "./static/css/header/header.css"
     );
   }

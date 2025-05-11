@@ -1,10 +1,12 @@
+/* Quiz Taking CSS - Only contains styles specific to the Quiz Taking container */
+
 :host {
     display: block;
     width: 100%;
-    font-family: var(--font-sans, 'Inter', sans-serif);
-    color: var(--gray-800);
-    background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
-    min-height: calc(100vh - 4rem);
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    background: var(--gradient-bg-light);
+    min-height: calc(100vh - 4.5rem); /* Adjusted for new header height */
 }
 
 .quiz-container {
@@ -18,67 +20,13 @@
 }
 
 .error-container {
-    background-color: white;
-    border-radius: clamp(0.75rem, 2vw, 1rem);
-    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.1), 
-                0 0.2rem 1rem rgba(0, 0, 0, 0.08),
-                0 0 0 1px rgba(255, 255, 255, 0.7) inset;
-    padding: clamp(1.25rem, 4vw, 2rem);
     text-align: center;
     width: min(40rem, 90%);
     margin: clamp(1rem, 4vw, 2rem) auto;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(15px);
-    box-sizing: border-box;
+    /* Use shared card and gradient classes */
+    /* JavaScript should add: 'card gradient-accent-top' */
 }
 
-.error-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(to right, #3b82f6, #10b981, #3b82f6);
-    border-radius: 1rem 1rem 0 0;
-}
-
-.home-btn {
-    padding: clamp(0.6rem, 2vw, 0.75rem) clamp(1.2rem, 3vw, 1.5rem);
-    border-radius: 100px;
-    font-size: clamp(0.875rem, 2vw, 1rem);
-    font-weight: 600;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25), 
-               0 2px 5px rgba(37, 99, 235, 0.15);
-    letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.home-btn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: all 0.8s ease;
-}
-
-.home-btn:hover {
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    transform: translateY(-3px);
-}
-
-.home-btn:hover::before {
-    left: 100%;
-}
+/* Note: The following classes should use shared components in JavaScript:
+ - error-container → 'card gradient-accent-top'
+ - home-btn → 'modern-button' */

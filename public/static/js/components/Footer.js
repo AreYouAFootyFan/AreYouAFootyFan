@@ -15,6 +15,7 @@ class FootballQuizFooter extends HTMLElement {
       await StyleLoader(
             this.shadowRoot,
             './static/css/styles.css',
+            './static/css/shared/components.css',
             './static/css/footer/footer.css'
         );
   }

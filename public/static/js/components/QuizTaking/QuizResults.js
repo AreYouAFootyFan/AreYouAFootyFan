@@ -26,6 +26,7 @@ class QuizResults extends HTMLElement {
         await StyleLoader(
             this.shadowRoot,
             './static/css/styles.css',
+            './static/css/shared/components.css',
             './static/css/quizTaking/quizResults.css'
         );
     }

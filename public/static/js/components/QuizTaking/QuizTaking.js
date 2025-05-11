@@ -42,6 +42,7 @@ class QuizTaking extends HTMLElement {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
+      "./static/css/shared/components.css",
       "./static/css/quizTaking/quizTaking.css"
     );
   }
