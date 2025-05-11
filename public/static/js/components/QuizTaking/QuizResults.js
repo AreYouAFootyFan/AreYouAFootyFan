@@ -62,8 +62,8 @@ class QuizResults extends HTMLElement {
         const heading = document.createElement('h2');
         heading.textContent = 'Quiz Complete!';
         
-        // Create percentage container
-        const percentageContainer = document.createElement('div');
+        // Create percentage container with semantic section tag
+        const percentageContainer = document.createElement('section');
         percentageContainer.classList.add('percentage-container');
         
         const percentage = document.createElement('p');
@@ -72,7 +72,16 @@ class QuizResults extends HTMLElement {
         
         const finalScore = document.createElement('p');
         finalScore.classList.add('final-score');
-        finalScore.innerHTML = `Your score: <strong>${this._summary.total_points}</strong> points`;
+        
+        // Create elements instead of using innerHTML
+        const scoreText = document.createTextNode('Your score: ');
+        const scoreValue = document.createElement('strong');
+        scoreValue.textContent = this._summary.total_points;
+        const pointsText = document.createTextNode(' points');
+        
+        finalScore.appendChild(scoreText);
+        finalScore.appendChild(scoreValue);
+        finalScore.appendChild(pointsText);
         
         percentageContainer.appendChild(percentage);
         percentageContainer.appendChild(finalScore);
@@ -82,14 +91,14 @@ class QuizResults extends HTMLElement {
         statsSummary.classList.add('stats-summary');
         
         // First stat item - Questions completed
-        const questionsItem = document.createElement('div');
+        const questionsItem = document.createElement('article');
         questionsItem.classList.add('stat-item');
         
-        const questionsLabel = document.createElement('div');
+        const questionsLabel = document.createElement('h3');
         questionsLabel.classList.add('stat-label');
         questionsLabel.textContent = 'Questions';
         
-        const questionsValue = document.createElement('div');
+        const questionsValue = document.createElement('p');
         questionsValue.classList.add('stat-value');
         questionsValue.textContent = `${this._summary.answered_questions}/${this._summary.total_questions}`;
         
@@ -97,14 +106,14 @@ class QuizResults extends HTMLElement {
         questionsItem.appendChild(questionsValue);
         
         // Second stat item - Correct answers
-        const correctItem = document.createElement('div');
+        const correctItem = document.createElement('article');
         correctItem.classList.add('stat-item', 'correct-stat');
         
-        const correctLabel = document.createElement('div');
+        const correctLabel = document.createElement('h3');
         correctLabel.classList.add('stat-label');
         correctLabel.textContent = 'Correct';
         
-        const correctValue = document.createElement('div');
+        const correctValue = document.createElement('p');
         correctValue.classList.add('stat-value');
         correctValue.textContent = `${this._summary.correct_answers}`;
         
@@ -112,14 +121,14 @@ class QuizResults extends HTMLElement {
         correctItem.appendChild(correctValue);
         
         // Third stat item - Incorrect answers
-        const incorrectItem = document.createElement('div');
+        const incorrectItem = document.createElement('article');
         incorrectItem.classList.add('stat-item', 'incorrect-stat');
         
-        const incorrectLabel = document.createElement('div');
+        const incorrectLabel = document.createElement('h3');
         incorrectLabel.classList.add('stat-label');
         incorrectLabel.textContent = 'Incorrect';
         
-        const incorrectValue = document.createElement('div');
+        const incorrectValue = document.createElement('p');
         incorrectValue.classList.add('stat-value');
         incorrectValue.textContent = `${this._summary.incorrect_answers}`;
         
@@ -138,7 +147,18 @@ class QuizResults extends HTMLElement {
         homeButton.href = '/home';
         homeButton.classList.add('home-btn');
         homeButton.setAttribute('data-link', '');
-        homeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>Back to Home`;
+        
+        // Use the external SVG icon file
+        const homeIcon = document.createElement('img');
+        homeIcon.src = '/static/img/icons/home.svg';
+        homeIcon.alt = 'Home';
+        homeIcon.width = 16;
+        homeIcon.height = 16;
+        
+        const buttonText = document.createTextNode('Back to Home');
+        
+        homeButton.appendChild(homeIcon);
+        homeButton.appendChild(buttonText);
         
         actions.appendChild(homeButton);
         
