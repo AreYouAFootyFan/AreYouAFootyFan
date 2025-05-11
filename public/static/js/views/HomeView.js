@@ -1,8 +1,8 @@
 import AbstractView from "./AbstractView.js";
-import "../components/homepage/QuizHome.js";
-import "../components/homepage/QuizCard.js";
-import "../components/homepage/QuizLeaderboard.js";
-import "../components/homepage/QuizCategoryFilter.js"
+import "../components/Homepage/QuizHome.js";
+import "../components/Homepage/QuizCard.js";
+import "../components/Homepage/QuizLeaderboard.js";
+import "../components/Homepage/QuizCategoryFilter.js"
 
 export default class HomeView extends AbstractView {
     constructor() {
