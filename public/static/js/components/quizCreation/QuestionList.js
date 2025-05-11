@@ -144,7 +144,7 @@ class QuestionsList extends HTMLElement {
         
         const deleteButton = document.createElement('button');
         deleteButton.type = 'button';
-        deleteButton.className = 'action-btn delete-question';
+        deleteButton.className = `action-btn delete-question ${this.questions.length > 5 ? '' : 'hidden'}` // todo;
         deleteButton.title = 'Delete Question';
         deleteButton.dataset.id = question.question_id;
         

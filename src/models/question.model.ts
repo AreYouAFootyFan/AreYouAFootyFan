@@ -11,7 +11,7 @@ export interface Question {
 export class QuestionModel {
   static async findByQuizId(quizId: number): Promise<Question[]> {
     const result = await db.query(
-      "SELECT * FROM questions WHERE quiz_id = $1 ORDER BY question_id",
+      "SELECT * FROM active_questions WHERE quiz_id = $1 ORDER BY question_id",
       [quizId]
     );
     return result.rows;
@@ -19,7 +19,7 @@ export class QuestionModel {
 
   static async findById(id: number): Promise<Question | null> {
     const result = await db.query(
-      "SELECT * FROM questions WHERE question_id = $1",
+      "SELECT * FROM active_questions WHERE question_id = $1",
       [id]
     );
 
@@ -74,10 +74,19 @@ export class QuestionModel {
     return result.rows.length > 0;
   }
 
+  static async softDelete(id: number): Promise<boolean> {
+    const result = await db.query(
+      "UPDATE questions SET deactivated_at = CURRENT_TIMESTAMP WHERE question_id = $1 AND deactivated_at IS NULL RETURNING *",
+      [id]
+    );
+
+    return result.rows.length > 0;
+  }
+
   static async findByIdWithDifficulty(id: number): Promise<any | null> {
     const result = await db.query(
       `SELECT q.*, d.difficulty_level, d.time_limit_seconds, d.points_on_correct, d.points_on_incorrect, d.points_on_no_answer
-       FROM questions q
+       FROM active_questions q
        JOIN difficulty_levels d ON q.difficulty_id = d.difficulty_id
        WHERE q.question_id = $1`,
       [id]
@@ -95,7 +104,7 @@ export class QuestionModel {
       `SELECT q.*, d.difficulty_level, d.time_limit_seconds, d.points_on_correct, d.points_on_incorrect,
         (SELECT COUNT(*) FROM answers WHERE question_id = q.question_id) as answer_count,
         (SELECT COUNT(*) FROM answers WHERE question_id = q.question_id AND is_correct = true) as correct_answer_count
-       FROM questions q
+       FROM active_questions q
        JOIN difficulty_levels d ON q.difficulty_id = d.difficulty_id
        WHERE q.quiz_id = $1
        ORDER BY q.question_id`,

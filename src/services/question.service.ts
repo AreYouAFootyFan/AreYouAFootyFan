@@ -86,7 +86,7 @@ export class QuestionService {
       throw ErrorUtils.notFound(Message.Error.Question.NOT_FOUND);
     }
 
-    const deleted = await QuestionModel.delete(id);
+    const deleted = await QuestionModel.softDelete(id);
 
     if (!deleted) {
       throw ErrorUtils.internal(Message.Error.Question.DELETE_FAILED);

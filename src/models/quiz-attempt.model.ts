@@ -91,7 +91,7 @@ export class QuizAttemptModel {
         (SELECT json_agg(a.*) FROM answers a WHERE a.question_id = q.question_id) as answers
        FROM quiz_attempts qa
        JOIN quizzes qz ON qa.quiz_id = qz.quiz_id
-       JOIN questions q ON qz.quiz_id = q.quiz_id
+       JOIN active_questions q ON qz.quiz_id = q.quiz_id
        JOIN difficulty_levels d ON q.difficulty_id = d.difficulty_id
        LEFT JOIN user_responses ur ON q.question_id = ur.question_id AND ur.attempt_id = qa.attempt_id
        WHERE qa.attempt_id = $1
