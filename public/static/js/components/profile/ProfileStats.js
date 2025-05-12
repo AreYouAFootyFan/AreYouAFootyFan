@@ -5,11 +5,6 @@ class ProfileStats extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.stats = {
-            elo: 1450,
-            quizzesCompleted: 27,
-            avgScore: 82,
-        };
         this.styleSheet = new CSSStyleSheet();
     }
     
@@ -32,21 +27,22 @@ class ProfileStats extends HTMLElement {
         }
         
         const statsContainer = document.createElement('section');
+        const stats = JSON.parse(this.getAttribute('statistics'));
         statsContainer.className = 'profile-stats';
         
         const eloCard = document.createElement('stats-card');
         // eloCard.className = 'stat-card';
-        eloCard.setAttribute('value', this.stats.elo);
+        eloCard.setAttribute('value', stats.elo);
         eloCard.setAttribute('label', 'ELO');
         
         const quizzesCard = document.createElement('stats-card');
         // quizzesCard.className = 'stat-card';
-        quizzesCard.setAttribute('value', this.stats.quizzesCompleted);
+        quizzesCard.setAttribute('value', stats.quizzesCompleted);
         quizzesCard.setAttribute('label', 'Quizzes completed');       
         
         const avgCard = document.createElement('stats-card');
         // avgCard.className = 'stat-card';
-        avgCard.setAttribute('value', this.stats.avgScore + '%');
+        avgCard.setAttribute('value', stats.avgScore + '%');
         avgCard.setAttribute('label', 'Average score');       
 
         statsContainer.appendChild(eloCard);

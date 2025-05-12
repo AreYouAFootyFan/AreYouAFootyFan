@@ -11,8 +11,9 @@ const router = express.Router();
 
 router.use(authenticate);
 router.use(requireUsername);
-router.use(requireRole(User.Role.MANAGER));
+// router.use(requireRole(User.Role.MANAGER));
 
 router.get("/dashboard", StatsController.getDashboardStats);
+router.get("/profile", StatsController.getProfileStats);
 
 export default router;

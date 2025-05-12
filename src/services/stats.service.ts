@@ -9,6 +9,14 @@ export interface DashboardStats {
   questions_answered: number;
 }
 
+export interface ProfileStats {
+    elo: number,
+    quizzesCompleted: number,
+    avgScore: number,
+    topCategories: string[],
+    badges: string[]
+}
+
 export class StatsService {
   static async getDashboardStats(): Promise<DashboardStats> {
     try {
@@ -34,6 +42,32 @@ export class StatsService {
         quizzes_completed: parseInt(completedQuizzesResult.rows[0].count),
         questions_answered: parseInt(questionsAnsweredResult.rows[0].count),
       };
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  static async getProfileStats(userId: number): Promise<ProfileStats> {
+    try {
+        const elo = 0;
+
+        const quizzes_completed = await db.query("SELECT * FROM get_num_quizzes_done($1)", [
+            userId,
+        ]);
+
+        const avgScore = 0;
+        const top_categories = ['La Liga'];
+        const badges = ['Rookie'];
+
+        return {
+            elo: elo,
+            quizzesCompleted: parseInt(quizzes_completed.rows[0].get_num_quizzes_done),
+            avgScore: avgScore,
+            topCategories: top_categories,
+            badges: badges
+        }
+
     } catch (error) {
       console.error("Error fetching dashboard stats:", error);
       throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);

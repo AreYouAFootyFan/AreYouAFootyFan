@@ -9,11 +9,13 @@ class UserProfile extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this.user = null;
+    this.userStats = null;
     this.errorMessage = "";
     this.styleSheet = new CSSStyleSheet();
   }
 
   async connectedCallback() {
+    this.userStats = await this.getStats();
     await this.loadStyles();
     this.renderSkeleton();
     this.loadUserData();
@@ -60,17 +62,7 @@ class UserProfile extends HTMLElement {
     main.appendChild(header);
     main.appendChild(section);
 
-    const userStats = {
-        elo: 1450,
-        quizzesCompleted: 27,
-        avgScore: 82,
-        topCategories: ["World Cup", "Premier League", "Football History"],
-        badges: ["Rookie", "Amateur", "Semi-Pro", "Professional", "World Class", "Legendary"]
-    };
-
-    const stats = this.createUserStatsView(userStats);
-
-    // console.log(stats);
+    const stats = this.createUserStatsView(this.userStats);
 
     main.appendChild(stats);
 
@@ -94,6 +86,13 @@ class UserProfile extends HTMLElement {
         // Stats Summary
         const statsSummary = document.createElement("profile-stats");
         statsSummary.id = "user-stats-summary";
+        statsSummary.setAttribute("statistics", JSON.stringify(
+            {   
+                elo: userStats.elo,
+                quizzesCompleted: userStats.quizzesCompleted,
+                avgScore: userStats.avgScore,
+            }
+        ));
 
         statsView.appendChild(statsSummary);
 
@@ -168,6 +167,19 @@ class UserProfile extends HTMLElement {
       );
     }
   }
+
+    async getStats() {
+        try {
+            const statsService = window.statsService;
+            if (statsService) {
+                const stats = await statsService.getProfileStats();
+                return stats;
+            }
+            } catch (error) {
+            console.error("Error loading stats:", error);
+            statsComponent.setError(error);
+        }
+    }
 
   updateUserInfo() {
     const profileContent = this.shadowRoot.querySelector("#profile-content");
