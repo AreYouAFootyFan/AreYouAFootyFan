@@ -1,5 +1,7 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
+import "./ProfileStats.js";
+import "./ProfileCategories.js";
 
 class UserProfile extends HTMLElement {
   constructor() {
@@ -20,7 +22,7 @@ class UserProfile extends HTMLElement {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
-      "./static/css/profile/profile.css"
+      "./static/css/profile/profile.css",
     );
   }
 
@@ -57,8 +59,96 @@ class UserProfile extends HTMLElement {
     main.appendChild(header);
     main.appendChild(section);
 
+    const userStats = {
+        elo: 1450,
+        quizzesCompleted: 27,
+        avgScore: 82,
+        topCategories: ["World Cup", "Premier League", "Football History"],
+        badges: []
+    };
+
+    const stats = this.createUserStatsView(userStats);
+
+    // console.log(stats);
+
+    main.appendChild(stats);
+
     this.shadowRoot.appendChild(main);
   }
+
+    createUserStatsView(userStats) {
+        const statsView = document.createElement("section");
+        statsView.id = "user-stats-view";
+
+        // Header
+        const statsHeader = document.createElement("header");
+        statsHeader.className = "admin-header";
+
+        const statsTitle = document.createElement("h1");
+        statsTitle.textContent = "Your Quiz Stats";
+
+        statsHeader.appendChild(statsTitle);
+        statsView.appendChild(statsHeader);
+
+        // Stats Summary
+        const statsSummary = document.createElement("profile-stats");
+        statsSummary.id = "user-stats-summary";
+
+        statsView.appendChild(statsSummary);
+
+        // Cards for Top Categories and Badges
+        const statsCards = document.createElement("section");
+        statsCards.className = "admin-cards";
+
+        // Top Categories Card
+        const topCategoriesCard = document.createElement("top-categories");
+        topCategoriesCard.setAttribute("title", "Your 3 Best Categories");
+        const cat0 = userStats.topCategories[0];
+        console.log(cat0);
+        topCategoriesCard.setAttribute("data-top-categories", 
+            JSON.stringify([
+                { name: userStats.topCategories[0], averageScore: 87.5 },
+                { name: userStats.topCategories[1], averageScore: 82.3 },
+                { name: userStats.topCategories[2], averageScore: 79.1 }
+            ])
+        );
+        // topCategoriesCard.setAttribute("action-view", "categories");
+
+
+
+        // const categoryList = document.createElement("ul");
+        // categoryList.setAttribute("slot", "content");
+        // userStats.topCategories.forEach(cat => {
+        //     const li = document.createElement("li");
+        //     li.textContent = cat;
+        //     categoryList.appendChild(li);
+        // });
+
+        // topCategoriesCard.appendChild(categoryList);
+
+        // Badges Card
+        const badgesCard = document.createElement("admin-card");
+        badgesCard.setAttribute("title", "Badges Earned");
+        badgesCard.setAttribute("action-view", "badges");
+
+        const badgeList = document.createElement("ul");
+        badgeList.setAttribute("slot", "content");
+        userStats.badges.forEach(badge => {
+            const li = document.createElement("li");
+            li.textContent = badge;
+            badgeList.appendChild(li);
+        });
+
+        badgesCard.appendChild(badgeList);
+
+        statsCards.appendChild(topCategoriesCard);
+        statsCards.appendChild(badgesCard);
+
+        statsView.appendChild(statsCards);
+
+        return statsView;
+    }
+
 
   async loadUserData() {
     try {

@@ -1,0 +1,86 @@
+:host {
+    display: block;
+}
+
+:host(.full-width) {
+    grid-column: 1 / -1;
+}
+
+.categories-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 0.0625rem solid var(--gray-200);
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.podium {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 15vh;
+    margin-bottom: 1.5rem;
+}
+
+.podium-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+    width: 16rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    position: relative;
+}
+
+.category-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+.position-rank {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.category-score {
+    font-size: 0.875rem;
+    color: var(--gray-700);
+}
+
+/* Heights and color for podium tiers */
+.podium-item.position-1 {
+    height: 95%;
+    background-color: gold;
+}
+
+.podium-item.position-2 {
+    height: 80%;
+    background-color: silver;
+}
+
+.podium-item.position-3 {
+    height: 70%;
+    background-color: #cd7f32; /* bronze */
+}
