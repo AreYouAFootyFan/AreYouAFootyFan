@@ -7,6 +7,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
     font-family: var(--font-sans, 'Inter', sans-serif);
 }
 
@@ -15,119 +16,470 @@
     justify-content: center;
     align-items: center;
     flex: 1;
-    background: linear-gradient(to right, #f8fbff, #e9f1ff);
-    padding: 2rem;
+    background: url("/static/img/football-stadium-bg.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-main::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 100%);
+}
+
+.auth-main::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(to right, transparent 49.5%, rgba(255, 255, 255, 0.2) 50%, transparent 50.5%),
+        linear-gradient(to bottom, transparent 49.5%, rgba(255, 255, 255, 0.2) 50%, transparent 50.5%);
+    background-size: 80px 80px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 1;
 }
 
 .auth-container {
-    background: #fff;
-    padding: 2.5rem 2rem;
-    max-width: 25rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    padding: 2.8rem 2.5rem;
+    max-width: 28rem;
     width: 100%;
     border-radius: 1rem;
-    box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.1), 
+                0 0.2rem 1rem rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.7) inset;
     text-align: center;
+    position: relative;
+    z-index: 2;
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.auth-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(to right, #3b82f6, #10b981, #3b82f6);
+    border-radius: 1rem 1rem 0 0;
 }
 
 .auth-header {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    position: relative;
 }
 
 .logo-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 4.5rem;
+    margin-bottom: 1.2rem;
     display: block;
+    color: var(--primary);
+    text-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.15);
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.logo-icon:hover {
+    transform: scale(1.05) rotate(5deg);
+}
+
+.logo-icon::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    width: 50px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    filter: blur(3px);
 }
 
 h1 {
-    font-size: 1.8rem;
-    margin: 0.5rem 0;
-    color: #333;
+    font-size: 2.2rem;
+    margin: 0.5rem 0 0.8rem;
+    color: var(--primary-dark);
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 p {
-    color: #666;
-    font-size: 0.95rem;
-    margin-bottom: 1.5rem;
+    color: var(--gray-600);
+    font-size: 1.05rem;
+    margin-bottom: 1.8rem;
+    line-height: 1.6;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.highlight-text {
+    color: var(--primary);
+    font-weight: 700;
+    position: relative;
+}
+
+.highlight-text::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+    opacity: 0.6;
 }
 
 #google-signin-button {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    padding: 0.5rem;
+}
+
+#google-signin-button:hover {
+    background: linear-gradient(to bottom, rgba(59, 130, 246, 0.05), rgba(16, 185, 129, 0.05));
 }
 
 #username-container {
     text-align: left;
+    position: relative;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0.3rem 0.6rem rgba(0, 0, 0, 0.08);
+    animation: slideIn 0.5s ease-out;
+    backdrop-filter: blur(5px);
 }
 
 #username-container h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
     text-align: center;
+    color: var(--primary-dark);
+    font-weight: 600;
+    position: relative;
+}
+
+#username-container h2::after {
+    content: "";
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4rem;
+    height: 0.2rem;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    border-radius: 1rem;
 }
 
 label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #555;
+    margin-bottom: 0.6rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
 }
 
 input {
     width: 100%;
-    padding: 0.75rem;
-    border: 0.0625rem solid #ccc;
-    border-radius: 0.5rem;
+    padding: 0.9rem 1rem;
+    border: 0.125rem solid rgba(203, 213, 225, 0.8);
+    border-radius: 0.7rem;
     font-size: 1rem;
     margin-bottom: 1.5rem;
     font-family: inherit;
+    transition: all 0.3s ease;
+    box-shadow: 0 0.15rem 0.3rem rgba(0, 0, 0, 0.05) inset;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25), 0 0.15rem 0.3rem rgba(0, 0, 0, 0.05) inset;
+    outline: none;
 }
 
 .login-btn {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
-    border-radius: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 500;
+    border-radius: 0.7rem;
+    padding: 0.9rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
     width: 100%;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
     font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0.4rem 1rem rgba(37, 99, 235, 0.3), 
+                0 0.1rem 0.3rem rgba(255, 255, 255, 0.5) inset;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.5s ease;
 }
 
 .login-btn:hover {
-    background-color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark));
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1.2rem rgba(37, 99, 235, 0.4), 
+                0 0.1rem 0.3rem rgba(255, 255, 255, 0.5) inset;
+}
+
+.login-btn:hover::before {
+    left: 100%;
+}
+
+.login-btn:active {
+    transform: translateY(1px);
 }
 
 .auth-footer {
     padding: 1.5rem;
     text-align: center;
-    background-color: #1e293b;
+    background-color: rgba(30, 41, 59, 0.95);
     color: #cbd5e1;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-footer::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary), var(--secondary), var(--primary));
+    background-size: 200% 100%;
+    animation: gradient-slide 3s linear infinite;
 }
 
 #google-login-link {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 1.5rem;
     background-color: white;
     color: #333;
-    border: 0.0625rem solid #ddd;
-    border-radius: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
     text-decoration: none;
     font-weight: 500;
     text-align: center;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     width: 100%;
     box-sizing: border-box;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    position: relative;
+    font-size: 1.1rem;
+}
+
+#google-login-link::after {
+    content: "→";
+    position: absolute;
+    top: 50%;
+    right: 1.5rem;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: all 0.3s ease;
 }
 
 #google-login-link:hover {
-    background-color: #f8f8f8;
-    border-color: #ccc;
+    background-color: #f8f9ff;
+    border-color: rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding-right: 2.8rem;
+}
+
+#google-login-link:hover::after {
+    opacity: 1;
+    right: 1rem;
 }
 
 .google-icon {
-    margin-right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.8rem;
     vertical-align: middle;
+    font-weight: bold;
+    font-size: 1.2rem;
+    width: 24px;
+    height: 24px;
+    background: #4285f4;
+    color: white;
+    border-radius: 50%;
+    padding: 2px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Error message styling */
+.error-message {
+    background-color: var(--error-light);
+    color: var(--error-dark);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    border-left: 4px solid var(--error);
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translateZ(0);
+}
+
+/* Loading indicator */
+.loading-indicator {
+    padding: 1rem;
+    text-align: center;
+    color: var(--primary);
+    font-weight: 600;
+    position: relative;
+}
+
+.loading-indicator::before {
+    content: "⚽";
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    animation: spin 1.5s linear infinite;
+}
+
+/* Animations */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
+}
+
+@keyframes shadow-pulse {
+    0% { opacity: 0.6; transform: translateX(-50%) scale(0.8); }
+    100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+}
+
+@keyframes pulsate {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.7; }
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+    40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+@keyframes slideIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradient-slide {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes glow {
+    0% { 
+        opacity: 0.4;
+        filter: blur(10px);
+    }
+    100% { 
+        opacity: 0.6;
+        filter: blur(15px);
+    }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .auth-main {
+        padding: 1rem;
+    }
+    
+    .auth-container {
+        padding: 2rem 1.5rem;
+        max-width: 100%;
+    }
+    
+    h1 {
+        font-size: 1.7rem;
+    }
+    
+    .logo-icon {
+        font-size: 3.5rem;
+    }
+    
+    .login-btn {
+        padding: 0.8rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1.8rem 1.2rem;
+        border-radius: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    p {
+        font-size: 0.9rem;
+    }
+    
+    #username-container {
+        padding: 1.2rem;
+    }
+    
+    #username-container h2 {
+        font-size: 1.4rem;
+    }
+    
+    input {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+    }
 }

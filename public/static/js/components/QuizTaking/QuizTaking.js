@@ -41,8 +41,9 @@ class QuizTaking extends HTMLElement {
   async loadStyles() {
     await StyleLoader(
       this.shadowRoot,
-      "./static/css/styles.css",
-      "./static/css/quizTaking/quizTaking.css"
+      "/static/css/styles.css",
+      "/static/css/shared/components.css",
+      "/static/css/quizTaking/quizTaking.css"
     );
   }
 
