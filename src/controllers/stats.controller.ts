@@ -14,4 +14,18 @@ export class StatsController {
       next(error);
     }
   }
+
+  static async getUserStats(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = parseInt(request.params.userId);
+      const stats = await StatsService.getUserStats(userId);
+      response.json(stats);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

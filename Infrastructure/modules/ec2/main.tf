@@ -50,3 +50,9 @@ data "aws_ami" "ubuntu" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-*-amd64-server-*"]
   }
 }
+
+resource "aws_eip" "this" {
+  count = var.instance_count > 0 ? 1 : 0
+  instance = aws_instance.this[0].id
+  vpc      = true
+}
