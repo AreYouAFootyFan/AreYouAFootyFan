@@ -108,23 +108,28 @@ export class StatsService {
 
     static async getManagerProfileStats(userId: number): Promise<ManagerProfileStats> {
     try {
-        const quizzes_created = 0;
+        const quizzes_created = await db.query("SELECT COUNT(*) as created FROM get_quizzes_created_by_manager($1);", [
+            userId,
+        ]);
 
         const rank = 0;
 
+        const quiz_attempts = await db.query("SELECT SUM(attempt_count) AS quiz_attempts FROM get_manager_quiz_attempts($1)", [
+            userId,
+        ]);
 
-        const quiz_attempts = 0;
-
-        const avgScore = '0.0';
+        const avgScore = await db.query("SELECT AVG(avg_accuracy) AS accuracy FROM get_manager_quizzes_accuracy($1);", [
+            userId,
+        ]);
 
         const top_categories = ['La Liga', ];
 
-        const accuracy = Math.round(parseFloat(avgScore) * 100 * 100) / 100;
+        const accuracy = Math.round(parseFloat(avgScore.rows[0].accuracy) * 100 * 100) / 100;
 
         return {
-            quizzesCreated: quizzes_created,
+            quizzesCreated: parseInt(quizzes_created.rows[0].created),
             rank: rank,
-            quizAttempts: quiz_attempts,
+            quizAttempts: parseInt(quiz_attempts.rows[0].quiz_attempts),
             avgScore: accuracy,
             topCategories: top_categories,
         }
