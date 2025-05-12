@@ -89,6 +89,7 @@ class UserProfile extends HTMLElement {
         statsSummary.setAttribute("statistics", JSON.stringify(
             {   
                 elo: userStats.elo,
+                rank: userStats.rank,
                 quizzesCompleted: userStats.quizzesCompleted,
                 avgScore: userStats.avgScore,
             }

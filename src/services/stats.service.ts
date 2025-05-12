@@ -13,6 +13,7 @@ export interface ProfileStats {
     elo: number,
     quizzesCompleted: number,
     avgScore: number,
+    rank: number
     topCategories: string[],
     badges: string[]
 }
@@ -50,22 +51,44 @@ export class StatsService {
 
   static async getProfileStats(userId: number): Promise<ProfileStats> {
     try {
-        const elo = 0;
+        const elo = await db.query("SELECT * FROM get_total_points($1)", [
+            userId,
+        ]);
+
+        const rank = await db.query("SELECT * FROM get_user_rank($1)", [
+            userId,
+        ]);
+
 
         const quizzes_completed = await db.query("SELECT * FROM get_num_quizzes_done($1)", [
             userId,
         ]);
 
-        const avgScore = 0;
-        const top_categories = ['La Liga'];
-        const badges = ['Rookie'];
+        const avgScore = await db.query("SELECT * FROM get_accuracy_rate($1)", [
+            userId,
+        ]);
+
+        const top_categories = ['La Liga', ];
+        const badges = await db.query("SELECT * FROM get_badges($1)", [
+            userId,
+        ]);
+        
+        const badgesEarned: string[] = [];
+
+        badges.rows.forEach(badge => {
+            badgesEarned.push(badge.badge_name);
+        });
+
+        const accuracy = Math.round(parseFloat(avgScore.rows[0].get_accuracy_rate) * 100 * 100) / 100;
+
 
         return {
-            elo: elo,
+            elo: parseInt(elo.rows[0].get_total_points),
+            rank: parseInt(rank.rows[0].get_user_rank),
             quizzesCompleted: parseInt(quizzes_completed.rows[0].get_num_quizzes_done),
-            avgScore: avgScore,
+            avgScore: accuracy,
             topCategories: top_categories,
-            badges: badges
+            badges: badgesEarned
         }
 
     } catch (error) {

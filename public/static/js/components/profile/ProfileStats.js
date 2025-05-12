@@ -31,21 +31,23 @@ class ProfileStats extends HTMLElement {
         statsContainer.className = 'profile-stats';
         
         const eloCard = document.createElement('stats-card');
-        // eloCard.className = 'stat-card';
         eloCard.setAttribute('value', stats.elo);
         eloCard.setAttribute('label', 'ELO');
+
+        const rankCard = document.createElement('stats-card');
+        rankCard.setAttribute('value', stats.rank);
+        rankCard.setAttribute('label', 'Current Rank');  
         
         const quizzesCard = document.createElement('stats-card');
-        // quizzesCard.className = 'stat-card';
         quizzesCard.setAttribute('value', stats.quizzesCompleted);
         quizzesCard.setAttribute('label', 'Quizzes completed');       
         
         const avgCard = document.createElement('stats-card');
-        // avgCard.className = 'stat-card';
         avgCard.setAttribute('value', stats.avgScore + '%');
-        avgCard.setAttribute('label', 'Average score');       
-
+        avgCard.setAttribute('label', 'Average score');      
+ 
         statsContainer.appendChild(eloCard);
+        statsContainer.appendChild(rankCard);
         statsContainer.appendChild(quizzesCard);
         statsContainer.appendChild(avgCard);
         
