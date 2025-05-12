@@ -2,6 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import { StatsService } from "../services/stats.service";
 import { ErrorUtils } from "../utils/error.utils";
 import { Config, Message } from "../utils/enums";
+import {
+  requireRole
+} from "../middleware/auth.middleware";
+import { User } from "../utils/enums";
 
 export class StatsController {
   static async getDashboardStats(
@@ -30,8 +34,13 @@ export class StatsController {
                 );
             }
 
-            const stats = await StatsService.getProfileStats(userId);
-            response.json(stats);
+            if(_request.user?.role === User.Role.MANAGER){
+                const stats = await StatsService.getManagerProfileStats(userId);
+                response.json(stats);
+            }else{
+                const stats = await StatsService.getPlayerProfileStats(userId);
+                response.json(stats);
+            }
         } catch (error) {
             next(error);
         }

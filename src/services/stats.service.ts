@@ -9,13 +9,22 @@ export interface DashboardStats {
   questions_answered: number;
 }
 
-export interface ProfileStats {
+export interface PlayerProfileStats {
     elo: number,
     quizzesCompleted: number,
     avgScore: number,
     rank: number
     topCategories: string[],
     badges: string[]
+}
+
+export interface ManagerProfileStats {
+    quizzesCreated: number,
+    quizAttempts: number,
+    avgScore: number,
+    rank: number
+    topCategories: string[]
+    // badges: string[]
 }
 
 export class StatsService {
@@ -49,7 +58,7 @@ export class StatsService {
     }
   }
 
-  static async getProfileStats(userId: number): Promise<ProfileStats> {
+  static async getPlayerProfileStats(userId: number): Promise<PlayerProfileStats> {
     try {
         const elo = await db.query("SELECT * FROM get_total_points($1)", [
             userId,
@@ -89,6 +98,35 @@ export class StatsService {
             avgScore: accuracy,
             topCategories: top_categories,
             badges: badgesEarned
+        }
+
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+    static async getManagerProfileStats(userId: number): Promise<ManagerProfileStats> {
+    try {
+        const quizzes_created = 0;
+
+        const rank = 0;
+
+
+        const quiz_attempts = 0;
+
+        const avgScore = '0.0';
+
+        const top_categories = ['La Liga', ];
+
+        const accuracy = Math.round(parseFloat(avgScore) * 100 * 100) / 100;
+
+        return {
+            quizzesCreated: quizzes_created,
+            rank: rank,
+            quizAttempts: quiz_attempts,
+            avgScore: accuracy,
+            topCategories: top_categories,
         }
 
     } catch (error) {

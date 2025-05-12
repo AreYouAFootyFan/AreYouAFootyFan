@@ -31,20 +31,35 @@ class ProfileStats extends HTMLElement {
         statsContainer.className = 'profile-stats';
         
         const eloCard = document.createElement('stats-card');
-        eloCard.setAttribute('value', stats.elo);
-        eloCard.setAttribute('label', 'ELO');
+        if(stats.role === 'Player'){
+            eloCard.setAttribute('value', stats.elo);
+            eloCard.setAttribute('label', 'ELO');
+        }else{
+            eloCard.setAttribute('value', stats.quizzesCreated);
+            eloCard.setAttribute('label', 'Quizzes Created');
+        }
 
         const rankCard = document.createElement('stats-card');
         rankCard.setAttribute('value', stats.rank);
-        rankCard.setAttribute('label', 'Current Rank');  
+        rankCard.setAttribute('label', 'Current Rank');   
         
         const quizzesCard = document.createElement('stats-card');
-        quizzesCard.setAttribute('value', stats.quizzesCompleted);
-        quizzesCard.setAttribute('label', 'Quizzes completed');       
+        if(stats.role === 'Player'){
+            quizzesCard.setAttribute('value', stats.quizzesCompleted);
+            quizzesCard.setAttribute('label', 'Quizzes completed');            
+        }else{
+            quizzesCard.setAttribute('value', stats.quizAttempts);
+            quizzesCard.setAttribute('label', 'Player quiz attempts');
+        }
         
         const avgCard = document.createElement('stats-card');
         avgCard.setAttribute('value', stats.avgScore + '%');
-        avgCard.setAttribute('label', 'Average score');      
+        if(stats.role === 'Player'){
+            avgCard.setAttribute('label', 'Average accuracy');                
+        }else{
+            avgCard.setAttribute('label', 'Player average accuracy');    
+        }
+  
  
         statsContainer.appendChild(eloCard);
         statsContainer.appendChild(rankCard);

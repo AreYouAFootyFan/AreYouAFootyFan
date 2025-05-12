@@ -12,6 +12,7 @@ class UserProfile extends HTMLElement {
     this.userStats = null;
     this.errorMessage = "";
     this.styleSheet = new CSSStyleSheet();
+    
   }
 
   async connectedCallback() {
@@ -63,13 +64,14 @@ class UserProfile extends HTMLElement {
     main.appendChild(section);
 
     const stats = this.createUserStatsView(this.userStats);
-
     main.appendChild(stats);
 
     this.shadowRoot.appendChild(main);
   }
 
     createUserStatsView(userStats) {
+        const authService = window.authService;
+
         const statsView = document.createElement("section");
         statsView.id = "user-stats-view";
 
@@ -84,16 +86,32 @@ class UserProfile extends HTMLElement {
         statsView.appendChild(statsHeader);
 
         // Stats Summary
+        const user = authService.getUser();
+        const isPlayer = user.role_name === 'Player';
+
         const statsSummary = document.createElement("profile-stats");
         statsSummary.id = "user-stats-summary";
-        statsSummary.setAttribute("statistics", JSON.stringify(
-            {   
-                elo: userStats.elo,
-                rank: userStats.rank,
-                quizzesCompleted: userStats.quizzesCompleted,
-                avgScore: userStats.avgScore,
-            }
-        ));
+        if(isPlayer){
+            statsSummary.setAttribute("statistics", JSON.stringify(
+                {   
+                    role: 'Player',
+                    elo: userStats.elo,
+                    rank: userStats.rank,
+                    quizzesCompleted: userStats.quizzesCompleted,
+                    avgScore: userStats.avgScore,
+                }
+            ));
+        }else{
+            statsSummary.setAttribute("statistics", JSON.stringify(
+                {   
+                    role: 'Manager',
+                    quizzesCreated: userStats.quizzesCreated,
+                    quizAttempts: userStats.quizAttempts,
+                    rank: userStats.rank,
+                    avgScore: userStats.avgScore,
+                }
+            ));
+        }
 
         statsView.appendChild(statsSummary);
 
@@ -111,33 +129,32 @@ class UserProfile extends HTMLElement {
                 { name: userStats.topCategories[2], averageScore: 79.1 }
             ])
         );
-        // topCategoriesCard.setAttribute("action-view", "categories");
-
-        // Badges Card
-        const badgesCard = document.createElement("badges-earned");
-        badgesCard.setAttribute("title", "Badges Earned");
-        
-        const badgeMap = {
-            Rookie: { src: './static/img/badges/rookie.png', alt: '' },
-            Amateur: { src: './static/img/badges/amateur.png', alt: '' },
-            'Semi-Pro': { src: './static/img/badges/semi-pro.png', alt: '' },
-            Professional: { src: './static/img/badges/professional.png', alt: '' },
-            'World Class': { src: './static/img/badges/world-class.png', alt: '' },
-            Legendary: { src: './static/img/badges/legendary.png', alt: '' }
-        };
-
-        const badges = userStats.badges
-            .map(name => badgeMap[name])
-            .filter(Boolean);
-
-        badgesCard.setAttribute("badges-earned", 
-            JSON.stringify(badges)
-        );
-        
 
         statsCards.appendChild(topCategoriesCard);
-        statsCards.appendChild(badgesCard);
 
+        // Badges Card
+        if(isPlayer){
+            const badgesCard = document.createElement("badges-earned");
+            badgesCard.setAttribute("title", "Badges Earned");
+            
+            const badgeMap = {
+                Rookie: { src: './static/img/badges/rookie.png', alt: '' },
+                Amateur: { src: './static/img/badges/amateur.png', alt: '' },
+                'Semi-Pro': { src: './static/img/badges/semi-pro.png', alt: '' },
+                Professional: { src: './static/img/badges/professional.png', alt: '' },
+                'World Class': { src: './static/img/badges/world-class.png', alt: '' },
+                Legendary: { src: './static/img/badges/legendary.png', alt: '' }
+            };
+
+            const badges = userStats.badges
+                .map(name => badgeMap[name])
+                .filter(Boolean);
+
+            badgesCard.setAttribute("badges-earned", 
+                JSON.stringify(badges)
+            );
+            statsCards.appendChild(badgesCard);
+        }
         statsView.appendChild(statsCards);
 
         return statsView;
@@ -146,8 +163,6 @@ class UserProfile extends HTMLElement {
 
   async loadUserData() {
     try {
-      const authService = window.authService;
-
       if (!authService || !authService.isAuthenticated()) {
         window.location.href = "/";
         return;
