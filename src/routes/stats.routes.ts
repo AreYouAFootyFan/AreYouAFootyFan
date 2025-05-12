@@ -9,6 +9,7 @@ import { User } from "../utils/enums";
 
 const router = express.Router();
 
+// All routes require authentication and username
 router.use(authenticate);
 router.use(requireUsername);
 

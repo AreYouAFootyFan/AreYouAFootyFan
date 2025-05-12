@@ -957,7 +957,7 @@ class AdminDashboard extends HTMLElement {
 
     if (!confirmModal || !confirmMessage || !confirmAction) return;
 
-    confirmMessage.textContent = `Are you sure you want to delete the category "${categoryName}"?`;
+    confirmMessage.textContent = `Are you sure you want to delete the category "${categoryName}"? All associated quizzes will be lost.`;
 
     confirmAction.onclick = () => this.handleDeleteCategory(categoryId);
 

@@ -16,20 +16,7 @@ static async getQuizzes(options: {
     userRole?: string;
   } = {}): Promise<any[]> {
     
-    let quizzes = await QuizModel.findAllWithCategories();
-    
-    if (options.categoryId) {
-      const category = await CategoryModel.findById(options.categoryId);
-      if (!category) {
-        throw ErrorUtils.notFound(Message.Error.Category.NOT_FOUND);
-      }
-      quizzes = quizzes.filter(quiz => quiz.category_id === options.categoryId);
-    }
-    
-    if (options.creatorId) {
-      quizzes = quizzes.filter(quiz => quiz.created_by === options.creatorId);
-    }
-    
+    let quizzes = options.categoryId ? await QuizModel.findByCategory(options.categoryId) : await QuizModel.findAll();
     if (options.validOnly && options.userId) {
       const validQuizzes = [];
       
@@ -81,6 +68,7 @@ static async getQuizzes(options: {
       };
     }));
   }
+  
   static async getQuizById(id: number): Promise<any> {
     const quiz = await QuizModel.findByIdWithCategory(id);
 
@@ -142,12 +130,6 @@ static async getQuizzes(options: {
 
     if (!existingQuiz) {
       throw ErrorUtils.notFound(Message.Error.Quiz.NOT_FOUND);
-    }
-
-    const hasAttempts = await QuizModel.hasAttempts(id);
-
-    if (hasAttempts) {
-      throw ErrorUtils.badRequest(Message.Error.Quiz.HAS_ATTEMPTS);
     }
 
     const deleted = await QuizModel.softDelete(id);

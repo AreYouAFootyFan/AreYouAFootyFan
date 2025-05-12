@@ -127,7 +127,7 @@ export class QuizModel {
 
   static async countQuestions(quizId: number): Promise<number> {
     const result = await db.query(
-      "SELECT COUNT(*) FROM questions WHERE quiz_id = $1",
+      "SELECT COUNT(*) FROM active_questions WHERE quiz_id = $1",
       [quizId]
     );
 

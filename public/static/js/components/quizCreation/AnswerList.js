@@ -13,6 +13,7 @@ class AnswersList extends HTMLElement {
         this.showAnswerForm = true;
         this.questionInfo = null;
         this.styleSheet = new CSSStyleSheet();
+        this.editingAnswerId = null;
     }
     
     async connectedCallback() {
@@ -66,7 +67,9 @@ class AnswersList extends HTMLElement {
             answersContent.appendChild(answersList);
         }
         
-        if (this.showAnswerForm && this.answers.length < 4) {
+        console.log(this.showAnswerForm)
+
+        if (this.showAnswerForm ) {
             answersContent.appendChild(this.createAnswerForm());
         }
         
@@ -192,21 +195,22 @@ class AnswersList extends HTMLElement {
             actionsSection.appendChild(markCorrectBtn);
         }
         
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'action-btn delete-answer';
-        deleteBtn.title = 'Delete Answer';
-        deleteBtn.dataset.id = answer.answer_id;
+        const editBtn = document.createElement('button');
+        editBtn.className = 'action-btn edit-answer';
+        editBtn.title = 'Edit Answer';
+        editBtn.dataset.id = answer.answer_id;
         
-        const deleteIcon = document.createElement('span');
-        deleteIcon.setAttribute('aria-hidden', 'true');
-        deleteIcon.textContent = '🗑️';
+        const editIcon = document.createElement('span');
+        editIcon.setAttribute('aria-hidden', 'true');
+        editIcon.textContent = '✏️';
         
-        deleteBtn.appendChild(deleteIcon);
-        deleteBtn.addEventListener('click', () => {
-            this.handleDeleteAnswer(answer.answer_id);
+        editBtn.appendChild(editIcon);
+        editBtn.addEventListener('click', () => {
+            this.handleEditAnswer(answer);
         });
         
-        actionsSection.appendChild(deleteBtn);
+        actionsSection.appendChild(editBtn);
+        
         
         answerCard.appendChild(contentSection);
         answerCard.appendChild(actionsSection);
@@ -221,7 +225,8 @@ class AnswersList extends HTMLElement {
         form.addEventListener('submit', this.handleAddAnswer.bind(this));
         
         const formTitle = document.createElement('h3');
-        formTitle.textContent = 'Add Answer Option';
+        formTitle.id = 'form-title';
+        formTitle.textContent = this.editingAnswerId ? 'Edit Answer Option' : 'Add Answer Option';
         
         const textGroup = document.createElement('section');
         textGroup.className = 'form-group';
@@ -268,17 +273,14 @@ class AnswersList extends HTMLElement {
         cancelBtn.className = 'btn btn-secondary';
         cancelBtn.textContent = 'Cancel';
         cancelBtn.addEventListener('click', () => {
-            const answerText = this.shadowRoot.querySelector('#answer-text');
-            const answerCorrect = this.shadowRoot.querySelector('#answer-correct');
-            
-            if (answerText) answerText.value = '';
-            if (answerCorrect) answerCorrect.checked = false;
+            this.cancelEdit();
         });
         
         const submitBtn = document.createElement('button');
         submitBtn.type = 'submit';
+        submitBtn.id = 'save-answer-btn';
         submitBtn.className = 'btn btn-primary';
-        submitBtn.textContent = 'Save Answer';
+        submitBtn.textContent = this.editingAnswerId ? 'Save Changes' : 'Save Answer';
         
         formActions.appendChild(cancelBtn);
         formActions.appendChild(submitBtn);
@@ -287,6 +289,18 @@ class AnswersList extends HTMLElement {
         form.appendChild(textGroup);
         form.appendChild(checkGroup);
         form.appendChild(formActions);
+        
+        if (this.editingAnswerId) {
+            const answer = this.answers.find(a => a.answer_id === this.editingAnswerId);
+            if (answer) {
+                textInput.value = answer.answer_text;
+                checkInput.checked = answer.is_correct;
+                
+                if (answer.is_correct) {
+                    checkInput.disabled = true;
+                }
+            }
+        }
         
         return form;
     }
@@ -351,32 +365,89 @@ class AnswersList extends HTMLElement {
         }
         
         try {
-            if (isCorrect && this.answers.some(a => a.is_correct)) {
-                if (!confirm('This question already has a correct answer. Do you want to mark this as the new correct answer?')) {
-                    return;
-                }
-            }
-            
             const answerService = window.answerService;
             if (!answerService) {
                 throw new Error('Answer service not available');
             }
             
-            await answerService.createAnswer({
-                question_id: questionId,
-                answer_text: text,
-                is_correct: isCorrect
-            });
+            if (this.editingAnswerId) {
+                const currentAnswer = this.answers.find(a => a.answer_id === this.editingAnswerId);
+                
+                if (isCorrect && !currentAnswer.is_correct && this.answers.some(a => a.is_correct)) {
+                    if (!confirm('This question already has a correct answer. Do you want to mark this as the new correct answer?')) {
+                        return;
+                    }
+                }
+                
+                await answerService.updateAnswer(this.editingAnswerId, {
+                    answer_text: text,
+                    is_correct: isCorrect
+                });
+                
+                if (isCorrect && !currentAnswer.is_correct) {
+                    await answerService.markAsCorrect(this.editingAnswerId);
+                }
+                
+                this.editingAnswerId = null;
+            } else {
+                if (isCorrect && this.answers.some(a => a.is_correct)) {
+                    if (!confirm('This question already has a correct answer. Do you want to mark this as the new correct answer?')) {
+                        return;
+                    }
+                }
+                
+                await answerService.createAnswer({
+                    question_id: questionId,
+                    answer_text: text,
+                    is_correct: isCorrect
+                });
+            }
             
             textInput.value = '';
             correctCheckbox.checked = false;
+            correctCheckbox.disabled = false;
             
             await this.loadAnswers();
             
         } catch (error) {
-            console.error('Error adding answer:', error);
-            alert('Failed to add answer: ' + (error.message || 'Unknown error'));
+            console.error('Error saving answer:', error);
+            alert('Failed to save answer: ' + (error.message || 'Unknown error'));
         }
+    }
+    
+    handleEditAnswer(answer) {
+        this.editingAnswerId = answer.answer_id;
+        
+        this.showAnswerForm = true;
+        this.render();
+        
+        setTimeout(() => {
+            const textInput = this.shadowRoot.querySelector('#answer-text');
+            if (textInput) {
+                textInput.focus();
+            }
+        }, 0);
+    }
+    
+    cancelEdit() {
+        const answerText = this.shadowRoot.querySelector('#answer-text');
+        const answerCorrect = this.shadowRoot.querySelector('#answer-correct');
+        
+        if (answerText) answerText.value = '';
+        if (answerCorrect) {
+            answerCorrect.checked = false;
+            answerCorrect.disabled = false;
+        }
+        
+        this.editingAnswerId = null;
+        this.showAnswerForm = false;
+        
+        const formTitle = this.shadowRoot.querySelector('#form-title');
+        if (formTitle) formTitle.textContent = 'Add Answer Option';
+        
+        const saveBtn = this.shadowRoot.querySelector('#save-answer-btn');
+        if (saveBtn) saveBtn.textContent = 'Save Answer';
+        this.render();
     }
     
     async handleMarkCorrect(answerId) {
@@ -393,27 +464,6 @@ class AnswersList extends HTMLElement {
         } catch (error) {
             console.error('Error marking answer as correct:', error);
             alert('Failed to mark answer as correct: ' + (error.message || 'Unknown error'));
-        }
-    }
-    
-    async handleDeleteAnswer(answerId) {
-        try {
-            if (!confirm('Are you sure you want to delete this answer?')) {
-                return;
-            }
-            
-            const answerService = window.answerService;
-            if (!answerService) {
-                throw new Error('Answer service not available');
-            }
-            
-            await answerService.deleteAnswer(answerId);
-            
-            await this.loadAnswers();
-            
-        } catch (error) {
-            console.error('Error deleting answer:', error);
-            alert('Failed to delete answer: ' + (error.message || 'Unknown error'));
         }
     }
 }

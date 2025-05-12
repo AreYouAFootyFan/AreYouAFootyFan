@@ -108,3 +108,65 @@ $$ LANGUAGE plpgsql;
 COMMENT ON FUNCTION award_badges_for_user IS 
 'This function can be called manually to award badges to a specific user based on their total points.
 Example usage: SELECT award_badges_for_user(123);';
+
+CREATE OR REPLACE FUNCTION update_points_on_answer_correctness_change()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_difficulty_id INT;
+    v_points_on_correct INT;
+    v_points_on_incorrect INT;
+    v_question_id INT;
+BEGIN
+    -- Get the question_id for this answer
+    v_question_id := NEW.question_id;
+    
+    -- Only proceed if the is_correct status has changed
+    IF OLD.is_correct IS DISTINCT FROM NEW.is_correct THEN
+        -- Get the difficulty level info for this question
+        SELECT q.difficulty_id INTO v_difficulty_id
+        FROM questions q
+        WHERE q.question_id = v_question_id;
+        
+        -- Get the points values from the difficulty level
+        SELECT dl.points_on_correct, dl.points_on_incorrect INTO v_points_on_correct, v_points_on_incorrect
+        FROM difficulty_levels dl
+        WHERE dl.difficulty_id = v_difficulty_id;
+        
+        -- Update all user responses that chose this answer
+        IF NEW.is_correct = TRUE THEN
+            -- Answer was marked as correct, update points to correct value
+            UPDATE user_responses ur
+            SET points_earned = v_points_on_correct
+            FROM quiz_attempts qa
+            WHERE ur.chosen_answer = NEW.answer_id
+            AND ur.attempt_id = qa.attempt_id
+            AND qa.end_time IS NOT NULL; -- Only update completed quiz attempts
+        ELSE
+            -- Answer was marked as incorrect, update points to incorrect value
+            UPDATE user_responses ur
+            SET points_earned = v_points_on_incorrect
+            FROM quiz_attempts qa
+            WHERE ur.chosen_answer = NEW.answer_id
+            AND ur.attempt_id = qa.attempt_id
+            AND qa.end_time IS NOT NULL; -- Only update completed quiz attempts
+            
+        END IF;
+        
+        -- Now let's check for badges that might need to be awarded after point changes
+        -- We need to get all affected users from the updated responses
+        PERFORM award_badges_for_user(qa.user_id)
+        FROM user_responses ur
+        JOIN quiz_attempts qa ON ur.attempt_id = qa.attempt_id
+        WHERE ur.chosen_answer = NEW.answer_id
+        AND qa.end_time IS NOT NULL
+        GROUP BY qa.user_id;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_points_on_answer_correctness_change
+AFTER UPDATE OF is_correct ON answers
+FOR EACH ROW
+EXECUTE FUNCTION update_points_on_answer_correctness_change();

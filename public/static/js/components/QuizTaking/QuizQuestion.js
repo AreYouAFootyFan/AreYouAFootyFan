@@ -49,8 +49,9 @@ class QuizQuestion extends HTMLElement {
     async loadStyles() {        
         await StyleLoader(
             this.shadowRoot,
-            './static/css/styles.css',
-            './static/css/quizTaking/quizQuestion.css'
+            '/static/css/styles.css',
+            '/static/css/shared/components.css',
+            '/static/css/quizTaking/quizQuestion.css'
         );
     }
 
@@ -84,9 +85,11 @@ class QuizQuestion extends HTMLElement {
         this.shadowRoot.appendChild(styleElement);
 
         const article = document.createElement('article');
+        article.classList.add('card', 'gradient-accent-top');
         this.shadowRoot.appendChild(article);
 
         const header = document.createElement('header');
+        header.classList.add('card-header');
         article.appendChild(header);
 
         const questionInfo = this.createInfoBlock('Question', `${questionIndex + 1}/${totalQuestions}`);
@@ -102,7 +105,7 @@ class QuizQuestion extends HTMLElement {
         header.appendChild(scoreInfo);
 
         const questionContent = document.createElement('section');
-        questionContent.classList.add('question-content');
+        questionContent.classList.add('question-content', 'card-content');
         article.appendChild(questionContent);
 
         const categoryInfo = document.createElement('p');
@@ -116,7 +119,7 @@ class QuizQuestion extends HTMLElement {
         questionContent.appendChild(questionText);
 
         const answerGrid = document.createElement('section');
-        answerGrid.classList.add('answer-grid');
+        answerGrid.classList.add('answer-grid', 'option-grid');
         questionContent.appendChild(answerGrid);
 
         this._question.answers.forEach((answer, index) => {
@@ -124,7 +127,7 @@ class QuizQuestion extends HTMLElement {
             const isCorrect = this.hasAttribute(`correct-answer-${answer.answer_id}`);
             const isWrong = isSelected && !isCorrect && showFeedback;
 
-            let className = 'answer-option';
+            let className = 'answer-option option-item';
             if (isSelected) className += ' selected';
             if (isCorrect && (showFeedback || timeUp)) className += ' correct';
             if (isWrong) className += ' wrong';
@@ -138,7 +141,7 @@ class QuizQuestion extends HTMLElement {
             }
 
             const optionLetter = document.createElement('span');
-            optionLetter.classList.add('option-letter');
+            optionLetter.classList.add('option-letter', 'option-icon');
             optionLetter.textContent = String.fromCharCode(65 + index);
             answerOption.appendChild(optionLetter);
 
@@ -152,7 +155,7 @@ class QuizQuestion extends HTMLElement {
 
         if (showFeedback) {
             const answerFeedback = document.createElement('section');
-            answerFeedback.classList.add('answer-feedback');
+            answerFeedback.classList.add('answer-feedback', 'feedback-container');
             questionContent.appendChild(answerFeedback);
 
             const points = document.createElement('p');
@@ -172,12 +175,13 @@ class QuizQuestion extends HTMLElement {
         }
 
         const footer = document.createElement('footer');
+        footer.classList.add('card-footer');
         article.appendChild(footer);
 
         if (!showFeedback && !timeUp) {
             const submitButton = document.createElement('button');
             submitButton.id = 'submit-btn';
-            submitButton.classList.add('submit-btn');
+            submitButton.classList.add('submit-btn', 'modern-button');
             submitButton.textContent = 'Submit Answer';
             if (!selectedAnswer || submitting) {
                 submitButton.disabled = true;
@@ -188,7 +192,7 @@ class QuizQuestion extends HTMLElement {
         if (showNextButton || (timeUp && questionIndex < totalQuestions - 1)) {
             const nextButton = document.createElement('button');
             nextButton.id = 'next-btn';
-            nextButton.classList.add('next-btn');
+            nextButton.classList.add('next-btn', 'modern-button', 'modern-button-secondary');
             nextButton.textContent = 'Next Question';
             footer.appendChild(nextButton);
         }
@@ -196,7 +200,7 @@ class QuizQuestion extends HTMLElement {
         if (showResultsButton || (timeUp && questionIndex >= totalQuestions - 1)) {
             const resultsButton = document.createElement('button');
             resultsButton.id = 'results-btn';
-            resultsButton.classList.add('results-btn');
+            resultsButton.classList.add('results-btn', 'modern-button', 'modern-button-secondary');
             resultsButton.textContent = 'See Results';
             footer.appendChild(resultsButton);
         }

@@ -1,0 +1,395 @@
+/* Common Authentication Components
+   These styles are shared across all authentication pages and themes */
+
+/* === Auth Page Layout === */
+.login-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(120deg, #f8fafc, #ebf4ff, #f0f9ff);
+    font-family: var(--font-sans);
+}
+
+.auth-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Modern geometric pattern */
+.auth-main::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 80%;
+    height: 150%;
+    background: radial-gradient(circle at center, rgba(59, 130, 246, 0.08) 0%, rgba(16, 185, 129, 0.04) 50%, transparent 70%);
+    transform: rotate(-15deg);
+    z-index: 0;
+}
+
+.auth-main::after {
+    content: "";
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 70%;
+    height: 140%;
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 70%);
+    transform: rotate(15deg);
+    z-index: 0;
+}
+
+/* === Auth Container === */
+.auth-container {
+    background: white;
+    padding: 3rem;
+    max-width: 30rem;
+    width: 100%;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 
+                0 0 0 1px rgba(0, 0, 0, 0.01);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.auth-header {
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+/* Logo */
+.logo-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 90px;
+    color: white;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    position: relative;
+    transition: all 0.5s ease;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+.logo-icon:hover {
+    transform: scale(1.05) rotate(5deg);
+    border-radius: 50% 30% 60% 40% / 40% 50% 50% 60%;
+}
+
+/* Auth Footer */
+.auth-footer {
+    padding: 1.5rem;
+    text-align: center;
+    background-color: transparent;
+    color: var(--gray-500);
+    position: relative;
+    overflow: hidden;
+    font-size: 0.875rem;
+}
+
+/* Footer links styling */
+.footer-links {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+}
+
+.footer-links a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 500;
+}
+
+.footer-links a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Typography enhancements */
+.auth-container h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 0.75rem;
+    background: linear-gradient(to right, var(--gray-800), var(--primary-dark));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-container p {
+    color: var(--gray-600);
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* Username Container */
+#username-container {
+    text-align: left;
+    position: relative;
+    background: white;
+    padding: 2rem;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    animation: slideIn 0.5s ease-out;
+}
+
+#username-container h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+    color: var(--primary-dark);
+    font-weight: 600;
+    position: relative;
+}
+
+#username-container h2::after {
+    content: "";
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4rem;
+    height: 0.2rem;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    border-radius: 1rem;
+}
+
+/* Google Sign In */
+#google-signin-button {
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+#google-login-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.9rem 1.5rem;
+    background-color: white;
+    color: var(--gray-700);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;    letter-spacing: 0.2px;
+    text-align: center;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    position: relative;
+}
+
+#google-login-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.google-icon {
+    display: inline-block;
+    margin-right: 0.8rem;
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+    background: white url('/static/img/icons/google-logo.svg') center center no-repeat;
+    background-size: 18px 18px;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Auth Login Button */
+.login-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.login-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+/* Auth animations */
+@keyframes slideIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Form Input Styling */
+.auth-form {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.auth-label {
+    display: block;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: var(--gray-700);
+    font-weight: 500;
+}
+
+.input-group {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    transition: color 0.3s ease;
+}
+
+.input-icon-left {
+    left: 1rem;
+}
+
+.input-icon-right {
+    right: 1rem;
+}
+
+.auth-input:focus ~ .input-icon {
+    color: var(--primary);
+}
+
+/* Auth form with left icons */
+.auth-input-with-icon {
+    padding-left: 3rem;
+}
+
+/* Checkbox styling */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.auth-checkbox {
+    margin-right: 0.5rem;
+}
+
+.checkbox-label {
+    font-size: 0.95rem;
+    color: var(--gray-600);
+}
+
+/* Remember me row */
+.auth-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0 1.5rem;
+}
+
+.forgot-password {
+    font-size: 0.9rem;
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.forgot-password:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Auth responsive styles */
+@media (max-width: 768px) {
+    .auth-main {
+        padding: 1rem;
+    }
+    
+    .auth-container {
+        padding: 2rem 1.5rem;
+        max-width: 100%;
+    }
+    
+    h1 {
+        font-size: 1.7rem;
+    }
+    
+    .logo-icon {
+        font-size: 3.5rem;
+    }
+    
+    .login-btn {
+        padding: 0.8rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1.8rem 1.2rem;
+        border-radius: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    p {
+        font-size: 0.9rem;
+    }
+    
+    #username-container {
+        padding: 1.2rem;
+    }
+    
+    #username-container h2 {
+        font-size: 1.4rem;
+    }
+}
