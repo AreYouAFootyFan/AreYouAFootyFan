@@ -2,6 +2,7 @@ import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
 import "./ProfileStats.js";
 import "./ProfileCategories.js";
+import "./ProfileBadges.js";
 
 class UserProfile extends HTMLElement {
   constructor() {
@@ -33,7 +34,7 @@ class UserProfile extends HTMLElement {
     const header = document.createElement("header");
     header.className = "page-header";
     const h1 = document.createElement("h1");
-    h1.textContent = "My Profile";
+    h1.textContent = "Your Info";
     header.appendChild(h1);
 
     const section = document.createElement("section");
@@ -64,7 +65,7 @@ class UserProfile extends HTMLElement {
         quizzesCompleted: 27,
         avgScore: 82,
         topCategories: ["World Cup", "Premier League", "Football History"],
-        badges: []
+        badges: ["Rookie", "Amateur", "Semi-Pro", "Professional", "World Class", "Legendary"]
     };
 
     const stats = this.createUserStatsView(userStats);
@@ -83,7 +84,7 @@ class UserProfile extends HTMLElement {
         // Header
         const statsHeader = document.createElement("header");
         statsHeader.className = "page-header";
-        
+
         const statsTitle = document.createElement("h1");
         statsTitle.textContent = "Your Quiz Stats";
 
@@ -103,8 +104,6 @@ class UserProfile extends HTMLElement {
         // Top Categories Card
         const topCategoriesCard = document.createElement("top-categories");
         topCategoriesCard.setAttribute("title", "Your 3 Best Categories");
-        const cat0 = userStats.topCategories[0];
-        console.log(cat0);
         topCategoriesCard.setAttribute("data-top-categories", 
             JSON.stringify([
                 { name: userStats.topCategories[0], averageScore: 87.5 },
@@ -114,32 +113,27 @@ class UserProfile extends HTMLElement {
         );
         // topCategoriesCard.setAttribute("action-view", "categories");
 
-
-
-        // const categoryList = document.createElement("ul");
-        // categoryList.setAttribute("slot", "content");
-        // userStats.topCategories.forEach(cat => {
-        //     const li = document.createElement("li");
-        //     li.textContent = cat;
-        //     categoryList.appendChild(li);
-        // });
-
-        // topCategoriesCard.appendChild(categoryList);
-
         // Badges Card
-        const badgesCard = document.createElement("admin-card");
+        const badgesCard = document.createElement("badges-earned");
         badgesCard.setAttribute("title", "Badges Earned");
-        badgesCard.setAttribute("action-view", "badges");
+        
+        const badgeMap = {
+            Rookie: { src: './static/img/badges/rookie.png', alt: '' },
+            Amateur: { src: './static/img/badges/amateur.png', alt: '' },
+            'Semi-Pro': { src: './static/img/badges/semi-pro.png', alt: '' },
+            Professional: { src: './static/img/badges/professional.png', alt: '' },
+            'World Class': { src: './static/img/badges/world-class.png', alt: '' },
+            Legendary: { src: './static/img/badges/legendary.png', alt: '' }
+        };
 
-        const badgeList = document.createElement("ul");
-        badgeList.setAttribute("slot", "content");
-        userStats.badges.forEach(badge => {
-            const li = document.createElement("li");
-            li.textContent = badge;
-            badgeList.appendChild(li);
-        });
+        const badges = userStats.badges
+            .map(name => badgeMap[name])
+            .filter(Boolean);
 
-        badgesCard.appendChild(badgeList);
+        badgesCard.setAttribute("badges-earned", 
+            JSON.stringify(badges)
+        );
+        
 
         statsCards.appendChild(topCategoriesCard);
         statsCards.appendChild(badgesCard);
@@ -213,11 +207,11 @@ class UserProfile extends HTMLElement {
 
     const fieldset = document.createElement("fieldset");
     const legend = document.createElement("legend");
-    legend.textContent = "Edit Profile";
+    legend.textContent = "Update Username";
 
     const label = document.createElement("label");
     label.setAttribute("for", "edit-username");
-    label.textContent = "Username";
+    label.textContent = "New Username: ";
 
     const input = document.createElement("input");
     input.type = "text";
