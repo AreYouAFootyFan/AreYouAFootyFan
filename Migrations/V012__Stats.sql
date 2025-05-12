@@ -1,6 +1,6 @@
 -- Returns the user's top 3 categories based on accuracy score
-CREATE OR REPLACE FUNCTION get_user_top_categories(p_user_id INT) 
-RETURNS TABLE (
+CREATE
+OR REPLACE FUNCTION get_user_top_categories (p_user_id INT) RETURNS TABLE (
     category_id INT,
     category_name VARCHAR(32),
     accuracy_rate NUMERIC,
@@ -53,8 +53,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns all quizzes created by a user with Manager role (role_id = 2)
-CREATE OR REPLACE FUNCTION get_quizzes_created_by_manager(p_user_id INT) 
-RETURNS TABLE (
+CREATE
+OR REPLACE FUNCTION get_quizzes_created_by_manager (p_user_id INT) RETURNS TABLE (
     quiz_id INT,
     quiz_title VARCHAR(64),
     quiz_description VARCHAR(128),
@@ -109,8 +109,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns the average accuracy score of all users on quizzes created by a specific manager
-CREATE OR REPLACE FUNCTION get_manager_quizzes_accuracy(p_manager_id INT)
-RETURNS TABLE (
+CREATE
+OR REPLACE FUNCTION get_manager_quizzes_accuracy (p_manager_id INT) RETURNS TABLE (
     quiz_id INT,
     quiz_title VARCHAR(64),
     category_name VARCHAR(32),
@@ -188,8 +188,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns the number of quiz attempts on quizzes created by a specific manager
-CREATE OR REPLACE FUNCTION get_manager_quiz_attempts(p_manager_id INT)
-RETURNS TABLE (
+CREATE
+OR REPLACE FUNCTION get_manager_quiz_attempts (p_manager_id INT) RETURNS TABLE (
     quiz_id INT,
     quiz_title VARCHAR(64),
     category_name VARCHAR(32),
@@ -248,8 +248,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns the top categories where a manager has created quizzes
-CREATE OR REPLACE FUNCTION get_manager_top_categories(p_manager_id INT)
-RETURNS TABLE (
+CREATE
+OR REPLACE FUNCTION get_manager_top_categories (p_manager_id INT) RETURNS TABLE (
     category_id INT,
     category_name VARCHAR(32),
     category_description VARCHAR(64),
@@ -337,29 +337,38 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Creates a view that ranks managers based on number of quizzes created
-CREATE OR REPLACE VIEW manager_leaderboard AS
-WITH manager_stats AS (
-    SELECT 
-        u.user_id,
-        u.username,
-        COUNT(DISTINCT q.quiz_id) AS quizzes_created,
-        COUNT(DISTINCT qn.question_id) AS questions_created,
-        COUNT(DISTINCT qa.attempt_id) AS quiz_attempts,
-        COUNT(DISTINCT qa.user_id) AS unique_players,
-        SUM(CASE WHEN qa.end_time IS NOT NULL THEN 1 ELSE 0 END) AS completed_attempts
-    FROM 
-        users u
-        LEFT JOIN quizzes q ON u.user_id = q.created_by AND q.deactivated_at IS NULL
-        LEFT JOIN questions qn ON q.quiz_id = qn.quiz_id AND qn.deactivated_at IS NULL
-        LEFT JOIN quiz_attempts qa ON q.quiz_id = qa.quiz_id
-    WHERE 
-        u.role_id = 2  -- Manager role
-        AND u.deactivated_at IS NULL
-    GROUP BY 
-        u.user_id, 
-        u.username
-)
-SELECT 
+CREATE OR REPLACE VIEW
+    manager_leaderboard AS
+WITH
+    manager_stats AS (
+        SELECT
+            u.user_id,
+            u.username,
+            COUNT(DISTINCT q.quiz_id) AS quizzes_created,
+            COUNT(DISTINCT qn.question_id) AS questions_created,
+            COUNT(DISTINCT qa.attempt_id) AS quiz_attempts,
+            COUNT(DISTINCT qa.user_id) AS unique_players,
+            SUM(
+                CASE
+                    WHEN qa.end_time IS NOT NULL THEN 1
+                    ELSE 0
+                END
+            ) AS completed_attempts
+        FROM
+            users u
+            LEFT JOIN quizzes q ON u.user_id = q.created_by
+            AND q.deactivated_at IS NULL
+            LEFT JOIN questions qn ON q.quiz_id = qn.quiz_id
+            AND qn.deactivated_at IS NULL
+            LEFT JOIN quiz_attempts qa ON q.quiz_id = qa.quiz_id
+        WHERE
+            u.role_id = 2 -- Manager role
+            AND u.deactivated_at IS NULL
+        GROUP BY
+            u.user_id,
+            u.username
+    )
+SELECT
     ms.user_id,
     ms.username,
     ms.quizzes_created,
@@ -367,17 +376,30 @@ SELECT
     ms.quiz_attempts,
     ms.unique_players,
     ms.completed_attempts,
-    RANK() OVER (ORDER BY ms.quizzes_created DESC) AS rank_by_quizzes,
-    RANK() OVER (ORDER BY ms.questions_created DESC) AS rank_by_questions,
-    RANK() OVER (ORDER BY ms.quiz_attempts DESC) AS rank_by_attempts,
-    RANK() OVER (ORDER BY ms.unique_players DESC) AS rank_by_players,
-    CASE 
-        WHEN ms.quiz_attempts > 0 
-        THEN (ms.completed_attempts::NUMERIC / ms.quiz_attempts::NUMERIC)
+    RANK() OVER (
+        ORDER BY
+            ms.quizzes_created DESC
+    ) AS rank_by_quizzes,
+    RANK() OVER (
+        ORDER BY
+            ms.questions_created DESC
+    ) AS rank_by_questions,
+    RANK() OVER (
+        ORDER BY
+            ms.quiz_attempts DESC
+    ) AS rank_by_attempts,
+    RANK() OVER (
+        ORDER BY
+            ms.unique_players DESC
+    ) AS rank_by_players,
+    CASE
+        WHEN ms.quiz_attempts > 0 THEN (
+            ms.completed_attempts::NUMERIC / ms.quiz_attempts::NUMERIC
+        )
         ELSE 0
     END AS completion_rate
-FROM 
+FROM
     manager_stats ms
-ORDER BY 
+ORDER BY
     ms.quizzes_created DESC,
     ms.quiz_attempts DESC;
