@@ -68,26 +68,25 @@ class CategoryCard extends HTMLElement {
         podium.className = 'podium';
         podium.setAttribute('aria-label', 'Top 3 Categories');
 
-        // Order: 2nd (left), 1st (center), 3rd (right)
         const positions = [1, 0, 2];
         positions.forEach((i, idx) => {
             const entry = topCategories[i];
             if (!entry) return;
 
-            const figure = document.createElement('figure');
+            const figure = document.createElement('section');
             figure.className = `podium-item position-${i + 1}`;
 
-            const caption = document.createElement('figcaption');
+            const caption = document.createElement('section');
             caption.className = 'category-name';
             caption.textContent = entry.name;
             figure.appendChild(caption);
 
-            const rank = document.createElement('div');
+            const rank = document.createElement('section');
             rank.className = 'position-rank';
             rank.textContent = `${i + 1}`;
             figure.appendChild(rank);
 
-            const score = document.createElement('div');
+            const score = document.createElement('section');
             score.className = 'category-score';
             score.textContent = `Avg: ${entry.averageScore.toFixed(2)}%`;
             figure.appendChild(score);

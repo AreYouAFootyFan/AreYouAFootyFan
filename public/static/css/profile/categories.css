@@ -34,44 +34,50 @@
 
 .podium {
     display: flex;
-    justify-content: space-around;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: flex-end;
-    height: 15vh;
-    margin-bottom: 1.5rem;
+    gap: 1rem;
+    height: 20vh;
+    /* margin-bottom: 2rem; */
 }
 
 .podium-item {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
     text-align: center;
-    width: 16rem;
+    width: 15rem;
+    /* min-height: 120px; */
     border-radius: 0.5rem;
-    padding: 0.5rem;
-    position: relative;
+    padding-bottom: 1rem;
 }
 
 .category-name {
+    position: relative;
+    top: -0.5rem;
     font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    padding: 0 0.25rem;
+    border-radius: 0.25rem;
+    z-index: 1;
 }
 
 .position-rank {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: bold;
     margin-bottom: 0.25rem;
 }
 
 .category-score {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: var(--gray-700);
 }
 
-/* Heights and color for podium tiers */
 .podium-item.position-1 {
-    height: 95%;
+    height: 100%;
     background-color: gold;
 }
 
@@ -81,6 +87,6 @@
 }
 
 .podium-item.position-3 {
-    height: 70%;
+    height: 60%;
     background-color: #cd7f32; /* bronze */
 }

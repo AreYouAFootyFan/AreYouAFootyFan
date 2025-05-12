@@ -82,8 +82,8 @@ class UserProfile extends HTMLElement {
 
         // Header
         const statsHeader = document.createElement("header");
-        statsHeader.className = "admin-header";
-
+        statsHeader.className = "page-header";
+        
         const statsTitle = document.createElement("h1");
         statsTitle.textContent = "Your Quiz Stats";
 
