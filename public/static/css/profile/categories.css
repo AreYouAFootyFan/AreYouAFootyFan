@@ -78,15 +78,15 @@
 
 .podium-item.position-1 {
     height: 95%;
-    background-color: gold;
+    background: linear-gradient(135deg, #FFD700 0%, #FFC107 30%, #FFB300 60%, #FFA000 100%);
 }
 
 .podium-item.position-2 {
     height: 75%;
-    background-color: silver;
+    background: linear-gradient(135deg, #E0E0E0 0%, #C0C0C0 25%, #A9A9A9 50%, #D3D3D3 75%, #F5F5F5 100%);
 }
 
 .podium-item.position-3 {
     height: 55%;
-    background-color: #cd7f32; /* bronze */
+    background: linear-gradient(135deg, #cd7f32 0%, #b87333 25%, #aa6c39 50%, #a97142 75%, #cd7f32 100%);
 }

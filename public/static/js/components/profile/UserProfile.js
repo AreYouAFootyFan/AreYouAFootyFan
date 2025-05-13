@@ -87,7 +87,7 @@ class UserProfile extends HTMLElement {
 
         // Stats Summary
         const user = authService.getUser();
-        const isPlayer = user.role_name === 'Player';
+        const isPlayer = user.role_id === 1;
 
         const statsSummary = document.createElement("profile-stats");
         statsSummary.id = "user-stats-summary";
@@ -122,12 +122,29 @@ class UserProfile extends HTMLElement {
         // Top Categories Card
         const topCategoriesCard = document.createElement("top-categories");
         topCategoriesCard.setAttribute("title", "Your 3 Best Categories");
+
+        const categories = [];
+        userStats.topCategories.forEach(category => {
+            if(isPlayer){
+                categories.push({
+                    role: 'Player',
+                    name: category.name,
+                    averageScore: parseFloat(category.accuracy)
+                });
+            }else{
+                categories.push({
+                    role: 'Manager',
+                    name: category.name,
+                    count: parseInt(category.count)
+                });
+            }
+
+        });
+
+        console.log(categories);
+
         topCategoriesCard.setAttribute("data-top-categories", 
-            JSON.stringify([
-                { name: userStats.topCategories[0], averageScore: 87.5 },
-                { name: userStats.topCategories[1], averageScore: 82.3 },
-                { name: userStats.topCategories[2], averageScore: 79.1 }
-            ])
+            JSON.stringify(categories)
         );
 
         statsCards.appendChild(topCategoriesCard);

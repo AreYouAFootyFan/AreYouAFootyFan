@@ -88,14 +88,25 @@ class CategoryCard extends HTMLElement {
 
             const score = document.createElement('section');
             score.className = 'category-score';
-            score.textContent = `Avg: ${entry.averageScore.toFixed(2)}%`;
+            if(entry.role === 'Player'){
+                score.textContent = `Avg: ${entry.averageScore.toFixed(2)}%`;
+            }else{
+                score.textContent = `Count: ${entry.count}`;
+            }
+            
             figure.appendChild(score);
 
             podium.appendChild(figure);
         });
 
-        content.appendChild(podium);
-
+        if(topCategories.length != 0){
+            content.appendChild(podium);
+        }else{
+            const paragraph = document.createElement('p');
+            paragraph.textContent = 'Not enough data to determine your best 3 categories';
+            content.appendChild(paragraph);
+        }
+        
         const slot = document.createElement('slot');
         slot.name = 'content';
         content.appendChild(slot);
