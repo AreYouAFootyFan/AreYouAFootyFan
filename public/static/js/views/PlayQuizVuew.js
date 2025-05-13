@@ -1,0 +1,36 @@
+import AbstractView from "./AbstractView.js";
+import Quizzes from "../components/PlayQuizzes/PlayQuizzes.js";
+import "../components/PlayQuizzes/PlayQuizzes.js";
+import "../components/Homepage/QuizHome.js";
+import "../components/Homepage/QuizCard.js";
+import "../components/Homepage/QuizLeaderboard.js";
+import "../components/Homepage/QuizCategoryFilter.js"
+
+export default class PlayQuizView extends AbstractView {
+    constructor(params) {
+        super();
+        this.setTitle("Play Quiz");
+        
+        this.modeId = this.extractQueryParameter('modeId') || params?.id || null;
+    }
+    
+
+    extractQueryParameter(paramName) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(paramName);
+    }
+    
+    async getHtml() {
+        const quizComponent = document.createElement('play-quizzes');
+        
+        if (this.modeId) {
+            quizComponent.setAttribute('mode-id', this.modeId);
+        }
+        
+        return quizComponent;
+    }
+    
+    async mount() {
+        // Any additional mounting logic can go here
+    }
+}

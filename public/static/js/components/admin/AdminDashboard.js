@@ -438,7 +438,6 @@ class AdminDashboard extends HTMLElement {
 
       this.loadInitialData();
     } catch (error) {
-      console.error("Error checking authentication:", error);
       window.location.href = "/login";
     }
   }
@@ -495,7 +494,6 @@ class AdminDashboard extends HTMLElement {
         statsComponent.setStats(stats);
       }
     } catch (error) {
-      console.error("Error loading stats:", error);
       statsComponent.setError(error);
     }
   }
@@ -530,7 +528,6 @@ class AdminDashboard extends HTMLElement {
             quiz.valid_questions == quiz.question_count;
           quiz.validation_message = validation.validation_message;
         } catch (error) {
-          console.error(`Error validating quiz ${quiz.quiz_id}:`, error);
           quiz.valid_questions = 0;
           quiz.question_count = 0;
           quiz.is_valid = false;
@@ -611,7 +608,6 @@ class AdminDashboard extends HTMLElement {
 
       quizzesContainer.appendChild(table);
     } catch (error) {
-      console.error("Error loading quizzes:", error);
       const quizzesContainer = this.shadowRoot.querySelector("#quizzes-list");
       if (quizzesContainer) {
         quizzesContainer.innerHTML = "";
@@ -703,7 +699,6 @@ class AdminDashboard extends HTMLElement {
 
       contentSlot.appendChild(table);
     } catch (error) {
-      console.error("Error loading recent quizzes:", error);
       const dashboardView = this.shadowRoot.querySelector("#dashboard-view");
       if (dashboardView) {
         const quizzesCard = dashboardView.querySelector(
@@ -800,7 +795,6 @@ class AdminDashboard extends HTMLElement {
 
       categoriesContainer.appendChild(table);
     } catch (error) {
-      console.error("Error loading categories:", error);
       const categoriesContainer =
         this.shadowRoot.querySelector("#categories-list");
       if (categoriesContainer) {
@@ -863,7 +857,6 @@ class AdminDashboard extends HTMLElement {
 
       contentSlot.appendChild(table);
     } catch (error) {
-      console.error("Error loading recent categories:", error);
       const dashboardView = this.shadowRoot.querySelector("#dashboard-view");
       if (dashboardView) {
         const categoriesCard = dashboardView.querySelector(
@@ -918,7 +911,6 @@ class AdminDashboard extends HTMLElement {
       const confirmModal = this.shadowRoot.querySelector("#confirm-modal");
       if (confirmModal) confirmModal.hide();
     } catch (error) {
-      console.error("Error deleting quiz:", error);
       this.showNotification(
         "Failed to delete quiz: " + (error.message || "Unknown error"),
         "error"
@@ -982,7 +974,6 @@ class AdminDashboard extends HTMLElement {
       const confirmModal = this.shadowRoot.querySelector("#confirm-modal");
       if (confirmModal) confirmModal.hide();
     } catch (error) {
-      console.error("Error deleting category:", error);
       this.showNotification(
         "Failed to delete category: " + (error.message || "Unknown error"),
         "error"
@@ -1055,7 +1046,6 @@ class AdminDashboard extends HTMLElement {
       const categoryModal = this.shadowRoot.querySelector("#category-modal");
       if (categoryModal) categoryModal.hide();
     } catch (error) {
-      console.error("Error saving category:", error);
       this.showNotification(
         "Failed to save category: " + (error.message || "Unknown error"),
         "error"

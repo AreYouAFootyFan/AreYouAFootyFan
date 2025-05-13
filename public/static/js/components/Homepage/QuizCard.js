@@ -1,29 +1,42 @@
-import { StyleLoader } from "../../utils/cssLoader.js";
+import { StyleLoaderStatic } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class QuizCard extends HTMLElement {
+    static {
+        this.styleSheet = null;
+        this.stylesLoaded = this.loadStylesOnce();
+    }
+
+    static async loadStylesOnce() {
+        try {
+            if (!this.styleSheet) {
+                this.styleSheet = await StyleLoaderStatic(
+                    './static/css/styles.css',
+                    './static/css/home/quizcard.css'
+                )
+            }
+            return true;
+        } catch (error) {
+            console.error('Error loading QuizCard styles:', error);
+            return false;
+        }
+    }
+    
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
         this.quiz = null;
-        this.styleSheet = new CSSStyleSheet();
     }
     
     async connectedCallback() {
-        await this.loadStyles();
+        await QuizCard.stylesLoaded;
+        this.shadowRoot.adoptedStyleSheets = QuizCard.styleSheet
         await this.render();
         this.setupEventListeners();
     }
     
-    async loadStyles() {
-        await StyleLoader(
-            this.shadowRoot,
-            './static/css/styles.css',
-            './static/css/home/quizcard.css'
-        );
-    }
-
     async render() {
         const shadow = this.shadowRoot;
-        shadow.innerHTML = '';
+        clearDOM(shadow)
 
         if (!this.quiz) {
             const paragraph = document.createElement('p');

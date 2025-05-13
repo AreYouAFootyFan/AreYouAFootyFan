@@ -192,7 +192,6 @@ class UserProfile extends HTMLElement {
 
       this.updateUserInfo();
     } catch (error) {
-      console.error("Error loading user data:", error);
       this.showError(
         "Failed to load user data: " + (error.message || "Unknown error")
       );
@@ -207,7 +206,6 @@ class UserProfile extends HTMLElement {
                 return stats;
             }
             } catch (error) {
-            console.error("Error loading stats:", error);
             statsComponent.setError(error);
         }
     }
@@ -336,7 +334,6 @@ class UserProfile extends HTMLElement {
         window.updateHeaderUI();
       }
     } catch (error) {
-      console.error("Error updating username:", error);
       this.showError(
         "Failed to update username: " +
           (error.message || "Username may already be taken")

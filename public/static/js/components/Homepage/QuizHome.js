@@ -1,5 +1,6 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 
 class QuizHome extends HTMLElement {
   constructor() {
@@ -84,7 +85,7 @@ class QuizHome extends HTMLElement {
 
     const sectionTitle = document.createElement("h2");
     sectionTitle.className = "section-title";
-    sectionTitle.textContent = "Available Quizzes";
+    sectionTitle.textContent = "Quizzes for you";
 
     const filter = document.createElement("quiz-category-filter");
     filter.id = "category-filter";
@@ -298,6 +299,13 @@ class QuizHome extends HTMLElement {
       });
       quizGrid.appendChild(quizCard);
     });
+    const buttonContainer = document.createElement("article");
+
+    buttonContainer.className = "quiz-grid-button-container";
+    const moreButton = document.createElement("button");
+  
+    quizGrid.appendChild(buttonContainer);
+
   }
 
   checkUserRole() {

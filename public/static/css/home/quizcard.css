@@ -78,3 +78,10 @@ button {
 button:hover {
     background-color: var(--primary-dark);
 }
+
+.quiz-grid-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+  

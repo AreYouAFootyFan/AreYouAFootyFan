@@ -118,7 +118,6 @@ class QuizTaking extends HTMLElement {
 
       this.loadQuestion(0);
     } catch (error) {
-      console.error("Error starting quiz:", error);
       this.showError(
         `Failed to start quiz: ${error.message || "Unknown error"}`
       );
@@ -250,7 +249,6 @@ class QuizTaking extends HTMLElement {
           this.currentQuestionIndex === this.quizData.totalQuestions - 1
       );
     } catch (error) {
-      console.error("Error submitting answer:", error);
 
       const questionElement = this.shadowRoot.querySelector("quiz-question");
       if (questionElement) {
@@ -430,7 +428,6 @@ class QuizTaking extends HTMLElement {
 
       this.isQuizCompleted = true;
     } catch (error) {
-      console.error("Error completing quiz:", error);
       this.showError(
         `Failed to complete quiz: ${error.message || "Unknown error"}`
       );
