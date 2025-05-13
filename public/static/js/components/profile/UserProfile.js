@@ -1,16 +1,22 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
+import "./ProfileStats.js";
+import "./ProfileCategories.js";
+import "./ProfileBadges.js";
 
 class UserProfile extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.user = null;
+    this.userStats = null;
     this.errorMessage = "";
     this.styleSheet = new CSSStyleSheet();
+    
   }
 
   async connectedCallback() {
+    this.userStats = await this.getStats();
     await this.loadStyles();
     this.renderSkeleton();
     this.loadUserData();
@@ -20,7 +26,7 @@ class UserProfile extends HTMLElement {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
-      "./static/css/profile/profile.css"
+      "./static/css/profile/profile.css",
     );
   }
 
@@ -31,7 +37,7 @@ class UserProfile extends HTMLElement {
     const header = document.createElement("header");
     header.className = "page-header";
     const h1 = document.createElement("h1");
-    h1.textContent = "My Profile";
+    h1.textContent = "Your Info";
     header.appendChild(h1);
 
     const section = document.createElement("section");
@@ -57,13 +63,123 @@ class UserProfile extends HTMLElement {
     main.appendChild(header);
     main.appendChild(section);
 
+    const stats = this.createUserStatsView(this.userStats);
+    main.appendChild(stats);
+
     this.shadowRoot.appendChild(main);
   }
 
+    createUserStatsView(userStats) {
+        const authService = window.authService;
+
+        const statsView = document.createElement("section");
+        statsView.id = "user-stats-view";
+
+        // Header
+        const statsHeader = document.createElement("header");
+        statsHeader.className = "page-header";
+
+        const statsTitle = document.createElement("h1");
+        statsTitle.textContent = "Your Quiz Stats";
+
+        statsHeader.appendChild(statsTitle);
+        statsView.appendChild(statsHeader);
+
+        // Stats Summary
+        const user = authService.getUser();
+        const isPlayer = user.role_id === 1;
+
+        const statsSummary = document.createElement("profile-stats");
+        statsSummary.id = "user-stats-summary";
+        if(isPlayer){
+            statsSummary.setAttribute("statistics", JSON.stringify(
+                {   
+                    role: 'Player',
+                    elo: userStats.elo,
+                    rank: userStats.rank,
+                    quizzesCompleted: userStats.quizzesCompleted,
+                    avgScore: userStats.avgScore,
+                }
+            ));
+        }else{
+            statsSummary.setAttribute("statistics", JSON.stringify(
+                {   
+                    role: 'Manager',
+                    quizzesCreated: userStats.quizzesCreated,
+                    quizAttempts: userStats.quizAttempts,
+                    rank: userStats.rank,
+                    avgScore: userStats.avgScore,
+                }
+            ));
+        }
+
+        statsView.appendChild(statsSummary);
+
+        // Cards for Top Categories and Badges
+        const statsCards = document.createElement("section");
+        statsCards.className = "admin-cards";
+
+        // Top Categories Card
+        const topCategoriesCard = document.createElement("top-categories");
+        topCategoriesCard.setAttribute("title", "Your 3 Best Categories");
+
+        const categories = [];
+        userStats.topCategories.forEach(category => {
+            if(isPlayer){
+                categories.push({
+                    role: 'Player',
+                    name: category.name,
+                    averageScore: parseFloat(category.accuracy)
+                });
+            }else{
+                categories.push({
+                    role: 'Manager',
+                    name: category.name,
+                    count: parseInt(category.count)
+                });
+            }
+
+        });
+
+        console.log(categories);
+
+        topCategoriesCard.setAttribute("data-top-categories", 
+            JSON.stringify(categories)
+        );
+
+        statsCards.appendChild(topCategoriesCard);
+
+        // Badges Card
+        if(isPlayer){
+            const badgesCard = document.createElement("badges-earned");
+            badgesCard.setAttribute("title", "Badges Earned");
+            
+            const badgeMap = {
+                Rookie: { src: './static/img/badges/rookie.png', alt: '' },
+                Amateur: { src: './static/img/badges/amateur.png', alt: '' },
+                'Semi-Pro': { src: './static/img/badges/semi-pro.png', alt: '' },
+                Professional: { src: './static/img/badges/professional.png', alt: '' },
+                'World Class': { src: './static/img/badges/world-class.png', alt: '' },
+                Legendary: { src: './static/img/badges/legendary.png', alt: '' }
+            };
+
+            const badges = userStats.badges
+                .map(name => badgeMap[name])
+                .filter(Boolean);
+
+            badgesCard.setAttribute("badges-earned", 
+                JSON.stringify(badges)
+            );
+            statsCards.appendChild(badgesCard);
+        }
+        statsView.appendChild(statsCards);
+
+        return statsView;
+    }
+
+
   async loadUserData() {
     try {
-      const authService = window.authService;
-
       if (!authService || !authService.isAuthenticated()) {
         window.location.href = "/";
         return;
@@ -84,6 +200,19 @@ class UserProfile extends HTMLElement {
       );
     }
   }
+
+    async getStats() {
+        try {
+            const statsService = window.statsService;
+            if (statsService) {
+                const stats = await statsService.getProfileStats();
+                return stats;
+            }
+            } catch (error) {
+            console.error("Error loading stats:", error);
+            statsComponent.setError(error);
+        }
+    }
 
   updateUserInfo() {
     const profileContent = this.shadowRoot.querySelector("#profile-content");
@@ -123,11 +252,11 @@ class UserProfile extends HTMLElement {
 
     const fieldset = document.createElement("fieldset");
     const legend = document.createElement("legend");
-    legend.textContent = "Edit Profile";
+    legend.textContent = "Update Username";
 
     const label = document.createElement("label");
     label.setAttribute("for", "edit-username");
-    label.textContent = "Username";
+    label.textContent = "New Username: ";
 
     const input = document.createElement("input");
     input.type = "text";

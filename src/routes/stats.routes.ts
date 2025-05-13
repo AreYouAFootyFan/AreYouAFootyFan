@@ -13,10 +13,7 @@ const router = express.Router();
 router.use(authenticate);
 router.use(requireUsername);
 
-// Dashboard stats require manager role
 router.get("/dashboard", requireRole(User.Role.MANAGER), StatsController.getDashboardStats);
-
-// User stats endpoint
-router.get("/user/:userId", StatsController.getUserStats);
+router.get("/profile", StatsController.getProfileStats);
 
 export default router;

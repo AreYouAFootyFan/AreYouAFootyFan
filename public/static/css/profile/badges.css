@@ -1,0 +1,62 @@
+:host {
+    display: block;
+}
+
+:host(.full-width) {
+    grid-column: 1 / -1;
+}
+
+.badges-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 0.0625rem solid var(--gray-200);
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 1.5rem;
+    justify-items: center;
+    padding: 1rem 0;
+}
+
+.badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 10rem;
+}
+
+.badge img {
+    width: 100%;
+    max-width: 7rem;
+    height: auto;
+    object-fit: contain;
+}
+
+.badge figcaption {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    color: var(--gray-700);
+}
