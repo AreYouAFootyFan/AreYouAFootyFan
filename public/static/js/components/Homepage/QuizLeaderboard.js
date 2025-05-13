@@ -19,7 +19,8 @@ class QuizLeaderboard extends HTMLElement {
         await StyleLoader(
             this.shadowRoot,
             './static/css/styles.css',
-            './static/css/home/leaderboard.css'
+            './static/css/home/leaderboard.css',
+            './static/css/shared/modals.css'
         );
     }
     
@@ -66,29 +67,42 @@ class QuizLeaderboard extends HTMLElement {
     }
     
     createModalSection() {
-        const modal = document.createElement('section');
+        const modal = document.createElement('dialog');
         modal.className = 'modal';
         modal.id = 'full-leaderboard-modal';
     
         const content = document.createElement('article');
         content.className = 'modal-content';
-    
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'close-btn';
-        closeBtn.id = 'close-leaderboard-btn';
-        closeBtn.textContent = '×';
-    
+        
+        // Create modal header
+        const header = document.createElement('header');
+        header.className = 'modal-header';
+        
         const title = document.createElement('h2');
-        title.className = 'section-title';
         title.textContent = 'Football Quiz Leaderboard';
-    
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-modal';
+        closeBtn.id = 'close-leaderboard-btn';
+        
+        const closeIcon = document.createTextNode('×');
+        closeBtn.appendChild(closeIcon);
+        
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+        
+        // Create modal body
+        const body = document.createElement('main');
+        body.className = 'modal-body';
+        
         const table = this.createLeaderboardTable('full-leaderboard-body', 'Loading full leaderboard data...');
-    
-        content.appendChild(closeBtn);
-        content.appendChild(title);
-        content.appendChild(table);
-    
+        body.appendChild(table);
+        
+        // Assemble modal
+        content.appendChild(header);
+        content.appendChild(body);
         modal.appendChild(content);
+        
         return modal;
     }
     
