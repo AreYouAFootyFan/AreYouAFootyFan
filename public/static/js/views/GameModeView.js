@@ -1,5 +1,5 @@
 import AbstractView from "./AbstractView.js";
-
+import "../components/Homepage/QuizLeaderboard.js";
 import "../components/GameModes/GameModes.js";
 
 export default class GameModeView extends AbstractView {

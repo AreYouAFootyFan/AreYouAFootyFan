@@ -84,8 +84,13 @@ class GameModes extends HTMLElement {
     this.renderGameModeCards(gameModeGrid);
     contentSection.appendChild(gameModeGrid);
 
+
     main.appendChild(contentSection);
-    
+    const leaderboard = document.createElement("quiz-leaderboard");
+    leaderboard.id = "leaderboard";
+    main.appendChild(leaderboard);
+
+
     return main;
   }
 
