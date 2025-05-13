@@ -170,24 +170,15 @@ tr td {
     padding: 1.5rem;
 }
 
-/* Responsive adjustments for table in modal */
-@media (max-width: 768px) {
-    #full-leaderboard-modal .modal-body th, 
-    #full-leaderboard-modal .modal-body td {
-        padding: 1rem 1.25rem;
-    }
+/* Responsive adjustments using fluid CSS */
+#full-leaderboard-modal .modal-body th, 
+#full-leaderboard-modal .modal-body td {
+    padding: clamp(0.75rem, calc(0.5rem + 1vw), 1.75rem);
+    font-size: clamp(0.875rem, calc(0.8rem + 0.2vw), 1rem);
 }
 
-@media (max-width: 480px) {
-    #full-leaderboard-modal .modal-body th, 
-    #full-leaderboard-modal .modal-body td {
-        padding: 0.875rem 0.75rem;
-        font-size: 0.875rem;
-    }
-    
-    #full-leaderboard-modal .rank {
-        width: 1.75rem;
-        height: 1.75rem;
-        margin-right: 0.5rem;
-    }
+#full-leaderboard-modal .rank {
+    width: clamp(1.75rem, calc(1.5rem + 0.5vw), 2rem);
+    height: clamp(1.75rem, calc(1.5rem + 0.5vw), 2rem);
+    margin-right: clamp(0.5rem, calc(0.4rem + 0.5vw), 0.75rem);
 }
