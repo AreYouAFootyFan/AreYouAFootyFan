@@ -28,4 +28,8 @@ VALUES
     (
         'Football History',
         'Explore legendary players, matches, and milestones.'
+    ),
+    (
+        'Fun & Miscellaneous',
+        'Creative, unusual, and entertaining football quizzes.'
     );
