@@ -13,7 +13,6 @@ router.use(authenticate);
 router.use(requireUsername);
 
 router.get("/dashboard", requireRole(User.Role.MANAGER), StatsController.getDashboardStats);
-
-router.get("/user/:userId", StatsController.getUserStats);
+router.get("/profile", StatsController.getProfileStats);
 
 export default router;
