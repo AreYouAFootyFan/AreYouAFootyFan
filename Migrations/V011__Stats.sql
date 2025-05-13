@@ -4,7 +4,7 @@ OR REPLACE FUNCTION get_user_top_categories (p_user_id INT) RETURNS TABLE (
     category_id INT,
     category_name VARCHAR(32),
     accuracy_rate NUMERIC,
-    total_questions BIGINT
+    total_questions INT
 ) AS $$
 BEGIN
     RETURN QUERY
