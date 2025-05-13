@@ -41,7 +41,7 @@ export class AnswerService {
     if (data.is_correct) {
       const answer = await AnswerModel.create({
         ...data,
-        is_correct: false, // Temporarily set to false
+        is_correct: false,
       });
 
       await AnswerModel.markAsCorrect(answer.answer_id, data.question_id);
@@ -123,6 +123,12 @@ export class AnswerService {
     }
 
     await AnswerModel.markAsCorrect(answerId, existingAnswer.question_id);
+
+    const updatedAnswer = await AnswerModel.findById(answerId);
+    
+    if (!updatedAnswer) {
+      throw ErrorUtils.internal(Message.Error.Answer.UPDATE_FAILED);
+  }
 
     return AnswerModel.findById(answerId) as Promise<Answer>;
   }

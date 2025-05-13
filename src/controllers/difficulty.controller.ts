@@ -55,7 +55,6 @@ export class DifficultyController {
         points_on_incorrect,
       } = request.body as CreateDifficultyLevelDto;
 
-      // Validate required fields
       if (!difficulty_level) {
         throw ErrorUtils.badRequest(Message.Error.Difficulty.LEVEL_REQUIRED);
       }

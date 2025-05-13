@@ -79,13 +79,11 @@ export class AnswerModel {
     try {
       await client.query("BEGIN");
 
-      // First, mark all answers for this question as incorrect
       await client.query(
         "UPDATE answers SET is_correct = false WHERE question_id = $1",
         [questionId]
       );
 
-      // Then, mark the specified answer as correct
       await client.query(
         "UPDATE answers SET is_correct = true WHERE answer_id = $1",
         [answerId]

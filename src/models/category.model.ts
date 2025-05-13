@@ -83,5 +83,4 @@ export class CategoryModel {
 
     return result.rows.length > 0;
   }
-
 }

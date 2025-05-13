@@ -53,7 +53,6 @@ export class QuizAttemptController {
       }
 
       const userId = request.user!.id;
-      const userRole = request.user!.role;
 
       const parsedQuizId = parseInt(quiz_id.toString());
 
@@ -66,7 +65,7 @@ export class QuizAttemptController {
         quiz_id: parsedQuizId,
       };
 
-      const attempt = await QuizAttemptService.startQuiz(data, userRole);
+      const attempt = await QuizAttemptService.startQuiz(data);
       response.status(Http.Status.CREATED).json(attempt);
     } catch (error) {
       next(error);

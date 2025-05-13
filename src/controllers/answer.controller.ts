@@ -149,7 +149,7 @@ export class AnswerController {
       }
 
       await AnswerService.deleteAnswer(id);
-      response.json({ message: Message.Success.Answer.DELETE});
+      response.json({ message: Message.Success.Answer.DELETE });
     } catch (error) {
       next(error);
     }
