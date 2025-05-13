@@ -67,8 +67,6 @@ class AnswersList extends HTMLElement {
             answersContent.appendChild(answersList);
         }
         
-        console.log(this.showAnswerForm)
-
         if (this.showAnswerForm ) {
             answersContent.appendChild(this.createAnswerForm());
         }
@@ -338,7 +336,6 @@ class AnswersList extends HTMLElement {
             this.render();
             
         } catch (error) {
-            console.error('Error loading answers:', error);
             this.loading = false;
             this.error = 'Failed to load answers: ' + (error.message || 'Unknown error');
             this.render();
@@ -410,7 +407,6 @@ class AnswersList extends HTMLElement {
             await this.loadAnswers();
             
         } catch (error) {
-            console.error('Error saving answer:', error);
             alert('Failed to save answer: ' + (error.message || 'Unknown error'));
         }
     }
@@ -462,7 +458,6 @@ class AnswersList extends HTMLElement {
             await this.loadAnswers();
             
         } catch (error) {
-            console.error('Error marking answer as correct:', error);
             alert('Failed to mark answer as correct: ' + (error.message || 'Unknown error'));
         }
     }

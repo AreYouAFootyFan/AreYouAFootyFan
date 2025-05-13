@@ -55,7 +55,6 @@ class AuthService {
         user: data.user,
       };
     } catch (error) {
-      console.error("Login error:", error);
       throw error;
     }
   }
@@ -78,7 +77,6 @@ class AuthService {
 
       return user;
     } catch (error) {
-      console.error("Set username error:", error);
       throw error;
     }
   }
@@ -113,7 +111,6 @@ class AuthService {
 
       return user;
     } catch (error) {
-      console.error("Refresh user data error:", error);
       throw error;
     }
   }

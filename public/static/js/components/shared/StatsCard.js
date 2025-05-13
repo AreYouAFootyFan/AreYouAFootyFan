@@ -1,23 +1,34 @@
-import { StyleLoader } from "../../utils/cssLoader.js";
+import { StyleLoaderStatic } from "../../utils/cssLoader.js";
 
 
 class StatsCard extends HTMLElement {
+  
+  static {
+      this.styleSheet = null;
+      this.stylesLoaded = this.loadStylesOnce();
+    }
+  
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
   }
 
-    async connectedCallback() {
-        await this.loadStyles();
-        this.render();
+  static async loadStylesOnce() {
+    try {
+        if (!this.styleSheet) {
+            this.styleSheet = await StyleLoaderStatic('./static/css/shared/statsCard.css')
+        }
+        return true;
+    } catch (error) {
+        console.error('Error loading QuizCard styles:', error);
+        return false;
     }
+  }
 
-    async loadStyles() {
-        await StyleLoader(
-            this.shadowRoot,
-            './static/css/shared/statsCard.css',
-        );
-    }
+  async connectedCallback() {
+      this.shadowRoot.adoptedStyleSheets = StatsCard.styleSheet
+      this.render();
+  }
 
   render() {
     const card = document.createElement('article');

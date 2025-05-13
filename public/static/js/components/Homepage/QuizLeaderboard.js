@@ -249,7 +249,6 @@ class QuizLeaderboard extends HTMLElement {
                 this.renderLeaderboard();
             }
         } catch (error) {
-            console.error('Error loading leaderboard data:', error);
             const leaderboardBody = this.shadowRoot.querySelector('#leaderboard-body');
             if (leaderboardBody) {
                 leaderboardBody.innerHTML = '';
@@ -307,7 +306,6 @@ class QuizLeaderboard extends HTMLElement {
                 }
             }
         } catch (error) {
-            console.error('Error loading full leaderboard:', error);
             fullLeaderboardBody.appendChild(this.createErrorRow());
         }
     }

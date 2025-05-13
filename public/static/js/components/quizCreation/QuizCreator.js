@@ -269,8 +269,6 @@ class QuizCreator extends HTMLElement {
     const questionId = this.currentQuestionId || localStorage.getItem('current_question_id');
     const isEditing = !!questionId;
     
-    console.log(`Creating question form view. Question ID: ${questionId}, isEditing: ${isEditing}`);
-    
     const h1 = document.createElement('h1');
     h1.textContent = isEditing ? 'Edit Question' : 'Add Question';
     header.appendChild(h1);
@@ -370,7 +368,6 @@ class QuizCreator extends HTMLElement {
             await this.loadInitialData();
             
         } catch (error) {
-            console.error('Error checking authentication:', error);
             window.location.href = '/login';
         }
     }
@@ -392,7 +389,6 @@ class QuizCreator extends HTMLElement {
             
             this.updateStepIndicators();
         } catch (error) {
-            console.error('Error loading initial data:', error);
             this.showNotification('Failed to load data. Please try again later.', 'error');
         }
     }
@@ -413,7 +409,6 @@ class QuizCreator extends HTMLElement {
                 }, 0);
             }
         } catch (error) {
-            console.error('Error loading categories:', error);
             this.showNotification('Failed to load categories. Please try again.', 'error');
         }
     }
@@ -434,7 +429,6 @@ class QuizCreator extends HTMLElement {
                 }, 0);
             }
         } catch (error) {
-            console.error('Error loading difficulties:', error);
             this.showNotification('Failed to load difficulty levels. Please try again.', 'error');
         }
     }
@@ -464,7 +458,6 @@ class QuizCreator extends HTMLElement {
             this.quizTitle = quiz.quiz_title;
             localStorage.setItem('selected_quiz_title', this.quizTitle);
         } catch (error) {
-            console.error('Error loading quiz data:', error);
             this.showNotification('Failed to load quiz data. Please try again.', 'error');
         }
     }
@@ -492,7 +485,6 @@ class QuizCreator extends HTMLElement {
             questionsList.setQuestions(this.questions);
             questionsList.setLoading(false);
         } catch (error) {
-            console.error('Error loading questions:', error);
             const questionsList = this.shadowRoot.querySelector('#questions-list');
             if (questionsList) {
                 questionsList.setError('Error loading questions. Please try again later.');
@@ -632,7 +624,6 @@ class QuizCreator extends HTMLElement {
     }
     
     async handleQuizSubmit(event) {
-        console.log('QuizCreator: handleQuizSubmit called', event.detail);
         const { quiz, isNew } = event.detail;
         
         try {
@@ -669,7 +660,6 @@ class QuizCreator extends HTMLElement {
             this.showQuestionsView();
             
         } catch (error) {
-            console.error('Error saving quiz:', error);
             this.showNotification('Failed to save quiz: ' + (error.message || 'Unknown error'), 'error');
         }
     }
@@ -704,7 +694,6 @@ class QuizCreator extends HTMLElement {
         this.showAnswersView(this.currentQuestionId);
         
     } catch (error) {
-        console.error('Error saving question:', error);
         this.showNotification('Failed to save question: ' + (error.message || 'Unknown error'), 'error');
     }
 }
@@ -733,11 +722,10 @@ class QuizCreator extends HTMLElement {
             questionForm.setQuestionData(question);
             
         } else {
-            console.error('Question form element not found!');
+            this.showNotification('Question form element not found!');
         }
         
     } catch (error) {
-        console.error('Error loading question for editing:', error);
         this.showNotification('Failed to load question: ' + (error.message || 'Unknown error'), 'error');
     }
 }
@@ -760,7 +748,6 @@ class QuizCreator extends HTMLElement {
             await this.loadQuestions();
             
         } catch (error) {
-            console.error('Error deleting question:', error);
             this.showNotification('Failed to delete question: ' + (error.message || 'Unknown error'), 'error');
         }
     }
