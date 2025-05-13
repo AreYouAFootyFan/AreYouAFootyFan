@@ -1,32 +1,40 @@
-/* Quiz Taking CSS - Only contains styles specific to the Quiz Taking container */
-
 :host {
     display: block;
     width: 100%;
-    font-family: var(--font-sans);
-    color: var(--text-primary);
-    background: var(--gradient-bg-light);
-    min-height: calc(100vh - 4.5rem); /* Adjusted for new header height */
+    font-family: var(--font-sans, 'Inter', sans-serif);
+    color: var(--gray-800);
+    background-color: var(--gray-100);
+    min-height: calc(100vh - 4rem);
 }
 
 .quiz-container {
-    max-width: min(var(--container-max-width), 95%);
+    max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: clamp(1rem, 5vw, 2rem) clamp(0.5rem, 3vw, 1rem);
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    box-sizing: border-box;
+    padding: 2rem 1rem;
 }
 
 .error-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    padding: 2rem;
     text-align: center;
-    width: min(40rem, 90%);
-    margin: clamp(1rem, 4vw, 2rem) auto;
-    /* Use shared card and gradient classes */
-    /* JavaScript should add: 'card gradient-accent-top' */
+    max-width: 40rem;
+    margin: 2rem auto;
 }
 
-/* Note: The following classes should use shared components in JavaScript:
- - error-container → 'card gradient-accent-top'
- - home-btn → 'modern-button' */
+.home-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: var(--primary);
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    transition: all var(--transition-fast);
+}
+
+.home-btn:hover {
+    background-color: var(--primary-dark);
+}

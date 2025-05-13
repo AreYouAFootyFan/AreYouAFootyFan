@@ -13,12 +13,13 @@ class LoginForm extends HTMLElement {
         await this.loadStyles();
         this.render();
         this.checkAuthentication();
-    }    async loadStyles() {
+    }
+    
+    async loadStyles() {
         await StyleLoader(
             this.shadowRoot,
             './static/css/styles.css',
-            './static/css/shared/auth.css',
-            './static/css/auth/professional-light.css'
+            './static/css/auth/loginform.css'
         );
     }
     
@@ -28,7 +29,8 @@ class LoginForm extends HTMLElement {
         }
         
         const loginPage = document.createElement('article');
-        loginPage.className = 'login-page';        
+        loginPage.className = 'login-page';
+        
         const authMain = document.createElement('main');
         authMain.className = 'auth-main';
         
@@ -57,17 +59,18 @@ class LoginForm extends HTMLElement {
         googleSigninButton.id = 'google-signin-button';
         if (this.showUsernameForm) {
             googleSigninButton.classList.add('hidden');
-        }        const googleLoginLink = document.createElement('a');
+        }
+        
+        const googleLoginLink = document.createElement('a');
         googleLoginLink.href = '#';
         googleLoginLink.id = 'google-login-link';
         
-        // Use simple span with CSS background instead of complex SVG
-        const googleIcon = document.createElement('span');
+        const googleIcon = document.createElement('i');
         googleIcon.className = 'google-icon';
-        googleIcon.setAttribute('aria-hidden', 'true');
+        googleIcon.textContent = 'G';
         
         googleLoginLink.appendChild(googleIcon);
-        googleLoginLink.appendChild(document.createTextNode('Sign in with Google'));
+        googleLoginLink.appendChild(document.createTextNode(' Sign in with Google'));
         
         if (window.authService) {
             googleLoginLink.href = window.authService.getAuthURL();
@@ -81,9 +84,9 @@ class LoginForm extends HTMLElement {
         });
         
         googleSigninButton.appendChild(googleLoginLink);
-          const usernameForm = document.createElement('form');
+        
+        const usernameForm = document.createElement('form');
         usernameForm.id = 'username-container';
-        usernameForm.className = 'auth-form';
 
         if (!this.showUsernameForm) {
             usernameForm.classList.add('hidden');
@@ -95,41 +98,28 @@ class LoginForm extends HTMLElement {
         const usernameInfo = document.createElement('p');
         usernameInfo.textContent = 'Please choose a unique username to continue:';
         
-        const formGroup = document.createElement('div');
-        formGroup.className = 'form-group floating-label';
+        const usernameLabel = document.createElement('label');
+        usernameLabel.setAttribute('for', 'username');
+        usernameLabel.textContent = 'Username';
         
         const usernameInput = document.createElement('input');
         usernameInput.type = 'text';
         usernameInput.id = 'username';
         usernameInput.name = 'username';
-        usernameInput.className = 'auth-input';
-        usernameInput.placeholder = ' ';
+        usernameInput.placeholder = 'Choose a username';
         usernameInput.minLength = 3;
         usernameInput.maxLength = 32;
         usernameInput.required = true;
         
-        const usernameLabel = document.createElement('label');
-        usernameLabel.setAttribute('for', 'username');
-        usernameLabel.className = 'auth-label';
-        usernameLabel.textContent = 'Username';
-          const usernameButton = document.createElement('button');
+        const usernameButton = document.createElement('button');
         usernameButton.type = 'submit';
         usernameButton.className = 'login-btn';
         usernameButton.textContent = 'Save Username';
         
-        // Add icon to the input field
-        const inputIcon = document.createElement('i');
-        inputIcon.className = 'input-icon input-icon-right';
-        const iconText = document.createTextNode('👤');
-        inputIcon.appendChild(iconText);
-        
-        formGroup.appendChild(usernameInput);
-        formGroup.appendChild(usernameLabel);
-        formGroup.appendChild(inputIcon);
-        
         usernameForm.appendChild(usernameTitle);
         usernameForm.appendChild(usernameInfo);
-        usernameForm.appendChild(formGroup);
+        usernameForm.appendChild(usernameLabel);
+        usernameForm.appendChild(usernameInput);
         usernameForm.appendChild(usernameButton);
         
         usernameForm.addEventListener('submit', this.handleUsernameSubmit.bind(this));
@@ -149,14 +139,15 @@ class LoginForm extends HTMLElement {
         authContainer.appendChild(errorElement);
         
         authMain.appendChild(authContainer);
-          const authFooter = document.createElement('footer');
+        
+        const authFooter = document.createElement('footer');
         authFooter.className = 'auth-footer';
         
         const footerText = document.createElement('p');
         footerText.textContent = '© 2025 Football Quiz Platform. All rights reserved.';
-    
+        
         authFooter.appendChild(footerText);
-
+        
         loginPage.appendChild(authMain);
         loginPage.appendChild(authFooter);
         
@@ -208,7 +199,8 @@ class LoginForm extends HTMLElement {
             this.showError('Login failed. Please try again.');
         }
     }
-      showLoadingState(message = 'Loading...') {
+    
+    showLoadingState(message = 'Loading...') {
         this.hideError();
         
         let loadingElement = this.shadowRoot.querySelector('.loading-indicator');
@@ -219,25 +211,11 @@ class LoginForm extends HTMLElement {
             
             const container = this.shadowRoot.querySelector('.auth-container');
             if (container) {
-                // Create a loading indicator with animation
-                const loadingBall = document.createElement('span');
-                loadingBall.className = 'loading-ball';
-                loadingBall.setAttribute('aria-hidden', 'true');
-                
-                const loadingText = document.createElement('span');
-                loadingText.textContent = message;
-                
-                loadingElement.appendChild(loadingBall);
-                loadingElement.appendChild(loadingText);
-                
                 container.appendChild(loadingElement);
             }
-        } else {
-            const loadingText = loadingElement.querySelector('span:not(.loading-ball)');
-            if (loadingText) {
-                loadingText.textContent = message;
-            }
         }
+        
+        loadingElement.textContent = message;
         
         const googleLoginLink = this.shadowRoot.querySelector('#google-login-link');
         if (googleLoginLink) {
@@ -296,7 +274,8 @@ class LoginForm extends HTMLElement {
             this.showError('Failed to set username. It might already be taken.');
         }
     }
-      displayUsernameForm() {
+    
+    displayUsernameForm() {
         this.showUsernameForm = true;
         
         const usernameForm = this.shadowRoot.querySelector('#username-container');
@@ -308,15 +287,11 @@ class LoginForm extends HTMLElement {
         if (googleSigninButton) {
             googleSigninButton.classList.add('hidden');
         }
-        
-        const authDivider = this.shadowRoot.querySelector('.auth-divider');
-        if (authDivider) {
-            authDivider.classList.add('hidden');
-        }
 
         this.hideLoadingState();
     }
-      showError(message) {
+    
+    showError(message) {
         console.error('Login error:', message);
         this.errorMessage = message;
         
