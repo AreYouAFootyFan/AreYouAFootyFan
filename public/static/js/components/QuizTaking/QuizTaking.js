@@ -47,7 +47,7 @@ class QuizTaking extends HTMLElement {
     const loadingContainer = document.createElement("section");
     loadingContainer.classList.add("loading-container");
 
-    const loadingSpinner = document.createElement("span");
+    const loadingSpinner = document.createElement("section");
     loadingSpinner.classList.add("loading-spinner");
 
     const loadingText = document.createElement("p");
@@ -97,7 +97,7 @@ class QuizTaking extends HTMLElement {
         const loadingContainer = document.createElement("section");
         loadingContainer.classList.add("loading-container");
 
-        const loadingSpinner = document.createElement("span");
+        const loadingSpinner = document.createElement("section");
         loadingSpinner.classList.add("loading-spinner");
 
         const loadingText = document.createElement("p");

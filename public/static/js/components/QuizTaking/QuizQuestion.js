@@ -137,12 +137,12 @@ class QuizQuestion extends HTMLElement {
                 answerOption.disabled = true;
             }
 
-            const optionLetter = document.createElement('span');
+            const optionLetter = document.createElement('section');
             optionLetter.classList.add('option-letter');
             optionLetter.textContent = String.fromCharCode(65 + index);
             answerOption.appendChild(optionLetter);
 
-            const optionText = document.createElement('span');
+            const optionText = document.createElement('section');
             optionText.classList.add('option-text');
             optionText.textContent = answer.answer_text;
             answerOption.appendChild(optionText);
