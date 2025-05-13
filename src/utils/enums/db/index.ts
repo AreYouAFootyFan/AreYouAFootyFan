@@ -1,7 +1,3 @@
-/**
- * PostgreSQL database error codes.
- * Makes code more readable when handling database errors.
- */
 export enum PgErrorCode {
   UNIQUE_VIOLATION = "23505",
   FOREIGN_KEY_VIOLATION = "23503",

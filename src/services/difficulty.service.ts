@@ -46,7 +46,6 @@ export class DifficultyService {
     id: number,
     data: UpdateDifficultyLevelDto
   ): Promise<DifficultyLevel> {
-    // Validate data
     if (data.time_limit_seconds !== undefined && data.time_limit_seconds <= 0) {
       throw ErrorUtils.badRequest(Message.Error.Difficulty.TIME_LIMIT_POSITIVE);
     }

@@ -15,15 +15,12 @@ export const errorHandler = (
   const status = error.status || Http.Status.INTERNAL_SERVER_ERROR;
   const message = error.message || Message.Error.Api.SOMETHING_WENT_WRONG;
 
-  if (error.code === Db.PgErrorCode.UNIQUE_VIOLATION) {
-    response.status(Http.Status.CONFLICT).json({
-      error: Message.Error.Api.DUPLICATE_RECORD,
-    });
-    return;
-  }
   response.status(status).json({
     error: message,
-    ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
+    ...(process.env.NODE_ENV === "development" && { 
+      stack: error.stack, 
+      dbError: error.code ? mapToDbError(error.code) : "",
+    }),
   });
 };
 
@@ -36,4 +33,18 @@ export const notFoundHandler = (request: Request, response: Response): void => {
   response.status(Http.Status.NOT_FOUND).json({
     error: errorMessage,
   });
+};
+
+const dbErrorMessages: Record<Db.PgErrorCode, string> = {
+  [Db.PgErrorCode.UNIQUE_VIOLATION]: "A record with this value already exists.",
+  [Db.PgErrorCode.FOREIGN_KEY_VIOLATION]: "Referenced record does not exist.",
+  [Db.PgErrorCode.NOT_NULL_VIOLATION]: "A required field is missing.",
+  [Db.PgErrorCode.CHECK_VIOLATION]: "A data validation rule was violated.",
+  [Db.PgErrorCode.INVALID_TEXT_REPRESENTATION]: "Invalid input format.",
+  [Db.PgErrorCode.UNDEFINED_TABLE]: "Referenced table does not exist.",
+  [Db.PgErrorCode.UNDEFINED_COLUMN]: "Referenced column does not exist.",
+};
+
+const mapToDbError = (code: string): string => {
+  return dbErrorMessages[code as Db.PgErrorCode] || "Unknown db error occured.";
 };

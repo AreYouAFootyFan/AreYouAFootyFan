@@ -47,7 +47,9 @@ export class DifficultyLevelModel {
     return result.rows[0];
   }
 
-  static async create(data: CreateDifficultyLevelDto): Promise<DifficultyLevel> {
+  static async create(
+    data: CreateDifficultyLevelDto
+  ): Promise<DifficultyLevel> {
     const result = await db.query(
       "INSERT INTO difficulty_levels (difficulty_level, time_limit_seconds, points_on_correct, points_on_incorrect, points_on_no_answer) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [
@@ -55,7 +57,7 @@ export class DifficultyLevelModel {
         data.time_limit_seconds,
         data.points_on_correct,
         data.points_on_incorrect,
-        data.points_on_no_answer
+        data.points_on_no_answer,
       ]
     );
 

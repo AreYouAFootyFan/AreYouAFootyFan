@@ -1,7 +1,8 @@
-import { UserModel, User } from "../models/user.model";
+import { UserModel } from "../models/user.model";
 import { CreateUserDto, UpdateUserDto } from "../DTOs/user.dto";
 import { ErrorUtils } from "../utils/error.utils";
 import { Message } from "../utils/enums";
+import { User, UserWithRole } from "../types/user.types";
 
 export class UserService {
   static async getAllUsers(): Promise<User[]> {
@@ -18,7 +19,7 @@ export class UserService {
     return user;
   }
 
-  static async getUserWithRoleById(id: number): Promise<any> {
+  static async getUserWithRoleById(id: number): Promise<UserWithRole> {
     const user = await UserModel.getUserWithRole(id);
 
     if (!user) {

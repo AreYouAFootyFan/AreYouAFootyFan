@@ -2,18 +2,10 @@ import { QuizModel } from "../models/quiz.model";
 import { QuestionModel } from "../models/question.model";
 import { AnswerModel } from "../models/answer.model";
 import { ErrorUtils } from "../utils/error.utils";
-import { Message } from "../utils/enums";
-
-export interface QuestionValidationResult {
-  question_id: number;
-  question_text: string;
-  difficulty_id: number;
-  difficulty_level: string;
-  is_valid: boolean;
-  answer_count: number;
-  correct_answer_count: number;
-  validation_messages: string[];
-}
+import { Config, Message } from "../utils/enums";
+import { 
+  QuestionValidation 
+} from "../types/question.types";
 
 export interface QuizValidationResult {
   quiz_id: number;
@@ -22,10 +14,11 @@ export interface QuizValidationResult {
   valid_questions: number;
   is_valid: boolean;
   validation_message: string;
-  questions: QuestionValidationResult[];
+  questions: QuestionValidation[];
 }
 
 export class QuizValidatorService {
+  
   static async validateQuiz(quizId: number): Promise<QuizValidationResult> {
     const quiz = await QuizModel.findById(quizId);
 
@@ -35,7 +28,7 @@ export class QuizValidatorService {
 
     const questions = await QuestionModel.findByQuizId(quizId);
 
-    const questionValidations: QuestionValidationResult[] = [];
+    const questionValidations: QuestionValidation[] = [];
 
     for (const question of questions) {
       const validation = await this.validateQuestion(question.question_id);
@@ -44,7 +37,7 @@ export class QuizValidatorService {
 
     const validQuestions = questionValidations.filter((question) => question.is_valid).length;
 
-    const isValid = validQuestions >= 5;
+    const isValid = validQuestions >= Config.Value.MIN_QUESTIONS_PER_QUIZ;
 
     return {
       quiz_id: quizId,
@@ -54,14 +47,14 @@ export class QuizValidatorService {
       is_valid: isValid,
       validation_message: isValid
         ? "Quiz is valid and ready to play"
-        : `Quiz needs at least 5 valid questions (currently has ${validQuestions})`,
+        : `Quiz needs at least ${Config.Value.MIN_QUESTIONS_PER_QUIZ} valid questions (currently has ${validQuestions})`,
       questions: questionValidations,
     };
   }
 
   static async validateQuestion(
     questionId: number
-  ): Promise<QuestionValidationResult> {
+  ): Promise<QuestionValidation> {
     const question = await QuestionModel.findByIdWithDifficulty(questionId);
 
     if (!question) {
@@ -74,13 +67,13 @@ export class QuizValidatorService {
 
     const validationMessages: string[] = [];
 
-    if (answers.length < 4) {
+    if (answers.length <  Config.Value.DEFAULT_ANSWERS_PER_QUESTION) {
       validationMessages.push(
-        `Question needs ${4 - answers.length} more answer(s)`
+        `Question needs ${ Config.Value.DEFAULT_ANSWERS_PER_QUESTION - answers.length} more answer(s)`
       );
-    } else if (answers.length > 4) {
+    } else if (answers.length > Config.Value.DEFAULT_ANSWERS_PER_QUESTION) {
       validationMessages.push(
-        `Question has ${answers.length - 4} too many answers`
+        `Question has ${answers.length -  Config.Value.DEFAULT_ANSWERS_PER_QUESTION} too many answers`
       );
     }
 
@@ -92,7 +85,7 @@ export class QuizValidatorService {
       );
     }
 
-    const isValid = answers.length === 4 && correctAnswers.length === 1;
+    const isValid = answers.length ===  Config.Value.DEFAULT_ANSWERS_PER_QUESTION && correctAnswers.length === 1;
 
     if (isValid) {
       validationMessages.push("Question is valid");
