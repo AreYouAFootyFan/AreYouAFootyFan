@@ -319,7 +319,7 @@ class QuizHome extends HTMLElement {
     if (!authService) return;
 
     const isQuizMaster = authService.isQuizMaster && authService.isQuizMaster();
-    localStorage.setItem("selected_quiz_id", quizId);
+    localStorage.setItem("selected_quiz_to_play_id", quizId);
     if (isQuizMaster) {
       this.showQuizMasterModal();
     } else {

@@ -5,7 +5,7 @@ class QuizTaking extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
 
-    this.quizId = localStorage.getItem("selected_quiz_id");
+    this.quizId = localStorage.getItem("selected_quiz_to_play_id");
     this.quizData = null;
     this.attempt = null;
     this.currentQuestionIndex = 0;
