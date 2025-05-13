@@ -1423,7 +1423,7 @@ VALUES
             FROM
                 quiz_id
         ),
-        'Who is AC Milan''s all-time top scorer?',
+        'Who holds the record for most goals in a single Serie A season?',
         2
     ),
     (
@@ -1565,7 +1565,7 @@ WITH
         FROM
             questions
         WHERE
-            question_text = 'Who is AC Milan''s all-time top scorer?'
+            question_text = 'Who holds the record for most goals in a single Serie A season?'
         LIMIT
             1
     )
@@ -1579,7 +1579,7 @@ VALUES
             FROM
                 q3
         ),
-        'Gunnar Nordahl',
+        'Gonzalo Higuain',
         TRUE
     ),
     (
@@ -1589,7 +1589,7 @@ VALUES
             FROM
                 q3
         ),
-        'Giuseppe Meazza',
+        'Ciro Immobile',
         FALSE
     ),
     (
@@ -1599,7 +1599,7 @@ VALUES
             FROM
                 q3
         ),
-        'Filippo Inzaghi',
+        'Gunnar Nordahl',
         FALSE
     ),
     (
@@ -1609,7 +1609,7 @@ VALUES
             FROM
                 q3
         ),
-        'Marco van Basten',
+        'Antonio Angelillo',
         FALSE
     );
 

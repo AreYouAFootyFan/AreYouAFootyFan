@@ -75,7 +75,7 @@ VALUES
             FROM
                 quiz_id
         ),
-        'In which year was the Bundesliga founded?',
+        'Which team was the first to win the Bundesliga and DFB-Pokal double?',
         2
     );
 
@@ -307,7 +307,7 @@ WITH
         FROM
             questions
         WHERE
-            question_text = 'In which year was the Bundesliga founded?'
+            question_text = 'Which team was the first to win the Bundesliga and DFB-Pokal double?'
         LIMIT
             1
     )
@@ -321,7 +321,7 @@ VALUES
             FROM
                 q5
         ),
-        '1963',
+        'Bayern Munich',
         TRUE
     ),
     (
@@ -331,7 +331,7 @@ VALUES
             FROM
                 q5
         ),
-        '1960',
+        'Borussia Dortmund',
         FALSE
     ),
     (
@@ -341,7 +341,7 @@ VALUES
             FROM
                 q5
         ),
-        '1965',
+        'FC Köln',
         FALSE
     ),
     (
@@ -351,7 +351,7 @@ VALUES
             FROM
                 q5
         ),
-        '1958',
+        'Werder Bremen',
         FALSE
     );
 

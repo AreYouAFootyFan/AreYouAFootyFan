@@ -1617,6 +1617,116 @@ VALUES
         FALSE
     );
 
+WITH
+    q4 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'What was the score when Barcelona completed their comeback against PSG in 2017?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        '6-1 (6-5 aggregate)',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        '5-1 (5-4 aggregate)',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        '4-0 (4-4 aggregate)',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        '3-0 (3-4 aggregate)',
+        FALSE
+    );
+
+WITH
+    q5 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which team did Real Madrid beat in the 2018 final with Gareth Bale''s bicycle kick?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Liverpool',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Juventus',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Atletico Madrid',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Bayern Munich',
+        FALSE
+    );
+
 -- Questions for "UCL Legends" quiz
 WITH
     quiz_id AS (

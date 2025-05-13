@@ -404,6 +404,40 @@ BEGIN
     (v_question_id, '2016 Euros', FALSE),
     (v_question_id, '2010 World Cup', FALSE);
 
+    -- Additional questions for Quiz 7: Football Innovations
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'When was the first electronic scoreboard used in football?', v_hard_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, '1962', TRUE),
+    (v_question_id, '1954', FALSE),
+    (v_question_id, '1970', FALSE),
+    (v_question_id, '1958', FALSE);
+
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'Which World Cup first used microchipped balls?', v_medium_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, '2006', TRUE),
+    (v_question_id, '2002', FALSE),
+    (v_question_id, '2010', FALSE),
+    (v_question_id, '2014', FALSE);
+
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'When was the first football match broadcast live on radio?', v_hard_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, '1927', TRUE),
+    (v_question_id, '1920', FALSE),
+    (v_question_id, '1932', FALSE),
+    (v_question_id, '1925', FALSE);
+
     -- Quiz 8: Historic National Teams
     INSERT INTO quizzes (quiz_title, quiz_description, category_id, created_by)
     VALUES ('Historic National Teams', 'Explore the history of national team football', v_category_id, 1)
@@ -430,6 +464,40 @@ BEGIN
     (v_question_id, 'Spain', FALSE),
     (v_question_id, 'West Germany', FALSE),
     (v_question_id, 'Italy', FALSE);
+
+    -- Additional questions for Quiz 8: Historic National Teams
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'Which national team was known as the "Golden Team"?', v_medium_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, 'Hungary 1950s', TRUE),
+    (v_question_id, 'Brazil 1970', FALSE),
+    (v_question_id, 'Spain 2010', FALSE),
+    (v_question_id, 'Netherlands 1974', FALSE);
+
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'Which national team has participated in every World Cup tournament?', v_medium_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, 'Brazil', TRUE),
+    (v_question_id, 'Germany', FALSE),
+    (v_question_id, 'Argentina', FALSE),
+    (v_question_id, 'Italy', FALSE);
+
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'Which national team was the first Asian team to reach World Cup semi-finals?', v_hard_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, 'South Korea', TRUE),
+    (v_question_id, 'Japan', FALSE),
+    (v_question_id, 'Saudi Arabia', FALSE),
+    (v_question_id, 'Iran', FALSE);
 
     -- Quiz 9: Football Tactics History
     INSERT INTO quizzes (quiz_title, quiz_description, category_id, created_by)
@@ -458,6 +526,40 @@ BEGIN
     (v_question_id, '3-5-2', FALSE),
     (v_question_id, '4-3-3', FALSE);
 
+    -- Additional questions for Quiz 9: Football Tactics History
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'Which manager pioneered the "Catenaccio" defensive system?', v_hard_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, 'Helenio Herrera', TRUE),
+    (v_question_id, 'Arrigo Sacchi', FALSE),
+    (v_question_id, 'Rinus Michels', FALSE),
+    (v_question_id, 'Vittorio Pozzo', FALSE);
+
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'Which team first used the "False 9" position in modern football?', v_medium_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, 'Roma (Luciano Spalletti with Totti)', TRUE),
+    (v_question_id, 'Barcelona (Guardiola with Messi)', FALSE),
+    (v_question_id, 'Manchester United (Ferguson with Rooney)', FALSE),
+    (v_question_id, 'Real Madrid (Del Bosque with Raúl)', FALSE);
+
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'Which formation was known as the "Magic Square"?', v_hard_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, 'Brazil''s 1982 midfield setup', TRUE),
+    (v_question_id, 'Ajax''s 1995 formation', FALSE),
+    (v_question_id, 'AC Milan''s 1989 system', FALSE),
+    (v_question_id, 'Real Madrid''s 1960 structure', FALSE);
+
     -- Quiz 10: Football Culture History
     INSERT INTO quizzes (quiz_title, quiz_description, category_id, created_by)
     VALUES ('Football Culture History', 'Explore the cultural impact of football through history', v_category_id, 1)
@@ -484,4 +586,38 @@ BEGIN
     (v_question_id, '1900s', FALSE),
     (v_question_id, '1920s', FALSE),
     (v_question_id, '1880s', FALSE);
+
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'Which club started the tradition of playing music after scoring a goal?', v_hard_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, 'Liverpool', TRUE),
+    (v_question_id, 'Manchester United', FALSE),
+    (v_question_id, 'Arsenal', FALSE),
+    (v_question_id, 'Chelsea', FALSE);
+
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'When was the first football fan club officially established?', v_hard_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, '1885', TRUE),
+    (v_question_id, '1901', FALSE),
+    (v_question_id, '1892', FALSE),
+    (v_question_id, '1878', FALSE);
+
+    INSERT INTO questions (quiz_id, question_text, difficulty_id)
+    VALUES (v_quiz_id, 'Which stadium first introduced executive boxes?', v_medium_difficulty)
+    RETURNING question_id INTO v_question_id;
+    
+    INSERT INTO answers (question_id, answer_text, is_correct)
+    VALUES 
+    (v_question_id, 'Goodison Park', TRUE),
+    (v_question_id, 'Old Trafford', FALSE),
+    (v_question_id, 'Highbury', FALSE),
+    (v_question_id, 'Anfield', FALSE);
+
 END $$;

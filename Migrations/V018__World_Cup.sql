@@ -4,7 +4,7 @@ INSERT INTO
 VALUES
     ('World Champions', 'Test your knowledge about World Cup winners', 6, 1),
     ('World Cup Records', 'Record breakers in World Cup history', 6, 1),
-    ('Greatest Finals', 'Most memorable World Cup finals', 6, 1),
+    ('Greatest World Cup Finals', 'Most memorable World Cup finals', 6, 1),
     ('World Cup Goals', 'Top scorers and memorable goals', 6, 1),
     ('Host Nations', 'Countries that hosted the World Cup', 6, 1),
     ('World Cup Legends', 'Legendary players in World Cup history', 6, 1),
@@ -719,7 +719,7 @@ VALUES
             FROM
                 quiz_id
         ),
-        'Who scored the most goals in a single World Cup tournament?',
+        'Which player has scored in the most World Cup finals?',
         2
     ),
     (
@@ -729,7 +729,7 @@ VALUES
             FROM
                 quiz_id
         ),
-        'Which player scored the fastest goal in World Cup history?',
+        'Who scored the fastest goal in World Cup history?',
         3
     ),
     (
@@ -739,7 +739,7 @@ VALUES
             FROM
                 quiz_id
         ),
-        'Who scored the "Goal of the Century" in 1986?',
+        'Who was the first player to score 100 World Cup goals?',
         2
     ),
     (
@@ -749,7 +749,7 @@ VALUES
             FROM
                 quiz_id
         ),
-        'Which player has scored in the most World Cup tournaments?',
+        'Which player has scored in the most different World Cup tournaments?',
         2
     ),
     (
@@ -759,7 +759,7 @@ VALUES
             FROM
                 quiz_id
         ),
-        'Who scored the winning goal in the 2014 World Cup final?',
+        'Who holds the record for most goals in a single World Cup match?',
         2
     );
 
@@ -771,7 +771,7 @@ WITH
         FROM
             questions
         WHERE
-            question_text = 'Who scored the most goals in a single World Cup tournament?'
+            question_text = 'Which player has scored in the most World Cup finals?'
         LIMIT
             1
     )
@@ -785,18 +785,8 @@ VALUES
             FROM
                 q1
         ),
-        'Just Fontaine',
+        'Pelé',
         TRUE
-    ),
-    (
-        (
-            SELECT
-                question_id
-            FROM
-                q1
-        ),
-        'Gerd Müller',
-        FALSE
     ),
     (
         (
@@ -815,7 +805,17 @@ VALUES
             FROM
                 q1
         ),
-        'Eusébio',
+        'Cristiano Ronaldo',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        'Lionel Messi',
         FALSE
     );
 
@@ -826,7 +826,7 @@ WITH
         FROM
             questions
         WHERE
-            question_text = 'Which player scored the fastest goal in World Cup history?'
+            question_text = 'Who scored the fastest goal in World Cup history?'
         LIMIT
             1
     )
@@ -840,7 +840,7 @@ VALUES
             FROM
                 q2
         ),
-        'Hakan Şükür',
+        'Just Fontaine (13 seconds in 1958)',
         TRUE
     ),
     (
@@ -850,7 +850,7 @@ VALUES
             FROM
                 q2
         ),
-        'Bryan Robson',
+        'Gerd Müller (15 seconds in 1970)',
         FALSE
     ),
     (
@@ -860,7 +860,7 @@ VALUES
             FROM
                 q2
         ),
-        'Celso Ayala',
+        'Miroslav Klose (11 seconds in 2014)',
         FALSE
     ),
     (
@@ -870,7 +870,7 @@ VALUES
             FROM
                 q2
         ),
-        'Bernard Lacombe',
+        'Eusébio (16 seconds in 1966)',
         FALSE
     );
 
@@ -881,7 +881,7 @@ WITH
         FROM
             questions
         WHERE
-            question_text = 'Who scored the "Goal of the Century" in 1986?'
+            question_text = 'Who was the first player to score 100 World Cup goals?'
         LIMIT
             1
     )
@@ -895,7 +895,7 @@ VALUES
             FROM
                 q3
         ),
-        'Diego Maradona',
+        'Miroslav Klose',
         TRUE
     ),
     (
@@ -905,7 +905,7 @@ VALUES
             FROM
                 q3
         ),
-        'Michel Platini',
+        'Cristiano Ronaldo',
         FALSE
     ),
     (
@@ -915,7 +915,7 @@ VALUES
             FROM
                 q3
         ),
-        'Gary Lineker',
+        'Lionel Messi',
         FALSE
     ),
     (
@@ -925,7 +925,7 @@ VALUES
             FROM
                 q3
         ),
-        'Careca',
+        'Zlatan Ibrahimovic',
         FALSE
     );
 
@@ -936,7 +936,7 @@ WITH
         FROM
             questions
         WHERE
-            question_text = 'Which player has scored in the most World Cup tournaments?'
+            question_text = 'Which player has scored in the most different World Cup tournaments?'
         LIMIT
             1
     )
@@ -991,7 +991,7 @@ WITH
         FROM
             questions
         WHERE
-            question_text = 'Who scored the winning goal in the 2014 World Cup final?'
+            question_text = 'Who holds the record for most goals in a single World Cup match?'
         LIMIT
             1
     )
@@ -1005,7 +1005,7 @@ VALUES
             FROM
                 q5
         ),
-        'Mario Götze',
+        'Oleg Salenko (5 goals)',
         TRUE
     ),
     (
@@ -1015,7 +1015,7 @@ VALUES
             FROM
                 q5
         ),
-        'Thomas Müller',
+        'Miroslav Klose (4 goals)',
         FALSE
     ),
     (
@@ -1025,7 +1025,7 @@ VALUES
             FROM
                 q5
         ),
-        'Miroslav Klose',
+        'Gary Lineker (3 goals)',
         FALSE
     ),
     (
@@ -1035,7 +1035,7 @@ VALUES
             FROM
                 q5
         ),
-        'André Schürrle',
+        'Gerd Müller (4 goals)',
         FALSE
     );
 
@@ -1785,7 +1785,7 @@ VALUES
             FROM
                 quiz_id
         ),
-        'Which team has participated in every World Cup tournament?',
+        'Which stadium has hosted the most World Cup finals?',
         2
     );
 
@@ -1952,6 +1952,116 @@ VALUES
                 q3
         ),
         'Nilton Santos Stadium',
+        FALSE
+    );
+
+WITH
+    q4 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Where was the first World Cup held?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Uruguay',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Brazil',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Argentina',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Italy',
+        FALSE
+    );
+
+WITH
+    q5 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which stadium has hosted the most World Cup finals?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Estadio Azteca',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Maracanã Stadium',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Olympiastadion Berlin',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Wembley Stadium',
         FALSE
     );
 
@@ -2294,5 +2404,1031 @@ VALUES
                 q5
         ),
         '1990',
+        FALSE
+    );
+
+-- Questions for "World Cup Managers" quiz
+WITH
+    quiz_id AS (
+        SELECT
+            quiz_id
+        FROM
+            quizzes
+        WHERE
+            quiz_title = 'World Cup Managers'
+        LIMIT
+            1
+    )
+INSERT INTO
+    questions (quiz_id, question_text, difficulty_id)
+VALUES
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Who is the only person to win the World Cup as both player and manager?',
+        2
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Which manager has won the most World Cup titles?',
+        2
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Who was the youngest manager to win a World Cup?',
+        3
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Which manager led Brazil to their first World Cup victory in 1958?',
+        2
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Who managed Germany to their 2014 World Cup victory?',
+        1
+    );
+
+-- Answers for "World Cup Managers" quiz questions
+WITH
+    q1 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Who is the only person to win the World Cup as both player and manager?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        'Franz Beckenbauer',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        'Mario Zagallo',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        'Didier Deschamps',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        'Carlos Alberto Parreira',
+        FALSE
+    );
+
+WITH
+    q2 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which manager has won the most World Cup titles?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'Vittorio Pozzo',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'Mario Zagallo',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'Franz Beckenbauer',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'Carlos Alberto Parreira',
+        FALSE
+    );
+
+WITH
+    q3 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Who was the youngest manager to win a World Cup?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Alberto Suppici',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Joachim Löw',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'César Luis Menotti',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Enzo Bearzot',
+        FALSE
+    );
+
+WITH
+    q4 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which manager led Brazil to their first World Cup victory in 1958?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Vicente Feola',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Mario Zagallo',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Aymoré Moreira',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'João Saldanha',
+        FALSE
+    );
+
+WITH
+    q5 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Who managed Germany to their 2014 World Cup victory?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Joachim Löw',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Jürgen Klinsmann',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Franz Beckenbauer',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Rudi Völler',
+        FALSE
+    );
+
+-- Questions for "Greatest Finals" quiz
+WITH
+    quiz_id AS (
+        SELECT
+            quiz_id
+        FROM
+            quizzes
+        WHERE
+            quiz_title = 'Greatest World Cup Finals'
+        LIMIT
+            1
+    )
+INSERT INTO
+    questions (quiz_id, question_text, difficulty_id)
+VALUES
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'What was the score in the 1950 final between Uruguay and Brazil?',
+        2
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Which World Cup final had the most goals scored?',
+        2
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Who won the first World Cup final to go to penalties?',
+        3
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'What was the score in the 2022 final before penalties?',
+        1
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Which team won three World Cup finals in 12 years (1958-1970)?',
+        2
+    );
+
+-- Answers for "Greatest Finals" quiz questions
+WITH
+    q1 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'What was the score in the 1950 final between Uruguay and Brazil?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        '2-1 to Uruguay',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        '3-1 to Brazil',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        '1-0 to Uruguay',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        '2-0 to Uruguay',
+        FALSE
+    );
+
+WITH
+    q2 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which World Cup final had the most goals scored?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'Brazil vs Sweden 1958 (5-2)',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'France vs Croatia 2018 (4-2)',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'Argentina vs France 2022 (3-3)',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'West Germany vs Hungary 1954 (3-2)',
+        FALSE
+    );
+
+WITH
+    q3 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Who won the first World Cup final to go to penalties?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Brazil (1994)',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Argentina (1986)',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Italy (1990)',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Germany (1982)',
+        FALSE
+    );
+
+WITH
+    q4 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'What was the score in the 2022 final before penalties?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        '3-3',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        '2-2',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        '4-4',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        '2-1',
+        FALSE
+    );
+
+WITH
+    q5 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which team won three World Cup finals in 12 years (1958-1970)?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Brazil',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Germany',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Italy',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Argentina',
+        FALSE
+    );
+
+-- Questions for "Host Nations" quiz
+WITH
+    quiz_id AS (
+        SELECT
+            quiz_id
+        FROM
+            quizzes
+        WHERE
+            quiz_title = 'Host Nations'
+        LIMIT
+            1
+    )
+INSERT INTO
+    questions (quiz_id, question_text, difficulty_id)
+VALUES
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Which country was the first to host the World Cup?',
+        2
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Which nation has hosted the World Cup twice?',
+        2
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Which was the first Asian country to host the World Cup?',
+        2
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Which African nation was the first to host the World Cup?',
+        2
+    ),
+    (
+        (
+            SELECT
+                quiz_id
+            FROM
+                quiz_id
+        ),
+        'Which country will host the 2026 World Cup along with USA and Canada?',
+        1
+    );
+
+-- Answers for "Host Nations" quiz questions
+WITH
+    q1 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which country was the first to host the World Cup?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        'Uruguay',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        'Brazil',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        'Italy',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q1
+        ),
+        'France',
+        FALSE
+    );
+
+WITH
+    q2 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which nation has hosted the World Cup twice?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'Mexico',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'England',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'Spain',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q2
+        ),
+        'Argentina',
+        FALSE
+    );
+
+WITH
+    q3 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which was the first Asian country to host the World Cup?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Japan/South Korea',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Qatar',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'China',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q3
+        ),
+        'Saudi Arabia',
+        FALSE
+    );
+
+WITH
+    q4 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which African nation was the first to host the World Cup?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'South Africa',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Morocco',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Egypt',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q4
+        ),
+        'Nigeria',
+        FALSE
+    );
+
+WITH
+    q5 AS (
+        SELECT
+            question_id
+        FROM
+            questions
+        WHERE
+            question_text = 'Which country will host the 2026 World Cup along with USA and Canada?'
+        LIMIT
+            1
+    )
+INSERT INTO
+    answers (question_id, answer_text, is_correct)
+VALUES
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Mexico',
+        TRUE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Brazil',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Argentina',
+        FALSE
+    ),
+    (
+        (
+            SELECT
+                question_id
+            FROM
+                q5
+        ),
+        'Colombia',
         FALSE
     );
