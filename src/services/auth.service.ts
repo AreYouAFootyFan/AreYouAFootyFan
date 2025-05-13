@@ -2,40 +2,42 @@ import * as jwt from "jsonwebtoken";
 import { UserService } from "./user.service";
 import { ErrorUtils } from "../utils/error.utils";
 import { Message } from "../utils/enums";
+import { 
+  GoogleTokenPayload, 
+  LoginResult, 
+  AuthenticatedUser 
+} from "../types/user.types";
 
-interface GoogleTokenPayload {
-  iss: string;
-  sub: string;
-  azp: string;
-  aud: string;
-  iat: number;
-  exp: number;
-  email?: string;
-  email_verified?: boolean;
-  name?: string;
-  picture?: string;
-  given_name?: string;
-  family_name?: string;
+interface GoogleTokenResponse {
+  id_token: string;
+  access_token: string;
+  expires_in: number;
+  refresh_token?: string;
+  scope: string;
+  token_type: string;
+}
+
+interface DecodedToken {
+  header: {
+    alg: string;
+    typ: string;
+    kid: string;
+  };
+  payload: GoogleTokenPayload;
+  signature: string;
 }
 
 export class AuthService {
-  private static GOOGLE_CERT_URL = "https://www.googleapis.com/oauth2/v3/certs";
-  private static GOOGLE_AUD = process.env.GOOGLE_CLIENT_ID;
-
-  private static googleCerts: { [key: string]: string } | null = null;
-  private static certExpiryTime: number = 0;
 
   static async decodeGoogleJWT(token: string): Promise<GoogleTokenPayload> {
     try {
-      const decoded = jwt.decode(token, { complete: true });
+      const decoded = jwt.decode(token, { complete: true }) as DecodedToken | null;
 
       if (!decoded || typeof decoded !== "object" || !decoded.payload) {
         throw ErrorUtils.unauthorized(Message.Error.Token.INVALID_FORMAT);
       }
 
-      const payload = decoded.payload as GoogleTokenPayload;
-
-      return payload;
+      return decoded.payload;
     } catch (error) {
       if (error instanceof Error) {
         throw ErrorUtils.unauthorized(
@@ -68,7 +70,7 @@ export class AuthService {
         body: params.toString(),
       });
 
-      const data = await response.json();
+      const data = await response.json() as GoogleTokenResponse;
 
       return data.id_token;
     } catch (error) {
@@ -81,9 +83,7 @@ export class AuthService {
     }
   }
 
-  static async loginWithGoogle(
-    googleCode: string
-  ): Promise<{ token: string; user: any; requiresUsername: boolean }> {
+  static async loginWithGoogle(googleCode: string): Promise<LoginResult> {
     const googleJwt = await this.getGoogleJWT(googleCode);
 
     const payload = await this.decodeGoogleJWT(googleJwt);
@@ -106,9 +106,7 @@ export class AuthService {
     };
   }
 
-  static async getUserFromToken(
-    token: string
-  ): Promise<{ id: number; role: string }> {
+  static async getUserFromToken(token: string): Promise<AuthenticatedUser> {
     try {
       const payload = await this.decodeGoogleJWT(token);
 

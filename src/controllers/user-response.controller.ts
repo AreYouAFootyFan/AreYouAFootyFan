@@ -68,9 +68,7 @@ export class UserResponseController {
         answer_id: parsedAnswerId,
       };
 
-      const userResponse = await UserResponseService.submitResponse(
-        data
-      );
+      const userResponse = await UserResponseService.submitResponse(data);
 
       response.json(userResponse);
     } catch (error) {

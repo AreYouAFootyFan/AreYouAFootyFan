@@ -178,15 +178,8 @@ export class QuestionController {
         throw ErrorUtils.badRequest(Message.Error.Question.INVALID_ID);
       }
 
-      const question = await QuestionService.getQuestionById(id);
-
-      const validation = await QuestionService.validateQuestionAnswers(id);
-
-      response.json({
-        question,
-        validation,
-        message: Message.Success.Question.VALIDATE,
-      });
+      const validationResult = await QuestionService.validateQuestion(id);
+      response.json(validationResult);
     } catch (error) {
       next(error);
     }
