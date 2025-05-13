@@ -141,8 +141,6 @@ class UserProfile extends HTMLElement {
 
         });
 
-        console.log(categories);
-
         topCategoriesCard.setAttribute("data-top-categories", 
             JSON.stringify(categories)
         );

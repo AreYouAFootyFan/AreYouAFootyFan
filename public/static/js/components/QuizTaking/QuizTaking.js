@@ -23,19 +23,11 @@ class QuizTaking extends HTMLElement {
     this.render();
     this.init();
 
-    document.addEventListener(
-      "visibilitychange",
-      this.handleVisibilityChange.bind(this)
-    );
     window.addEventListener("beforeunload", this.cleanup.bind(this));
   }
 
   disconnectedCallback() {
     this.cleanup();
-    document.removeEventListener(
-      "visibilitychange",
-      this.handleVisibilityChange
-    );
   }
 
   async loadStyles() {

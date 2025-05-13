@@ -101,10 +101,10 @@ class QuizHome extends HTMLElement {
     const loadingParagraph = document.createElement("p");
     loadingParagraph.className = "loading";
 
-    const spinner = document.createElement("span");
+    const spinner = document.createElement("section");
     spinner.className = "loading-spinner";
 
-    const loadingText = document.createElement("span");
+    const loadingText = document.createElement("section");
     loadingText.textContent = "Loading quizzes...";
 
     loadingParagraph.appendChild(spinner);
