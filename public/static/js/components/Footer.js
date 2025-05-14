@@ -1,4 +1,5 @@
 import { StyleLoader } from "../utils/cssLoader.js";
+import { clearDOM } from "../utils/domHelpers.js";
 class FootballQuizFooter extends HTMLElement {
   constructor() {
     super();
@@ -20,9 +21,7 @@ class FootballQuizFooter extends HTMLElement {
   }
 
   render() {
-    while (this.shadowRoot.firstChild) {
-      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-    }
+    clearDOM(this.shadowRoot);
     
     const footer = document.createElement('footer');
     

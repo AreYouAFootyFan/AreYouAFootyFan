@@ -1,6 +1,3 @@
-/**
- * Base error messages used throughout the application
- */
 import { Length } from "../../";
 
 export enum Base {
@@ -14,25 +11,16 @@ export enum Base {
   INVALID_LIMIT = "Invalid limit parameter",
 }
 
-/**
- * API-related error messages
- */
 export enum Api {
   SOMETHING_WENT_WRONG = "Something went wrong",
   DUPLICATE_RECORD = "A record with this information already exists",
   ENDPOINT_NOT_FOUND = "Cannot {method} {path}",
 }
 
-/**
- * Auth-related error messages
- */
 export enum Auth {
   GOOGLE_CODE_REQUIRED = "Google code is required",
 }
 
-/**
- * Quiz-related error messages
- */
 export enum Quiz {
   NOT_FOUND = "Quiz not found",
   INSUFFICIENT_QUESTIONS = "Quiz does not have enough questions (minimum 5 required)",
@@ -50,9 +38,6 @@ export enum Quiz {
   DESCRIPTION_TOO_LONG = `Quiz description cannot exceed ${Length.Max.QUIZ_DESCRIPTION} characters`,
 }
 
-/**
- * Question-related error messages
- */
 export enum Question {
   NOT_FOUND = "Question not found",
   ID_REQUIRED = "Question ID is required",
@@ -71,9 +56,6 @@ export enum Question {
   DELETE_SUCCESS = "Question deleted successfully",
 }
 
-/**
- * Answer-related error messages
- */
 export enum Answer {
   NOT_FOUND = "Answer not found",
   TEXT_REQUIRED = "Answer text is required",
@@ -90,9 +72,6 @@ export enum Answer {
   CANNOT_DELETE_ONLY_CORRECT = "Cannot delete the only correct answer. Mark another answer as correct first.",
 }
 
-/**
- * Quiz attempt-related error messages
- */
 export enum Attempt {
   NOT_FOUND = "Quiz attempt not found",
   COMPLETED = "Quiz attempt is already completed",
@@ -101,9 +80,6 @@ export enum Attempt {
   ID_REQUIRED = "Attempt ID is required",
 }
 
-/**
- * Category-related error messages
- */
 export enum Category {
   NOT_FOUND = "Category not found",
   INVALID = "Invalid category ID",
@@ -119,25 +95,16 @@ export enum Category {
   USED_BY_QUIZZES = "Cannot delete category as it is used by existing quizzes",
 }
 
-/**
- * Permission-related error messages
- */
 export enum Permission {
   USERNAME_REQUIRED = "Username is required to access this resource",
   NO_FIELD_TO_UPDATE = "At least one field to update is required",
 }
 
-/**
- * Player and manager role-specific error messages
- */
 export enum Role {
   FORBIDDEN_PLAYER = "Only Players can submit responses",
   FORBIDDEN_MANAGER = "Only Managers can create quizzes",
 }
 
-/**
- * Token-related error messages
- */
 export enum Token {
   INVALID_FORMAT = "Invalid token format",
   INVALID_TOKEN = "Invalid Google token",
@@ -145,18 +112,12 @@ export enum Token {
   EXPIRED = "Invalid or expired token",
 }
 
-/**
- * Response-related error messages
- */
 export enum Response {
   NOT_FOUND = "Response not found",
   UPDATE_FAILED = "Failed to update response",
   INVALID_ID = "Invalid response ID",
 }
 
-/**
- * User-related error messages
- */
 export enum User {
   NOT_FOUND = "User not found",
   GOOGLE_ID_EXISTS = "User with this Google ID already exists",
@@ -166,23 +127,15 @@ export enum User {
   USERNAME_REQUIRED = "Username is required",
   USERNAME_TOO_SHORT = `Username must be at least ${Length.Min.USERNAME} characters`,
   USERNAME_TOO_LONG = `Username cannot exceed ${Length.Max.USERNAME} characters`,
-  PASSWORD_TOO_SHORT = `Password must be at least ${Length.Min.PASSWORD} characters`,
-  PASSWORD_TOO_LONG = `Password cannot exceed ${Length.Max.PASSWORD} characters`,
   INVALID_ID = "Invalid user ID",
   INVALID_ROLE_ID = "Invalid role ID",
 }
 
-/**
- * Leaderboard-related error messages
- */
 export enum Leaderboard {
   FETCH_RANK_FAILED = "Failed to fetch user rank",
   FETCH_TOP_FAILED = "Failed to fetch top players",
 }
 
-/**
- * Difficulty-related error messages
- */
 export enum Difficulty {
   INVALID_ID = "Invalid difficulty level ID",
   LEVEL_REQUIRED = "Difficulty level name is required",

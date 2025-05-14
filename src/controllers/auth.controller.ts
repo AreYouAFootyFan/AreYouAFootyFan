@@ -3,6 +3,7 @@ import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";
 import { ErrorUtils } from "../utils/error.utils";
 import { Message } from "../utils/enums";
+import { UsernameStatus } from "../types/user.types";
 
 export class AuthController {
   static async googleLogin(
@@ -41,7 +42,8 @@ export class AuthController {
 
       const hasUsername = await UserService.isUsernameSet(userId);
 
-      response.json({ requiresUsername: !hasUsername });
+      const result: UsernameStatus = { requiresUsername: !hasUsername };
+      response.json(result);
     } catch (error) {
       next(error);
     }

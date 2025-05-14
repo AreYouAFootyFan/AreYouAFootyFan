@@ -1,3 +1,5 @@
+import { navigator } from "../index.js";
+
 class AuthService {
   constructor() {
     this.token = localStorage.getItem("authToken");
@@ -55,7 +57,6 @@ class AuthService {
         user: data.user,
       };
     } catch (error) {
-      console.error("Login error:", error);
       throw error;
     }
   }
@@ -78,7 +79,6 @@ class AuthService {
 
       return user;
     } catch (error) {
-      console.error("Set username error:", error);
       throw error;
     }
   }
@@ -88,7 +88,7 @@ class AuthService {
     this.user = null;
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
-    window.location.href = "/";
+    navigator("/");
   }
 
   async refreshUserData() {
@@ -113,7 +113,6 @@ class AuthService {
 
       return user;
     } catch (error) {
-      console.error("Refresh user data error:", error);
       throw error;
     }
   }

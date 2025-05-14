@@ -1,5 +1,7 @@
 import { StyleLoader } from "../utils/cssLoader.js";
 import { Role } from "../enums/users.js";
+import { clearDOM } from "../utils/domHelpers.js";
+import { navigator } from "../index.js";
 
 class FootballQuizHeader extends HTMLElement {
   constructor() {
@@ -30,9 +32,7 @@ class FootballQuizHeader extends HTMLElement {
   }
 
   render() {
-    while (this.shadowRoot.firstChild) {
-      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-    }
+    clearDOM(this.shadowRoot);
 
     const header = document.createElement("header");
 
@@ -102,8 +102,10 @@ class FootballQuizHeader extends HTMLElement {
     profileButton.type = "button";
     profileButton.className = "logout-btn";
     profileButton.textContent = "Profile";
-    profileButton.addEventListener("click", () => {
-      window.location.href = "/profile";
+    profileButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      // history.pushState({}, "", "/profile");
+      navigator("/profile");
     });
     profileItem.appendChild(profileButton);
 
@@ -143,6 +145,27 @@ class FootballQuizHeader extends HTMLElement {
 
     homeItem.appendChild(homeLink);
 
+    // const profileItem = document.createElement("li");
+    // profileItem.className = "nav-item";
+
+    // const profile = document.createElement("a");
+    // profile.href = "/profile";
+    // profile.className = "nav-link";
+    // profile.dataset.link = "";
+    // profile.textContent = "Profile";
+    // profileItem.appendChild(profile);
+
+    const gameModeItem = document.createElement("li");
+    gameModeItem.className = "nav-item";
+
+    const gameModeLink = document.createElement("a");
+    gameModeLink.href = "/game-modes";
+    gameModeLink.className = "nav-link";
+    gameModeLink.dataset.link = "";
+    gameModeLink.textContent = "Play";
+
+    gameModeItem.appendChild(gameModeLink);
+
     const adminItem = document.createElement("li");
     adminItem.className = "nav-item admin-item hidden";
 
@@ -155,6 +178,8 @@ class FootballQuizHeader extends HTMLElement {
     adminItem.appendChild(adminLink);
 
     navList.appendChild(homeItem);
+    // navList.appendChild(profileItem);
+    navList.appendChild(gameModeItem);
     navList.appendChild(adminItem);
     navInner.appendChild(navList);
     headerNav.appendChild(navInner);
@@ -228,7 +253,6 @@ class FootballQuizHeader extends HTMLElement {
     const authService = window.authService;
 
     if (!authService) {
-      console.warn("Auth service not available");
       return;
     }
 
@@ -271,7 +295,7 @@ class FootballQuizHeader extends HTMLElement {
     } else {
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
-      window.location.href = "/";
+      navigator("/");
     }
   }
 

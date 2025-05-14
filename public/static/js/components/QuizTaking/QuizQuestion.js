@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class QuizQuestion extends HTMLElement {
     constructor() {
         super();
@@ -56,14 +57,14 @@ class QuizQuestion extends HTMLElement {
 
     render() {
         if (!this._question) {
-            this.clearShadowRoot();
+            clearDOM(this.shadowRoot);
             const loadingMessage = document.createElement('p');
             loadingMessage.textContent = 'Loading question...';
             this.shadowRoot.appendChild(loadingMessage);
             return;
         }
 
-        this.clearShadowRoot();
+        clearDOM(this.shadowRoot);
 
         const questionIndex = parseInt(this.getAttribute('question-index') || '0');
         const totalQuestions = parseInt(this.getAttribute('total-questions') || '0');
@@ -137,12 +138,12 @@ class QuizQuestion extends HTMLElement {
                 answerOption.disabled = true;
             }
 
-            const optionLetter = document.createElement('span');
+            const optionLetter = document.createElement('section');
             optionLetter.classList.add('option-letter');
             optionLetter.textContent = String.fromCharCode(65 + index);
             answerOption.appendChild(optionLetter);
 
-            const optionText = document.createElement('span');
+            const optionText = document.createElement('section');
             optionText.classList.add('option-text');
             optionText.textContent = answer.answer_text;
             answerOption.appendChild(optionText);
@@ -222,12 +223,6 @@ class QuizQuestion extends HTMLElement {
         section.appendChild(valueElement);
 
         return section;
-    }
-
-    clearShadowRoot() {
-        while (this.shadowRoot.firstChild) {
-            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-        }
     }
 
     setupEventListeners() {

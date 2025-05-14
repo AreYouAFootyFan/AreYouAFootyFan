@@ -3,14 +3,12 @@ import { AuthService } from "../services/auth.service";
 import { ErrorUtils } from "../utils/error.utils";
 import { UserService } from "../services/user.service";
 import { Message, User } from "../utils/enums";
+import { AuthenticatedUser } from "../types/user.types";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        id: number;
-        role: string;
-      };
+      user?: AuthenticatedUser;
     }
   }
 }

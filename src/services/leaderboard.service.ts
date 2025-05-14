@@ -11,28 +11,20 @@ export interface LeaderboardEntry {
 }
 
 export class LeaderboardService {
-  /**
-   * Get the full leaderboard (top 10 users by points)
-   */
   static async getLeaderboard(): Promise<LeaderboardEntry[]> {
     try {
-      // This query uses the leaderboard view that's already defined in the database
       const result = await db.query("SELECT * FROM leaderboard");
 
       return result.rows.map((row, index) => ({
         ...row,
         rank: index + 1,
-        quizzes_taken: 0, // We'll update this below
+        quizzes_taken: 0,
       }));
     } catch (error) {
-      console.error("Error fetching leaderboard:", error);
       throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
     }
   }
 
-  /**
-   * Get the rank of a specific user
-   */
   static async getUserRank(
     userId: number
   ): Promise<{ rank: number; total_points: number }> {
@@ -54,14 +46,10 @@ export class LeaderboardService {
         total_points: parseInt(points.rows[0].get_total_points),
       };
     } catch (error) {
-      console.error("Error fetching user rank:", error);
       throw ErrorUtils.internal("Failed to fetch user rank");
     }
   }
 
-  /**
-   * Get the top N players (with additional statistics)
-   */
   static async getTopPlayers(
     limit: number = Config.Value.DEFAULT_LEADERBOARD_LIMIT
   ): Promise<LeaderboardEntry[]> {
@@ -85,7 +73,6 @@ export class LeaderboardService {
         quizzes_taken: parseInt(row.quizzes_taken),
       }));
     } catch (error) {
-      console.error("Error fetching top players:", error);
       throw ErrorUtils.internal("Failed to fetch top players");
     }
   }

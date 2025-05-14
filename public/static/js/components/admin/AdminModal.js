@@ -1,6 +1,12 @@
-import { StyleLoader } from "../../utils/cssLoader.js";
+import { StyleLoaderStatic } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 
 class AdminModal extends HTMLElement {
+  static {
+    this.styleSheet = null;
+    this.stylesLoaded = this.loadStylesOnce();
+  }
+
   static get observedAttributes() {
     return ["title"];
   }
@@ -13,7 +19,8 @@ class AdminModal extends HTMLElement {
   }
 
   async connectedCallback() {
-    await this.loadStyles();
+    await AdminModal.stylesLoaded;
+    this.shadowRoot.adoptedStyleSheets = AdminModal.styleSheet;
     this.render();
     this.setupEventListeners();
   }
@@ -24,19 +31,23 @@ class AdminModal extends HTMLElement {
     }
   }
 
-  async loadStyles() {
-    await StyleLoader(
-      this.shadowRoot,
-      "./static/css/styles.css",
-      "./static/css/admin/shared.css",
-      "./static/css/admin/adminModal.css"
-    );
+  static async loadStylesOnce() {
+    try {
+      if (!this.styleSheet) {
+        this.styleSheet = await StyleLoaderStatic(
+          "./static/css/styles.css",
+          "./static/css/admin/shared.css",
+          "./static/css/admin/adminModal.css"
+        );
+      }
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   render() {
-    while (this.shadowRoot.firstChild) {
-      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-    }
+    clearDOM(this.shadowRoot)
 
     const title = this.getAttribute("title") || "Modal";
 

@@ -1,5 +1,8 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
+import { clearDOM } from "../../utils/domHelpers.js";
+import "../../components/widgets/LiveScores.js";
+import { navigator } from "../../index.js";
 
 class QuizHome extends HTMLElement {
   constructor() {
@@ -18,13 +21,42 @@ class QuizHome extends HTMLElement {
     this.setupEventListeners();
     await this.loadData();
     this.checkUserRole();
+
+    // Create and append the live scores widget
+    this.initializeLiveScores();
+  }
+
+  disconnectedCallback() {
+    // Remove the live scores widget when navigating away
+    const liveScores = document.querySelector("live-scores");
+    if (liveScores) {
+      liveScores.remove();
+    }
+  }
+
+  initializeLiveScores() {
+    // Remove any existing live scores widget
+    const existingWidget = document.querySelector("live-scores");
+    if (existingWidget) {
+      existingWidget.remove();
+    }
+
+    // Create and append the new widget
+    const liveScores = document.createElement("live-scores");
+    document.body.appendChild(liveScores);
+
+    // Ensure the widget is visible in the DOM
+    liveScores.style.display = "block";
+    liveScores.style.visibility = "visible";
+    liveScores.style.opacity = "1";
   }
 
   async loadStyles() {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
-      "./static/css/home/home.css"
+      "./static/css/home/home.css",
+      "./static/css/widgets/liveScores.css"
     );
   }
 
@@ -37,7 +69,6 @@ class QuizHome extends HTMLElement {
   buildMainContent() {
     const main = document.createElement("main");
 
-    // Hero Section
     const hero = document.createElement("section");
     hero.className = "hero";
 
@@ -58,7 +89,6 @@ class QuizHome extends HTMLElement {
     hero.appendChild(heroContent);
     main.appendChild(hero);
 
-    // Notification
     const notification = document.createElement("section");
     notification.className = "notification";
     notification.id = "quiz-maker-note";
@@ -75,7 +105,6 @@ class QuizHome extends HTMLElement {
     notification.appendChild(noteMessage);
     main.appendChild(notification);
 
-    // Content Section
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
 
@@ -84,7 +113,7 @@ class QuizHome extends HTMLElement {
 
     const sectionTitle = document.createElement("h2");
     sectionTitle.className = "section-title";
-    sectionTitle.textContent = "Available Quizzes";
+    sectionTitle.textContent = "Quizzes for you";
 
     const filter = document.createElement("quiz-category-filter");
     filter.id = "category-filter";
@@ -93,7 +122,6 @@ class QuizHome extends HTMLElement {
     sectionHeader.appendChild(filter);
     contentSection.appendChild(sectionHeader);
 
-    // Quiz Grid
     const quizGrid = document.createElement("section");
     quizGrid.id = "quiz-grid";
     quizGrid.className = "quiz-grid";
@@ -101,10 +129,10 @@ class QuizHome extends HTMLElement {
     const loadingParagraph = document.createElement("p");
     loadingParagraph.className = "loading";
 
-    const spinner = document.createElement("span");
+    const spinner = document.createElement("section");
     spinner.className = "loading-spinner";
 
-    const loadingText = document.createElement("span");
+    const loadingText = document.createElement("section");
     loadingText.textContent = "Loading quizzes...";
 
     loadingParagraph.appendChild(spinner);
@@ -114,12 +142,10 @@ class QuizHome extends HTMLElement {
 
     main.appendChild(contentSection);
 
-    // Leaderboard
     const leaderboard = document.createElement("quiz-leaderboard");
     leaderboard.id = "leaderboard";
     main.appendChild(leaderboard);
 
-    // Modal
     const modal = document.createElement("section");
     modal.id = "quiz-master-modal";
     modal.className = "modal";
@@ -147,7 +173,7 @@ class QuizHome extends HTMLElement {
     adminLink.href = "/quiz";
     adminLink.className = "primary-btn";
     adminLink.dataset.link = "";
-    adminLink.textContent = 'Continue';
+    adminLink.textContent = "Continue";
 
     modalFooter.appendChild(cancelButton);
     modalFooter.appendChild(adminLink);
@@ -223,6 +249,13 @@ class QuizHome extends HTMLElement {
     try {
       const dataPromises = [];
 
+      // Verify football service is available
+      if (!window.footballService) {
+        console.warn(
+          "Football service not available. Live scores widget may not work."
+        );
+      }
+
       if (window.categoryService) {
         dataPromises.push(
           window.categoryService
@@ -232,7 +265,7 @@ class QuizHome extends HTMLElement {
               this.populateCategoryFilter();
             })
             .catch((error) => {
-              console.error("Error loading categories:", error);
+              this.showNotification("Error loading categories:", "error");
             })
         );
       }
@@ -241,12 +274,26 @@ class QuizHome extends HTMLElement {
         dataPromises.push(
           window.quizService
             .getValidQuizzes()
-            .then((quizzes) => {
-              this.quizzes = quizzes;
-              this.renderQuizzes();
+            .then((response) => {
+              // Handle paginated response
+              if (response && response.data && Array.isArray(response.data)) {
+                this.quizzes = response.data;
+                this.renderQuizzes();
+              } else {
+                throw new Error("Invalid quiz data format");
+              }
             })
             .catch((error) => {
-              console.error("Error loading quizzes:", error);
+              this.showNotification("Error loading quizzes:", "error");
+              const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
+              if (quizGrid) {
+                quizGrid.innerHTML = "";
+                const errorMessage = document.createElement("p");
+                errorMessage.className = "error-message";
+                errorMessage.textContent =
+                  "Error loading quizzes. Please try again later.";
+                quizGrid.appendChild(errorMessage);
+              }
             })
         );
       }
@@ -260,7 +307,7 @@ class QuizHome extends HTMLElement {
 
       await Promise.all(dataPromises);
     } catch (error) {
-      console.error("Error loading data:", error);
+      this.showNotification("Error loading data:", "error");
     }
   }
 
@@ -298,6 +345,11 @@ class QuizHome extends HTMLElement {
       });
       quizGrid.appendChild(quizCard);
     });
+    const buttonContainer = document.createElement("article");
+
+    buttonContainer.className = "quiz-grid-button-container";
+
+    quizGrid.appendChild(buttonContainer);
   }
 
   checkUserRole() {
@@ -319,11 +371,11 @@ class QuizHome extends HTMLElement {
     if (!authService) return;
 
     const isQuizMaster = authService.isQuizMaster && authService.isQuizMaster();
-    localStorage.setItem("selected_quiz_id", quizId);
+    localStorage.setItem("selected_quiz_to_play_id", quizId);
     if (isQuizMaster) {
       this.showQuizMasterModal();
     } else {
-      window.location.href = "/quiz";
+      navigator("/quiz");
     }
   }
 
@@ -339,6 +391,23 @@ class QuizHome extends HTMLElement {
     if (modal) {
       modal.classList.remove("visible");
     }
+  }
+
+  showNotification(message, type = "success") {
+    const notification = this.shadowRoot.querySelector("#notification");
+    if (!notification) return;
+
+    while (notification.firstChild) {
+      notification.removeChild(notification.firstChild);
+    }
+
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.classList.add("visible");
+
+    setTimeout(() => {
+      notification.classList.remove("visible");
+    }, 3000);
   }
 }
 

@@ -1,7 +1,3 @@
-/**
- * Enum for HTTP status codes.
- * Makes code more readable when setting response status.
- */
 export enum Status {
   OK = 200,
   CREATED = 201,

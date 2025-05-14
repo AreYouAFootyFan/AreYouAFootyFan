@@ -5,7 +5,7 @@ class QuizTaking extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
 
-    this.quizId = localStorage.getItem("selected_quiz_id");
+    this.quizId = localStorage.getItem("selected_quiz_to_play_id");
     this.quizData = null;
     this.attempt = null;
     this.currentQuestionIndex = 0;
@@ -23,19 +23,11 @@ class QuizTaking extends HTMLElement {
     this.render();
     this.init();
 
-    document.addEventListener(
-      "visibilitychange",
-      this.handleVisibilityChange.bind(this)
-    );
     window.addEventListener("beforeunload", this.cleanup.bind(this));
   }
 
   disconnectedCallback() {
     this.cleanup();
-    document.removeEventListener(
-      "visibilitychange",
-      this.handleVisibilityChange
-    );
   }
 
   async loadStyles() {
@@ -55,7 +47,7 @@ class QuizTaking extends HTMLElement {
     const loadingContainer = document.createElement("section");
     loadingContainer.classList.add("loading-container");
 
-    const loadingSpinner = document.createElement("span");
+    const loadingSpinner = document.createElement("section");
     loadingSpinner.classList.add("loading-spinner");
 
     const loadingText = document.createElement("p");
@@ -73,7 +65,7 @@ class QuizTaking extends HTMLElement {
     const authService = window.authService;
 
     if (!authService || !authService.isAuthenticated()) {
-      window.location.href = "/";
+      navigator("/");
       return;
     }
 
@@ -93,7 +85,6 @@ class QuizTaking extends HTMLElement {
     }
   }
 
-
   async startQuiz(quizId) {
     try {
       const quizAttemptService = window.quizAttemptService;
@@ -105,7 +96,7 @@ class QuizTaking extends HTMLElement {
         const loadingContainer = document.createElement("section");
         loadingContainer.classList.add("loading-container");
 
-        const loadingSpinner = document.createElement("span");
+        const loadingSpinner = document.createElement("section");
         loadingSpinner.classList.add("loading-spinner");
 
         const loadingText = document.createElement("p");
@@ -126,7 +117,6 @@ class QuizTaking extends HTMLElement {
 
       this.loadQuestion(0);
     } catch (error) {
-      console.error("Error starting quiz:", error);
       this.showError(
         `Failed to start quiz: ${error.message || "Unknown error"}`
       );
@@ -225,7 +215,7 @@ class QuizTaking extends HTMLElement {
       const userResponseService = window.userResponseService;
 
       if (!userResponseService && !window.quizAttemptService) {
-        console.warn("Response services not available.");
+        this.showError("Response services not available.");
         return;
       }
 
@@ -245,7 +235,7 @@ class QuizTaking extends HTMLElement {
           });
         }
       } catch (e) {
-        console.warn("API call failed.", e);
+        this.showError("API call failed.");
         return;
       }
 
@@ -258,8 +248,6 @@ class QuizTaking extends HTMLElement {
           this.currentQuestionIndex === this.quizData.totalQuestions - 1
       );
     } catch (error) {
-      console.error("Error submitting answer:", error);
-
       const questionElement = this.shadowRoot.querySelector("quiz-question");
       if (questionElement) {
         questionElement.setAttribute("submitting", "false");
@@ -352,7 +340,7 @@ class QuizTaking extends HTMLElement {
       this.submitAnswer();
     } else {
       await this.submitNoAnswer();
-      
+
       questionElement.setAttribute("time-up", "true");
 
       this.currentQuestion.answers.forEach((answer) => {
@@ -386,7 +374,7 @@ class QuizTaking extends HTMLElement {
         questionElement.setAttribute("submitting", "true");
       }
       if (!window.quizAttemptService) {
-        console.warn("User response service not available.");
+        this.showError("User response service not available.");
         return;
       }
       const response = await window.quizAttemptService.submitNoAnswer({
@@ -400,9 +388,8 @@ class QuizTaking extends HTMLElement {
       questionElement.setAttribute("feedback-points", response.points_earned);
       questionElement.setAttribute("score", this.score);
       questionElement.setAttribute("no-answer", "true");
-
     } catch (error) {
-      console.error("Error submitting no-answer:", error);
+      this.showError("Error submitting no-answer:", error);
     }
   }
 
@@ -411,7 +398,7 @@ class QuizTaking extends HTMLElement {
       const quizAttemptService = window.quizAttemptService;
 
       if (!quizAttemptService) {
-        console.warn("Quiz attempt service not available.");
+        this.showError("Quiz attempt service not available.");
         return;
       }
 
@@ -422,7 +409,7 @@ class QuizTaking extends HTMLElement {
         );
         this.showQuizResults(summary);
       } catch (e) {
-        console.warn("API call failed.", e);
+        this.showError("API call failed.");
         throw e;
       }
 
@@ -438,7 +425,6 @@ class QuizTaking extends HTMLElement {
 
       this.isQuizCompleted = true;
     } catch (error) {
-      console.error("Error completing quiz:", error);
       this.showError(
         `Failed to complete quiz: ${error.message || "Unknown error"}`
       );

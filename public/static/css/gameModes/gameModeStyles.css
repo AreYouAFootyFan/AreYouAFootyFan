@@ -1,0 +1,127 @@
+.game-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+  .game-mode-card {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--gray-100);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .hero {
+    padding: 1rem;
+    background-color: var(--gray-50); 
+    color: var(--gray-900);         
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  
+  .hero-content {
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .hero-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color:var(--gray-800)
+  }
+  
+ 
+  
+  .mode-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 10rem;
+    height: 10rem;
+    background-color: var(--gray-50);
+    border-radius: 50%;
+  }
+  
+  .mode-content {
+    flex: 1;
+  }
+  
+  .mode-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .mode-description {
+    font-size: 0.875rem;
+    color: var(--gray-700);
+    margin-bottom: 1.5rem;
+  }
+  
+  .mode-play-button {
+    background-color:var(--info);
+    color: white;
+    border: none;
+    border-radius: 60px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    align-self: flex-start;
+  }
+  
+  .mode-play-button:hover {
+    background-color: var(--primary-dark);
+  }
+
+  /* Pagination Styles */
+  .pagination {
+    margin-top: 2rem;
+    padding: 1rem 0;
+  }
+
+  .pagination-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pagination-button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color, #dee2e6);
+    background: var(--surface-color, #ffffff);
+    color: var(--text-color, #333);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 0.875rem;
+  }
+
+  .pagination-button:hover:not([disabled]) {
+    background: var(--hover-color, #f8f9fa);
+    border-color: var(--hover-border-color, #cbd3da);
+  }
+
+  .pagination-button.active {
+    background: var(--primary-color, #007bff);
+    color: white;
+    border-color: var(--primary-color, #007bff);
+  }
+
+  .pagination-button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }

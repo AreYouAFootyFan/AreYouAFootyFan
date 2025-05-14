@@ -6,6 +6,8 @@ import "./AdminCard.js";
 import "./AdminNotification.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
+import { clearDOM } from "../../utils/domHelpers.js";
+import { navigator } from "../../index.js";
 
 class AdminDashboard extends HTMLElement {
   constructor() {
@@ -15,6 +17,7 @@ class AdminDashboard extends HTMLElement {
     this.quizzes = [];
     this.categories = [];
     this.viewMode = "dashboard";
+    this.currentPage = 1;
 
     this.changeView = this.changeView.bind(this);
     this.showCategoryModal = this.showCategoryModal.bind(this);
@@ -23,6 +26,19 @@ class AdminDashboard extends HTMLElement {
     this.confirmDeleteQuiz = this.confirmDeleteQuiz.bind(this);
 
     this.styleSheet = new CSSStyleSheet();
+    this.styleSheet.replaceSync(`
+      .table-wrapper {
+        margin-bottom: 2rem;
+        width: 100%;
+      }
+
+      .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+        width: 100%;
+      }
+    `);
   }
 
   async connectedCallback() {
@@ -43,53 +59,40 @@ class AdminDashboard extends HTMLElement {
   }
 
   render() {
-    // Clear existing content
-    while (this.shadowRoot.firstChild) {
-      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-    }
+    clearDOM(this.shadowRoot);
 
-    // Create main container
     const main = document.createElement("main");
     main.className = "admin-page";
 
-    // Create admin container
     const adminContainer = document.createElement("section");
     adminContainer.className = "admin-container";
 
-    // Create sidebar
     const sidebar = document.createElement("admin-sidebar");
     sidebar.setAttribute("active-view", this.viewMode);
 
     adminContainer.appendChild(sidebar);
 
-    // Create content section
     const adminContent = document.createElement("section");
     adminContent.className = "admin-content";
 
-    // Dashboard View
     const dashboardView = this.createDashboardView();
     adminContent.appendChild(dashboardView);
 
-    // Quizzes View
     const quizzesView = this.createQuizzesView();
     adminContent.appendChild(quizzesView);
 
-    // Categories View
     const categoriesView = this.createCategoriesView();
     adminContent.appendChild(categoriesView);
 
     adminContainer.appendChild(adminContent);
     main.appendChild(adminContainer);
 
-    // Create modals
     const categoryModal = this.createCategoryModal();
     const confirmModal = this.createConfirmModal();
 
-    // Create notification toast
     const notification = document.createElement("admin-notification");
     notification.id = "notification-toast";
 
-    // Add everything to shadow DOM
     this.shadowRoot.appendChild(main);
     this.shadowRoot.appendChild(categoryModal);
     this.shadowRoot.appendChild(confirmModal);
@@ -103,7 +106,6 @@ class AdminDashboard extends HTMLElement {
       this.viewMode === "dashboard" ? "" : "hidden"
     }`;
 
-    // Dashboard Header
     const dashboardHeader = document.createElement("header");
     dashboardHeader.className = "admin-header";
 
@@ -125,16 +127,13 @@ class AdminDashboard extends HTMLElement {
 
     dashboardView.appendChild(dashboardHeader);
 
-    // Dashboard Stats
     const adminStats = document.createElement("admin-stats");
     adminStats.id = "admin-stats";
     dashboardView.appendChild(adminStats);
 
-    // Dashboard Cards
     const adminCards = document.createElement("section");
     adminCards.className = "admin-cards";
 
-    // Recent Quizzes Card
     const recentQuizzesCard = document.createElement("admin-card");
     recentQuizzesCard.setAttribute("title", "Recently Created Quizzes");
     recentQuizzesCard.setAttribute("action", "View All");
@@ -147,7 +146,6 @@ class AdminDashboard extends HTMLElement {
 
     recentQuizzesCard.appendChild(quizzesLoading);
 
-    // Categories Card
     const categoriesCard = document.createElement("admin-card");
     categoriesCard.setAttribute("title", "Categories");
     categoriesCard.setAttribute("action", "View All");
@@ -175,7 +173,6 @@ class AdminDashboard extends HTMLElement {
       this.viewMode === "quizzes" ? "" : "hidden"
     }`;
 
-    // Quizzes Header
     const quizzesHeader = document.createElement("header");
     quizzesHeader.className = "admin-header";
 
@@ -197,7 +194,6 @@ class AdminDashboard extends HTMLElement {
 
     quizzesView.appendChild(quizzesHeader);
 
-    // Quizzes Card
     const quizzesCard = document.createElement("admin-card");
     quizzesCard.setAttribute("full-width", "");
 
@@ -221,7 +217,6 @@ class AdminDashboard extends HTMLElement {
       this.viewMode === "categories" ? "" : "hidden"
     }`;
 
-    // Categories Header
     const categoriesHeader = document.createElement("header");
     categoriesHeader.className = "admin-header";
 
@@ -242,7 +237,6 @@ class AdminDashboard extends HTMLElement {
 
     categoriesView.appendChild(categoriesHeader);
 
-    // Categories Card
     const categoriesCard = document.createElement("admin-card");
     categoriesCard.setAttribute("full-width", "");
 
@@ -370,15 +364,15 @@ class AdminDashboard extends HTMLElement {
   setupEventListeners() {
     const sidebar = this.shadowRoot.querySelector("admin-sidebar");
     if (sidebar) {
-      sidebar.addEventListener("change-view", (e) => {
-        this.changeView(e.detail.view);
+      sidebar.addEventListener("change-view", (event) => {
+        this.changeView(event.detail.view);
       });
     }
 
     const cards = this.shadowRoot.querySelectorAll("admin-card");
     cards.forEach((card) => {
-      card.addEventListener("action-click", (e) => {
-        this.changeView(e.detail.view);
+      card.addEventListener("action-click", (event) => {
+        this.changeView(event.detail.view);
       });
     });
 
@@ -389,8 +383,8 @@ class AdminDashboard extends HTMLElement {
 
     const categoryForm = this.shadowRoot.querySelector("#category-form");
     if (categoryForm) {
-      categoryForm.addEventListener("submit", (e) => {
-        e.preventDefault();
+      categoryForm.addEventListener("submit", (event) => {
+        event.preventDefault();
         this.handleCategorySubmit();
       });
     }
@@ -413,8 +407,8 @@ class AdminDashboard extends HTMLElement {
 
     const links = this.shadowRoot.querySelectorAll("[data-link]");
     links.forEach((link) => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
         window.history.pushState(null, null, link.getAttribute("href"));
         window.dispatchEvent(new PopStateEvent("popstate"));
       });
@@ -427,19 +421,18 @@ class AdminDashboard extends HTMLElement {
     try {
       const isAuthenticated = await authService.checkAuthentication();
       if (!isAuthenticated) {
-        window.location.href = "/login";
+        navigator("/login");
         return;
       }
 
       if (!authService.isQuizMaster()) {
-        window.location.href = "/home";
+        navigator("/home");
         return;
       }
 
       this.loadInitialData();
     } catch (error) {
-      console.error("Error checking authentication:", error);
-      window.location.href = "/login";
+      navigator("/login");
     }
   }
 
@@ -495,7 +488,6 @@ class AdminDashboard extends HTMLElement {
         statsComponent.setStats(stats);
       }
     } catch (error) {
-      console.error("Error loading stats:", error);
       statsComponent.setError(error);
     }
   }
@@ -511,32 +503,30 @@ class AdminDashboard extends HTMLElement {
       loadingText.textContent = "Loading quizzes...";
       quizzesContainer.appendChild(loadingText);
 
-      if (!window.quizService || !window.quizValidatorService) {
-        throw new Error("Quiz services not available");
+      if (!window.quizService) {
+        throw new Error("Quiz service not available");
       }
 
-      this.quizzes = await window.quizService.getAllQuizzes();
-      for (let i = 0; i < this.quizzes.length; i++) {
-        const quiz = this.quizzes[i];
-        try {
-          const validation = await window.quizValidatorService.validateQuiz(
-            quiz.quiz_id
-          );
+      // Get quizzes with validation in a single call
+      const response = await window.quizService.getQuizzesWithValidation({
+        page: this.currentPage || 1,
+        limit: 10,
+      });
 
-          quiz.valid_questions = validation.valid_questions;
-          quiz.question_count = validation.total_questions;
-          quiz.is_valid =
-            quiz.valid_questions >= 5 &&
-            quiz.valid_questions == quiz.question_count;
-          quiz.validation_message = validation.validation_message;
-        } catch (error) {
-          console.error(`Error validating quiz ${quiz.quiz_id}:`, error);
-          quiz.valid_questions = 0;
-          quiz.question_count = 0;
-          quiz.is_valid = false;
-          quiz.validation_message = "Unable to validate quiz";
-        }
+      // Check if response has the expected structure
+      if (
+        !response ||
+        !response.data ||
+        !Array.isArray(response.data) ||
+        !response.pagination
+      ) {
+        console.error("Unexpected response structure:", response);
+        throw new Error("Invalid response format");
       }
+
+      this.quizzes = response.data;
+      this.totalQuizzes = response.pagination.total;
+      this.totalPages = response.pagination.totalPages;
 
       quizzesContainer.innerHTML = "";
 
@@ -548,29 +538,31 @@ class AdminDashboard extends HTMLElement {
         return;
       }
 
+      // Create a section for the table content
+      const tableSection = document.createElement("section");
+      tableSection.className = "quiz-table-section";
+
       const table = document.createElement("admin-table");
       table.columns = [
         { key: "quiz_title", title: "Quiz Name" },
         { key: "category_name", title: "Category" },
         { key: "status", title: "Status" },
-        { key: "question_count", title: "Questions" },
+        { key: "total_questions", title: "Total Questions" },
+        { key: "valid_questions", title: "Valid Questions" },
         { key: "actions", title: "Actions" },
       ];
 
       table.data = this.quizzes.map((quiz) => {
-        const isValid = quiz.is_valid;
-        const statusClass = isValid ? "valid-status" : "invalid-status";
-        const statusText = isValid ? "Live" : `Not Live`;
-
         return {
           quiz_title: quiz.quiz_title,
           category_name: quiz.category_name || "Uncategorized",
           status: {
             type: "badge",
-            value: statusText,
-            class: statusClass,
+            value: quiz.is_valid ? "Live" : "Not Live",
+            class: quiz.is_valid ? "valid-status" : "invalid-status",
           },
-          question_count: quiz.question_count || 0,
+          total_questions: quiz.question_count || 0,
+          valid_questions: quiz.valid_question_count || 0,
           actions: {
             type: "actions",
             items: [
@@ -609,9 +601,27 @@ class AdminDashboard extends HTMLElement {
         }
       });
 
-      quizzesContainer.appendChild(table);
+      tableSection.appendChild(table);
+      quizzesContainer.appendChild(tableSection);
+
+      if (this.totalPages > 1) {
+        const nav = document.createElement("nav");
+        nav.className = "quiz-pagination";
+        nav.setAttribute("aria-label", "Quiz pages navigation");
+
+        const pagination = document.createElement("pagination-controls");
+        pagination.setAttribute("current-page", this.currentPage || 1);
+        pagination.setAttribute("total-pages", this.totalPages);
+        pagination.addEventListener("page-change", (event) => {
+          this.currentPage = event.detail.page;
+          this.loadQuizzes();
+        });
+
+        nav.appendChild(pagination);
+        quizzesContainer.appendChild(nav);
+      }
     } catch (error) {
-      console.error("Error loading quizzes:", error);
+      console.error("Error in loadQuizzes:", error);
       const quizzesContainer = this.shadowRoot.querySelector("#quizzes-list");
       if (quizzesContainer) {
         quizzesContainer.innerHTML = "";
@@ -640,9 +650,28 @@ class AdminDashboard extends HTMLElement {
       loadingText.textContent = "Loading quizzes...";
       contentSlot.appendChild(loadingText);
 
-      if (this.quizzes.length === 0 && window.quizService) {
-        this.quizzes = await window.quizService.getAllQuizzes();
+      if (!window.quizService) {
+        throw new Error("Quiz service not available");
       }
+
+      // Get recent quizzes with validation
+      const response = await window.quizService.getQuizzesWithValidation({
+        page: 1,
+        limit: 5,
+      });
+
+      // Check if response has the expected structure
+      if (
+        !response ||
+        !response.data ||
+        !Array.isArray(response.data) ||
+        !response.pagination
+      ) {
+        console.error("Unexpected response structure:", response);
+        throw new Error("Invalid response format");
+      }
+
+      this.quizzes = response.data;
 
       contentSlot.innerHTML = "";
 
@@ -654,27 +683,25 @@ class AdminDashboard extends HTMLElement {
         return;
       }
 
-      const recentQuizzes = this.quizzes.slice(0, 5);
-
       const table = document.createElement("admin-table");
       table.columns = [
         { key: "quiz_title", title: "Quiz Name" },
         { key: "status", title: "Status" },
+        { key: "total_questions", title: "Total Questions" },
+        { key: "valid_questions", title: "Valid Questions" },
         { key: "actions", title: "Actions" },
       ];
 
-      table.data = recentQuizzes.map((quiz) => {
-        const isReady =
-          (quiz.valid_questions || 0) >= 5 &&
-          quiz.valid_questions == quiz.question_count;
-
+      table.data = this.quizzes.map((quiz) => {
         return {
           quiz_title: quiz.quiz_title,
           status: {
             type: "badge",
-            value: isReady ? "Live" : "Not Live",
-            class: isReady ? "valid-status" : "invalid-status",
+            value: quiz.is_valid ? "Live" : "Not Live",
+            class: quiz.is_valid ? "valid-status" : "invalid-status",
           },
+          total_questions: quiz.question_count || 0,
+          valid_questions: quiz.valid_question_count || 0,
           actions: {
             type: "actions",
             items: [
@@ -703,7 +730,7 @@ class AdminDashboard extends HTMLElement {
 
       contentSlot.appendChild(table);
     } catch (error) {
-      console.error("Error loading recent quizzes:", error);
+      console.error("Error in loadRecentQuizzes:", error);
       const dashboardView = this.shadowRoot.querySelector("#dashboard-view");
       if (dashboardView) {
         const quizzesCard = dashboardView.querySelector(
@@ -736,7 +763,8 @@ class AdminDashboard extends HTMLElement {
         throw new Error("Category service not available");
       }
 
-      this.categories = await window.categoryService.getAllCategories();
+      const response = await window.categoryService.getAllCategories(1, 100);
+      this.categories = response.data;
 
       categoriesContainer.innerHTML = "";
 
@@ -800,7 +828,6 @@ class AdminDashboard extends HTMLElement {
 
       categoriesContainer.appendChild(table);
     } catch (error) {
-      console.error("Error loading categories:", error);
       const categoriesContainer =
         this.shadowRoot.querySelector("#categories-list");
       if (categoriesContainer) {
@@ -831,7 +858,8 @@ class AdminDashboard extends HTMLElement {
       contentSlot.appendChild(loadingText);
 
       if (this.categories.length === 0 && window.categoryService) {
-        this.categories = await window.categoryService.getAllCategories();
+        const response = await window.categoryService.getAllCategories(1, 100);
+        this.categories = response.data;
       }
 
       contentSlot.innerHTML = "";
@@ -863,7 +891,6 @@ class AdminDashboard extends HTMLElement {
 
       contentSlot.appendChild(table);
     } catch (error) {
-      console.error("Error loading recent categories:", error);
       const dashboardView = this.shadowRoot.querySelector("#dashboard-view");
       if (dashboardView) {
         const categoriesCard = dashboardView.querySelector(
@@ -883,7 +910,7 @@ class AdminDashboard extends HTMLElement {
   handleManageQuestions(quizId, quizTitle) {
     localStorage.setItem("selected_quiz_id", quizId);
     localStorage.setItem("selected_quiz_title", quizTitle);
-    window.location.href = "/create-quiz";
+    navigator("/create-quiz");
   }
 
   confirmDeleteQuiz(quizId, quizTitle) {
@@ -918,7 +945,6 @@ class AdminDashboard extends HTMLElement {
       const confirmModal = this.shadowRoot.querySelector("#confirm-modal");
       if (confirmModal) confirmModal.hide();
     } catch (error) {
-      console.error("Error deleting quiz:", error);
       this.showNotification(
         "Failed to delete quiz: " + (error.message || "Unknown error"),
         "error"
@@ -982,7 +1008,6 @@ class AdminDashboard extends HTMLElement {
       const confirmModal = this.shadowRoot.querySelector("#confirm-modal");
       if (confirmModal) confirmModal.hide();
     } catch (error) {
-      console.error("Error deleting category:", error);
       this.showNotification(
         "Failed to delete category: " + (error.message || "Unknown error"),
         "error"
@@ -1055,7 +1080,6 @@ class AdminDashboard extends HTMLElement {
       const categoryModal = this.shadowRoot.querySelector("#category-modal");
       if (categoryModal) categoryModal.hide();
     } catch (error) {
-      console.error("Error saving category:", error);
       this.showNotification(
         "Failed to save category: " + (error.message || "Unknown error"),
         "error"

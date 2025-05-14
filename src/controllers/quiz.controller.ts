@@ -5,28 +5,51 @@ import { ErrorUtils } from "../utils/error.utils";
 import { Message, Http, Length } from "../utils/enums";
 
 export class QuizController {
-
   static async getQuizzes(
     request: Request,
     response: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const validOnly = request.query.valid === "true";
-      const categoryId = request.query.category ? parseInt(request.query.category as string) : undefined;
-      const creatorId = request.query.creator ? parseInt(request.query.creator as string) : undefined;
-      
+      const { valid, page = 1, limit = 10, categoryId } = request.query;
+      const useValidationView = valid === 'validation';
+      const validOnly = valid === 'true';
+
+      // Validate pagination parameters
+      const pageNum = Number(page);
+      const limitNum = Number(limit);
+
+      if (!Number.isInteger(pageNum) || pageNum < 1) {
+        throw ErrorUtils.badRequest("Page number must be a positive integer");
+      }
+      if (!Number.isInteger(limitNum) || limitNum < 1 || limitNum > 100) {
+        throw ErrorUtils.badRequest("Limit must be between 1 and 100");
+      }
+
+      // Parse categoryId if provided
+      let parsedCategoryId: number | undefined;
+      if (categoryId !== undefined) {
+        parsedCategoryId = parseInt(categoryId.toString());
+        if (isNaN(parsedCategoryId)) {
+          throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
+        }
+      }
+
       const userId = request.user?.id;
       const userRole = request.user?.role;
-      
+
       const quizzes = await QuizService.getQuizzes({
         userId,
         userRole,
-        categoryId,
-        creatorId,
-        validOnly
+        categoryId: parsedCategoryId,
+        validOnly: useValidationView ? undefined : validOnly,
+        useValidationView,
+        pagination: {
+          page: pageNum,
+          limit: limitNum
+        }
       });
-      
+
       response.json(quizzes);
     } catch (error) {
       next(error);
@@ -215,15 +238,8 @@ export class QuizController {
         throw ErrorUtils.badRequest(Message.Error.Quiz.INVALID_ID);
       }
 
-      const quiz = await QuizService.getQuizById(id);
-
-      const hasEnoughQuestions = await QuizService.checkQuizQuestionCount(id);
-
-      response.json({
-        quiz,
-        has_enough_questions: hasEnoughQuestions,
-        is_ready: hasEnoughQuestions,
-      });
+      const quizStatus = await QuizService.checkQuizStatus(id);
+      response.json(quizStatus);
     } catch (error) {
       next(error);
     }

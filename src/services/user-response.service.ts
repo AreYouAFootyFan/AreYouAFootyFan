@@ -7,32 +7,30 @@ import { CreateUserResponseDto } from "../DTOs/user-response.dto";
 import { Message } from "../utils/enums";
 import { QuizAttemptService } from "./quiz-attempt.service";
 import db from '../config/db';
+import { 
+  UserResponse, 
+  UserResponseDetails, 
+  ResponseSubmissionResult,
+} from "../types/user-response.types";
+import { QueryResult } from "pg";
 
 export class UserResponseService {
-  static async getAttemptResponses(attemptId: number): Promise<any[]> {
+  
+  static async getAttemptResponses(attemptId: number): Promise<UserResponseDetails[]> {
     const attempt = await QuizAttemptModel.findById(attemptId);
 
     if (!attempt) {
       throw ErrorUtils.notFound(Message.Error.Attempt.NOT_FOUND);
     }
 
-    const responses = await UserResponseModel.findByAttemptId(attemptId);
-
-    const detailedResponses = await Promise.all(
-      responses.map(async (response) => {
-        const details = await UserResponseModel.getResponseDetails(
-          response.response_id
-        );
-        return details;
-      })
-    );
-
+    const detailedResponses = await UserResponseModel.getDetailedResponsesByAttemptId(attemptId);
+    
     return detailedResponses;
-  }
+}
 
   static async submitResponse(
     data: CreateUserResponseDto
-  ): Promise<any> {
+  ): Promise<ResponseSubmissionResult> {
     const attempt = await QuizAttemptModel.findById(data.attempt_id);
 
     if (!attempt) {
@@ -68,6 +66,8 @@ export class UserResponseService {
       data.attempt_id
     );
 
+    let userResponse: UserResponse;
+
     if (existingResponse) {
       const updatedResponse = await UserResponseModel.update(
         existingResponse.response_id,
@@ -78,24 +78,18 @@ export class UserResponseService {
         throw ErrorUtils.internal(Message.Error.Response.UPDATE_FAILED);
       }
 
-      const responseDetails = await UserResponseModel.getResponseDetails(
-        updatedResponse.response_id
-      );
-
-      const shouldAutoComplete = await QuizAttemptService.checkAutoComplete(
-        data.attempt_id
-      );
-
-      return {
-        ...responseDetails,
-        quiz_completed: shouldAutoComplete,
-      };
+      userResponse = updatedResponse;
+    } else {
+      userResponse = await UserResponseModel.create(data);
     }
 
-    const response = await UserResponseModel.create(data);
     const responseDetails = await UserResponseModel.getResponseDetails(
-      response.response_id
+      userResponse.response_id
     );
+
+    if (!responseDetails) {
+      throw ErrorUtils.notFound(Message.Error.Response.NOT_FOUND);
+    }
 
     const shouldAutoComplete = await QuizAttemptService.checkAutoComplete(
       data.attempt_id
@@ -110,7 +104,7 @@ export class UserResponseService {
   static async submitNoAnswerResponse(
     attemptId: number,
     questionId: number,
-  ): Promise<any> {
+  ): Promise<ResponseSubmissionResult> {
 
     const attempt = await QuizAttemptModel.findById(attemptId);
 
@@ -138,20 +132,38 @@ export class UserResponseService {
     );
 
     if (existingResponse) {
-      return UserResponseModel.getResponseDetails(existingResponse.response_id);
+      const details = await UserResponseModel.getResponseDetails(existingResponse.response_id);
+      if (!details) {
+        throw ErrorUtils.notFound(Message.Error.Response.NOT_FOUND);
+      }
+      
+      const shouldAutoComplete = await QuizAttemptService.checkAutoComplete(attemptId);
+      
+      return {
+        ...details,
+        quiz_completed: shouldAutoComplete
+      };
     }
 
     const questionDetails = await QuestionModel.findByIdWithDifficulty(questionId);
     
-    const response = await db.query(
+    if (!questionDetails) {
+      throw ErrorUtils.notFound(Message.Error.Question.NOT_FOUND);
+    }
+    
+    const result: QueryResult<{ response_id: number }> = await db.query(
       `INSERT INTO user_responses (attempt_id, question_id, chosen_answer, points_earned) 
       VALUES ($1, $2, NULL, $3) 
       RETURNING response_id`,
-      [attemptId, questionId ,questionDetails.points_on_no_answer]
+      [attemptId, questionId, questionDetails.points_on_no_answer]
     );
 
-    const responseId = response.rows[0].response_id;
+    const responseId = result.rows[0].response_id;
     const responseDetails = await UserResponseModel.getResponseDetails(responseId);
+
+    if (!responseDetails) {
+      throw ErrorUtils.notFound(Message.Error.Response.NOT_FOUND);
+    }
 
     const shouldAutoComplete = await QuizAttemptService.checkAutoComplete(attemptId);
 
@@ -161,7 +173,7 @@ export class UserResponseService {
     };
   }
 
-  static async getResponseById(responseId: number): Promise<any> {
+  static async getResponseById(responseId: number): Promise<UserResponseDetails> {
     const response = await UserResponseModel.getResponseDetails(responseId);
 
     if (!response) {

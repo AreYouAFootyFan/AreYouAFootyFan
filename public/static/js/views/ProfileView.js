@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import "../components/shared/StatsCard.js";
 import "../components/profile/UserProfile.js";
 
 export default class ProfileView extends AbstractView {

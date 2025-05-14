@@ -36,33 +36,36 @@ class QuizLeaderboard extends HTMLElement {
     }
     
     createLeaderboardSection() {
-        const section = document.createElement('section');
-        section.className = 'leaderboard';
-    
-        const inner = document.createElement('section');
-        inner.className = 'leaderboard-inner';
-    
-        const header = document.createElement('header');
-        header.className = 'section-header';
-    
-        const title = document.createElement('h2');
-        title.className = 'section-title';
-        title.textContent = 'Top Players';
-    
-        const button = document.createElement('button');
-        button.className = 'view-all';
-        button.id = 'view-full-leaderboard';
-        button.textContent = 'View Full Leaderboard';
-    
-        header.appendChild(title);
-        header.appendChild(button);
-    
-        const table = this.createLeaderboardTable('leaderboard-body', 'Loading leaderboard data...');
-        inner.appendChild(header);
-        inner.appendChild(table);
-    
-        section.appendChild(inner);
-        return section;
+      const section = document.createElement("section");
+      section.className = "leaderboard";
+
+      const inner = document.createElement("section");
+      inner.className = "leaderboard-inner";
+
+      const header = document.createElement("header");
+      header.className = "section-header";
+
+      const title = document.createElement("h2");
+      title.className = "section-title";
+      title.textContent = "Top Players";
+
+      const button = document.createElement("button");
+      button.className = "view-all";
+      button.id = "view-full-leaderboard";
+      button.textContent = "View Full Leaderboard";
+
+      header.appendChild(title);
+      header.appendChild(button);
+
+      const table = this.createLeaderboardTable(
+        "leaderboard-body",
+        "Loading leaderboard data..."
+      );
+      inner.appendChild(header);
+      inner.appendChild(table);
+
+      section.appendChild(inner);
+      return section;
     }
     
     createModalSection() {
@@ -174,11 +177,11 @@ class QuizLeaderboard extends HTMLElement {
         const row = document.createElement('tr');
 
         const rankCell = document.createElement('td');
-        const rankSpan = document.createElement('span');
-        rankSpan.classList.add('rank');
-        if (player.rank <= 3) rankSpan.classList.add(`rank-${player.rank}`);
-        rankSpan.textContent = player.rank;
-        rankCell.appendChild(rankSpan);
+        const rankSection = document.createElement('section');
+        rankSection.classList.add('rank');
+        if (player.rank <= 3) rankSection.classList.add(`rank-${player.rank}`);
+        rankSection.textContent = player.rank;
+        rankCell.appendChild(rankSection);
     
         const usernameCell = document.createElement('td');
         usernameCell.textContent = player.username;
@@ -230,7 +233,6 @@ class QuizLeaderboard extends HTMLElement {
             });
         }
         
-        // Handle modal background clicks
         const leaderboardModal = this.shadowRoot.querySelector('#full-leaderboard-modal');
         if (leaderboardModal) {
             leaderboardModal.addEventListener('click', (e) => {
@@ -249,7 +251,6 @@ class QuizLeaderboard extends HTMLElement {
                 this.renderLeaderboard();
             }
         } catch (error) {
-            console.error('Error loading leaderboard data:', error);
             const leaderboardBody = this.shadowRoot.querySelector('#leaderboard-body');
             if (leaderboardBody) {
                 leaderboardBody.innerHTML = '';
@@ -307,7 +308,6 @@ class QuizLeaderboard extends HTMLElement {
                 }
             }
         } catch (error) {
-            console.error('Error loading full leaderboard:', error);
             fullLeaderboardBody.appendChild(this.createErrorRow());
         }
     }

@@ -1,12 +1,19 @@
-import { QuestionModel, Question } from "../models/question.model";
+import { QuestionModel } from "../models/question.model";
 import { QuizModel } from "../models/quiz.model";
 import { DifficultyLevelModel } from "../models/difficulty.model";
 import { ErrorUtils } from "../utils/error.utils";
 import { CreateQuestionDto, UpdateQuestionDto } from "../DTOs/question.dto";
-import { Message } from "../utils/enums";
+import { Config, Message } from "../utils/enums";
+import {
+  Question,
+  QuestionWithAnswerStats,
+  QuestionValidationData,
+} from "../types/question.types";
 
 export class QuestionService {
-  static async getQuestionsByQuizId(quizId: number): Promise<any[]> {
+  static async getQuestionsByQuizId(
+    quizId: number
+  ): Promise<QuestionWithAnswerStats[]> {
     const quiz = await QuizModel.findById(quizId);
 
     if (!quiz) {
@@ -16,7 +23,7 @@ export class QuestionService {
     return QuestionModel.findByQuizIdWithDetails(quizId);
   }
 
-  static async getQuestionById(id: number): Promise<any> {
+  static async getQuestionById(id: number): Promise<QuestionWithAnswerStats> {
     const question = await QuestionModel.findByIdWithDifficulty(id);
 
     if (!question) {
@@ -24,12 +31,13 @@ export class QuestionService {
     }
 
     const answerCount = await QuestionModel.countAnswers(id);
-    question.answer_count = answerCount;
-
     const correctAnswerCount = await QuestionModel.countCorrectAnswers(id);
-    question.correct_answer_count = correctAnswerCount;
 
-    return question;
+    return {
+      ...question,
+      answer_count: answerCount,
+      correct_answer_count: correctAnswerCount,
+    };
   }
 
   static async createQuestion(data: CreateQuestionDto): Promise<Question> {
@@ -101,7 +109,7 @@ export class QuestionService {
       questionId
     );
 
-    if (answerCount < 4) {
+    if (answerCount < Config.Value.DEFAULT_ANSWERS_PER_QUESTION) {
       return {
         isValid: false,
         message: `Question requires 4 answer options, currently has ${answerCount}`,
@@ -118,6 +126,22 @@ export class QuestionService {
     return {
       isValid: true,
       message: "Question has valid answers",
+    };
+  }
+
+  static async validateQuestion(id: number): Promise<QuestionValidationData> {
+    const question = await this.getQuestionById(id);
+
+    if (!question) {
+      throw ErrorUtils.notFound(Message.Error.Question.NOT_FOUND);
+    }
+
+    const validation = await this.validateQuestionAnswers(id);
+
+    return {
+      question,
+      validation,
+      message: Message.Success.Question.VALIDATE,
     };
   }
 }
