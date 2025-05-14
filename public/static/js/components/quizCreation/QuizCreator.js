@@ -401,7 +401,8 @@ class QuizCreator extends HTMLElement {
                 return;
             }
             
-            this.categories = await categoryService.getAllCategories();
+            const response = await categoryService.getAllCategories(1, 100);
+            this.categories = response.data;
             const quizForm = this.shadowRoot.querySelector('#quiz-form');
             if (quizForm) {
                 setTimeout(() => {
