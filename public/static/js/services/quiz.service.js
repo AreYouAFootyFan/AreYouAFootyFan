@@ -1,24 +1,26 @@
 import apiService from './api.service.js';
 
 class QuizService {
-    async getAllQuizzes() {
-        return apiService.get('/api/quizzes');
-    }
-    
-    async getValidQuizzes() {
-        return apiService.get('/api/quizzes?valid=true');
-    }
-
-    async getQuizzesByCategory(categoryId) {
-        return apiService.get(`/api/quizzes?category=${categoryId}`);
+    async getQuizzes(options = {}) {
+        const { page = 1, limit = 10, categoryId, valid } = options;
+        return apiService.post('/api/quizzes/list', { 
+            page, 
+            limit,
+            ...categoryId && { categoryId },
+            ...valid && { valid }
+        });
     }
 
-    async getValidQuizzesByCategory(categoryId) {
-        return apiService.get(`/api/quizzes?category=${categoryId}&valid=true`);
+    async getValidQuizzes(page = 1, limit = 10) {
+        return this.getQuizzes({ page, limit, valid: true });
     }
 
-    async getQuizzesByCreator(creatorId) {
-        return apiService.get(`/api/quizzes?creator=${creatorId}`);
+    async getQuizzesByCategory(categoryId, page = 1, limit = 10) {
+        return this.getQuizzes({ page, limit, categoryId });
+    }
+
+    async getValidQuizzesByCategory(categoryId, page = 1, limit = 10) {
+        return this.getQuizzes({ page, limit, categoryId, valid: true });
     }
 
     async getQuizById(id) {

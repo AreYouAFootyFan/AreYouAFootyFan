@@ -7,6 +7,10 @@ class Quizzes extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.quizzes = [];
     this.categories = [];
+    this.currentPage = 1;
+    this.itemsPerPage = 8;
+    this.totalPages = 1;
+    this.isLoading = false;
   }
 
   async connectedCallback() {
@@ -37,7 +41,6 @@ class Quizzes extends HTMLElement {
 
   buildMainContent() {
     const main = document.createElement("main");
-
 
     // Content Section
     const contentSection = document.createElement("section");
@@ -72,6 +75,49 @@ class Quizzes extends HTMLElement {
     quizGrid.appendChild(loadingParagraph);
     contentSection.appendChild(quizGrid);
 
+    // Pagination Controls
+    const paginationNav = document.createElement("nav");
+    paginationNav.setAttribute("aria-label", "Quiz pages navigation");
+    paginationNav.className = "pagination-controls";
+
+    const paginationList = document.createElement("ul");
+    paginationList.className = "pagination-list";
+
+    // Previous button
+    const prevItem = document.createElement("li");
+    const prevButton = document.createElement("button");
+    prevButton.id = "prev-page";
+    prevButton.className = "pagination-button";
+    prevButton.textContent = "Previous";
+    prevButton.disabled = true;
+    prevButton.setAttribute("aria-label", "Go to previous page");
+    prevItem.appendChild(prevButton);
+
+    // Page info
+    const pageInfoItem = document.createElement("li");
+    const pageInfo = document.createElement("strong");
+    pageInfo.id = "page-info";
+    pageInfo.className = "page-info";
+    pageInfo.textContent = "Page 1";
+    pageInfo.setAttribute("aria-live", "polite");
+    pageInfoItem.appendChild(pageInfo);
+
+    // Next button
+    const nextItem = document.createElement("li");
+    const nextButton = document.createElement("button");
+    nextButton.id = "next-page";
+    nextButton.className = "pagination-button";
+    nextButton.textContent = "Next";
+    nextButton.disabled = true;
+    nextButton.setAttribute("aria-label", "Go to next page");
+    nextItem.appendChild(nextButton);
+
+    paginationList.appendChild(prevItem);
+    paginationList.appendChild(pageInfoItem);
+    paginationList.appendChild(nextItem);
+    paginationNav.appendChild(paginationList);
+    
+    contentSection.appendChild(paginationNav);
     main.appendChild(contentSection);
     
     return main;
@@ -101,40 +147,108 @@ class Quizzes extends HTMLElement {
   }
 
   setupEventListeners() {
-    
+    const prevButton = this.shadowRoot.querySelector("#prev-page");
+    const nextButton = this.shadowRoot.querySelector("#next-page");
+
+    if (prevButton) {
+      prevButton.addEventListener("click", () => this.handlePageChange(this.currentPage - 1));
+    }
+    if (nextButton) {
+      nextButton.addEventListener("click", () => this.handlePageChange(this.currentPage + 1));
+    }
+  }
+
+  async handlePageChange(newPage) {
+    if (this.isLoading || newPage < 1 || newPage > this.totalPages) return;
+    this.currentPage = newPage;
+    await this.loadData();
+  }
+
+  updatePaginationControls() {
+    const prevButton = this.shadowRoot.querySelector("#prev-page");
+    const nextButton = this.shadowRoot.querySelector("#next-page");
+    const pageInfo = this.shadowRoot.querySelector("#page-info");
+
+    if (prevButton) {
+      prevButton.disabled = this.currentPage === 1;
+    }
+    if (nextButton) {
+      nextButton.disabled = this.currentPage === this.totalPages;
+    }
+    if (pageInfo) {
+      pageInfo.textContent = `Page ${this.currentPage} of ${this.totalPages}`;
+    }
   }
 
   async loadData() {
+    if (!window.quizService) return;
+    
+    this.isLoading = true;
+    const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
+    
     try {
-      const dataPromises = [];
-      if (window.quizService) {
-        dataPromises.push(
-          window.quizService
-            .getValidQuizzesByCategory(this.getAttribute('mode-id'))
-            .then((quizzes) => {
-              this.quizzes = quizzes;
-              this.renderQuizzes();
-            })
-            .catch((error) => {
-              console.error("Error loading quizzes:", error);
-            })
-        );
+      // Show loading state
+      if (quizGrid) {
+        clearDOM(quizGrid);
+        const loadingParagraph = document.createElement("p");
+        loadingParagraph.className = "loading";
+        const spinner = document.createElement("article");
+        spinner.className = "loading-spinner";
+        const loadingText = document.createElement("article");
+        loadingText.textContent = "Loading quizzes...";
+        loadingParagraph.appendChild(spinner);
+        loadingParagraph.appendChild(loadingText);
+        quizGrid.appendChild(loadingParagraph);
       }
 
-      await Promise.all(dataPromises);
+      const response = await window.quizService.getValidQuizzesByCategory(
+        this.getAttribute('mode-id'),
+        this.currentPage,
+        this.itemsPerPage
+      );
+      
+      // Check if response has the expected structure
+      if (response && response.data) {
+        this.quizzes = response.data;
+        this.totalPages = response.pagination.totalPages;
+        this.currentPage = response.pagination.page;
+      } else {
+        // If response doesn't have the expected structure, treat it as an error
+        throw new Error('Invalid response format');
+      }
+      
+      this.renderQuizzes();
+      this.updatePaginationControls();
     } catch (error) {
-      console.error("Error loading data:", error);
+      console.error("Error loading quizzes:", error);
+      if (quizGrid) {
+        clearDOM(quizGrid);
+        quizGrid.appendChild(this.createErrorMessage());
+      }
+    } finally {
+      this.isLoading = false;
     }
+  }
+
+  createErrorMessage() {
+    const article = document.createElement("article");
+    article.className = "error-state";
+    article.innerHTML = `
+      <p class="error-icon">❌</p>
+      <h3 class="error-title">Error Loading Quizzes</h3>
+      <p class="error-message">There was a problem loading the quizzes. Please try again later.</p>
+    `;
+    return article;
   }
 
   renderQuizzes() {
     const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
     if (!quizGrid) return;
 
-
     clearDOM(quizGrid);
 
-    if (this.quizzes.length === 0) {
+    // Check if this.quizzes is an array and has items
+    if (!Array.isArray(this.quizzes) || this.quizzes.length === 0) {
       const emptyQuiz = this.createEmptyQuizMessage();
       quizGrid.appendChild(emptyQuiz);
       return;

@@ -15,9 +15,16 @@ export class QuizController {
       const categoryId = request.query.category
         ? parseInt(request.query.category as string)
         : undefined;
-      const creatorId = request.query.creator
-        ? parseInt(request.query.creator as string)
-        : undefined;
+
+      const { page = 1, limit = 10 } = request.body;
+
+      // Validate pagination parameters
+      if (!Number.isInteger(page) || page < 1) {
+        throw ErrorUtils.badRequest("Page number must be a positive integer");
+      }
+      if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+        throw ErrorUtils.badRequest("Limit must be between 1 and 100");
+      }
 
       const userId = request.user?.id;
       const userRole = request.user?.role;
@@ -26,8 +33,11 @@ export class QuizController {
         userId,
         userRole,
         categoryId,
-        creatorId,
         validOnly,
+        pagination: {
+          page,
+          limit
+        }
       });
 
       response.json(quizzes);
