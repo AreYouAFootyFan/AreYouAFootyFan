@@ -1,6 +1,7 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
 import { clearDOM } from "../../utils/domHelpers.js";
+import "../../components/widgets/LiveScores.js";
 
 class QuizHome extends HTMLElement {
   constructor() {
@@ -19,13 +20,42 @@ class QuizHome extends HTMLElement {
     this.setupEventListeners();
     await this.loadData();
     this.checkUserRole();
+    
+    // Create and append the live scores widget
+    this.initializeLiveScores();
+  }
+
+  disconnectedCallback() {
+    // Remove the live scores widget when navigating away
+    const liveScores = document.querySelector('live-scores');
+    if (liveScores) {
+      liveScores.remove();
+    }
+  }
+
+  initializeLiveScores() {
+    // Remove any existing live scores widget
+    const existingWidget = document.querySelector('live-scores');
+    if (existingWidget) {
+      existingWidget.remove();
+    }
+
+    // Create and append the new widget
+    const liveScores = document.createElement('live-scores');
+    document.body.appendChild(liveScores);
+
+    // Ensure the widget is visible in the DOM
+    liveScores.style.display = 'block';
+    liveScores.style.visibility = 'visible';
+    liveScores.style.opacity = '1';
   }
 
   async loadStyles() {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
-      "./static/css/home/home.css"
+      "./static/css/home/home.css",
+      "./static/css/widgets/liveScores.css"
     );
   }
 
@@ -223,6 +253,11 @@ class QuizHome extends HTMLElement {
   async loadData() {
     try {
       const dataPromises = [];
+
+      // Verify football service is available
+      if (!window.footballService) {
+        console.warn("Football service not available. Live scores widget may not work.");
+      }
 
       if (window.categoryService) {
         dataPromises.push(
