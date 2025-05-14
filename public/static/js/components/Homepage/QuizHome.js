@@ -277,12 +277,25 @@ class QuizHome extends HTMLElement {
         dataPromises.push(
           window.quizService
             .getValidQuizzes()
-            .then((quizzes) => {
-              this.quizzes = quizzes;
-              this.renderQuizzes();
+            .then((response) => {
+              // Handle paginated response
+              if (response && response.data && Array.isArray(response.data)) {
+                this.quizzes = response.data;
+                this.renderQuizzes();
+              } else {
+                throw new Error('Invalid quiz data format');
+              }
             })
             .catch((error) => {
               console.error("Error loading quizzes:", error);
+              const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
+              if (quizGrid) {
+                quizGrid.innerHTML = "";
+                const errorMessage = document.createElement("p");
+                errorMessage.className = "error-message";
+                errorMessage.textContent = "Error loading quizzes. Please try again later.";
+                quizGrid.appendChild(errorMessage);
+              }
             })
         );
       }

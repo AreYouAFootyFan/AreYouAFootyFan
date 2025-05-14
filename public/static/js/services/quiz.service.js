@@ -1,24 +1,42 @@
 import apiService from './api.service.js';
 
 class QuizService {
+    async getQuizzes(options = {}) {
+        const { page = 1, limit = 10, categoryId, valid } = options;
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString(),
+            ...(categoryId && { categoryId: categoryId.toString() }),
+            ...(valid && { valid: valid.toString() })
+        });
+        return apiService.get(`/api/quizzes/list?${params.toString()}`);
+    }
+
     async getAllQuizzes() {
-        return apiService.get('/api/quizzes');
-    }
-    
-    async getValidQuizzes() {
-        return apiService.get('/api/quizzes?valid=true');
+        return this.getQuizzes({ limit: 100 }); // Get a large number of quizzes for admin
     }
 
-    async getQuizzesByCategory(categoryId) {
-        return apiService.get(`/api/quizzes?category=${categoryId}`);
+    async getQuizzesWithValidation(options = {}) {
+        const { page = 1, limit = 10, categoryId } = options;
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString(),
+            valid: 'validation',  // Use the valid_quizzes view without filtering
+            ...(categoryId && { categoryId: categoryId.toString() })
+        });
+        return apiService.get(`/api/quizzes/list?${params.toString()}`);
     }
 
-    async getValidQuizzesByCategory(categoryId) {
-        return apiService.get(`/api/quizzes?category=${categoryId}&valid=true`);
+    async getValidQuizzes(page = 1, limit = 10) {
+        return this.getQuizzes({ page, limit, valid: true });
     }
 
-    async getQuizzesByCreator(creatorId) {
-        return apiService.get(`/api/quizzes?creator=${creatorId}`);
+    async getQuizzesByCategory(categoryId, page = 1, limit = 10) {
+        return this.getQuizzes({ page, limit, categoryId });
+    }
+
+    async getValidQuizzesByCategory(categoryId, page = 1, limit = 10) {
+        return this.getQuizzes({ page, limit, categoryId, valid: true });
     }
 
     async getQuizById(id) {

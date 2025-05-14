@@ -1,5 +1,6 @@
 import db from "../config/db";
 import { CreateCategoryDto, UpdateCategoryDto } from "../DTOs/category.dto";
+import { PaginationOptions, PaginatedResponse } from "../types/pagination.types";
 
 export interface Category {
   category_id: number;
@@ -9,9 +10,42 @@ export interface Category {
 }
 
 export class CategoryModel {
-  static async findAll(): Promise<Category[]> {
-    const result = await db.query("SELECT * FROM active_categories");
-    return result.rows;
+  static async findAll(pagination?: PaginationOptions): Promise<PaginatedResponse<Category>> {
+    if (pagination) {
+      const offset = (pagination.page - 1) * pagination.limit;
+      
+      const countResult = await db.query(
+        "SELECT COUNT(*) FROM active_categories"
+      );
+      const totalItems = parseInt(countResult.rows[0].count);
+      
+      const result = await db.query(
+        "SELECT * FROM active_categories ORDER BY category_id LIMIT $1 OFFSET $2",
+        [pagination.limit, offset]
+      );
+      
+      return {
+        data: result.rows,
+        pagination: {
+          total: totalItems,
+          page: pagination.page,
+          limit: pagination.limit,
+          totalPages: Math.ceil(totalItems / pagination.limit)
+        }
+      };
+    }
+
+    // Fallback to non-paginated query
+    const result = await db.query("SELECT * FROM active_categories ORDER BY category_id");
+    return {
+      data: result.rows,
+      pagination: {
+        total: result.rows.length,
+        page: 1,
+        limit: result.rows.length,
+        totalPages: 1
+      }
+    };
   }
 
   static async findById(id: number): Promise<Category | null> {
