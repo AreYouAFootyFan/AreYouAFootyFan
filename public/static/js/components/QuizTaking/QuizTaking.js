@@ -23,19 +23,11 @@ class QuizTaking extends HTMLElement {
     this.render();
     this.init();
 
-    document.addEventListener(
-      "visibilitychange",
-      this.handleVisibilityChange.bind(this)
-    );
     window.addEventListener("beforeunload", this.cleanup.bind(this));
   }
 
   disconnectedCallback() {
     this.cleanup();
-    document.removeEventListener(
-      "visibilitychange",
-      this.handleVisibilityChange
-    );
   }
 
   async loadStyles() {
@@ -55,7 +47,7 @@ class QuizTaking extends HTMLElement {
     const loadingContainer = document.createElement("section");
     loadingContainer.classList.add("loading-container");
 
-    const loadingSpinner = document.createElement("span");
+    const loadingSpinner = document.createElement("section");
     loadingSpinner.classList.add("loading-spinner");
 
     const loadingText = document.createElement("p");
@@ -105,7 +97,7 @@ class QuizTaking extends HTMLElement {
         const loadingContainer = document.createElement("section");
         loadingContainer.classList.add("loading-container");
 
-        const loadingSpinner = document.createElement("span");
+        const loadingSpinner = document.createElement("section");
         loadingSpinner.classList.add("loading-spinner");
 
         const loadingText = document.createElement("p");

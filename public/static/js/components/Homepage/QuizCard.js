@@ -105,11 +105,11 @@ class QuizCard extends HTMLElement {
         const startButton = this.shadowRoot.querySelector('.start-btn');
         if (startButton) {
             startButton.addEventListener('click', (e) => {
-                this.dispatchEvent(new CustomEvent('quiz-start', {
-                    detail: {
-                        quizId: this.quiz?.quiz_id
-                    }
-                }));
+                if (this.quiz && this.quiz.quiz_id) {
+                    this.dispatchEvent(new CustomEvent('quiz-start', {
+                        detail: { quizId: this.quiz.quiz_id }
+                    }));
+                }
             });
         }
     }
