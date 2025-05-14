@@ -6,12 +6,26 @@ import { Message, Http, Length } from "../utils/enums";
 
 export class CategoryController {
   static async getAllCategories(
-    _request: Request,
+    request: Request,
     response: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const categories = await CategoryService.getAllCategories();
+      const { page = 1, limit = 10 } = request.body;
+
+      // Validate pagination parameters
+      if (!Number.isInteger(Number(page)) || Number(page) < 1) {
+        throw ErrorUtils.badRequest("Page number must be a positive integer");
+      }
+      if (!Number.isInteger(Number(limit)) || Number(limit) < 1 || Number(limit) > 100) {
+        throw ErrorUtils.badRequest("Limit must be between 1 and 100");
+      }
+
+      const categories = await CategoryService.getAllCategories({
+        page: Number(page),
+        limit: Number(limit)
+      });
+      
       response.json(categories);
     } catch (error) {
       next(error);

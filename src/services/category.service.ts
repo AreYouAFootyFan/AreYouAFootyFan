@@ -2,10 +2,11 @@ import { CategoryModel, Category } from "../models/category.model";
 import { CreateCategoryDto, UpdateCategoryDto } from "../DTOs/category.dto";
 import { ErrorUtils } from "../utils/error.utils";
 import { Message } from "../utils/enums";
+import { PaginationOptions, PaginatedResponse } from "../types/pagination.types";
 
 export class CategoryService {
-  static async getAllCategories(): Promise<Category[]> {
-    return CategoryModel.findAll();
+  static async getAllCategories(pagination?: PaginationOptions): Promise<PaginatedResponse<Category>> {
+    return CategoryModel.findAll(pagination);
   }
 
   static async getCategoryById(id: number): Promise<Category> {
