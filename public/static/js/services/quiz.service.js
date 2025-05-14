@@ -3,12 +3,17 @@ import apiService from './api.service.js';
 class QuizService {
     async getQuizzes(options = {}) {
         const { page = 1, limit = 10, categoryId, valid } = options;
-        return apiService.post('/api/quizzes/list', { 
-            page, 
-            limit,
-            ...categoryId && { categoryId },
-            ...valid && { valid }
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString(),
+            ...(categoryId && { categoryId: categoryId.toString() }),
+            ...(valid && { valid: valid.toString() })
         });
+        return apiService.get(`/api/quizzes/list?${params.toString()}`);
+    }
+
+    async getAllQuizzes() {
+        return this.getQuizzes({ limit: 100 }); // Get a large number of quizzes for admin
     }
 
     async getValidQuizzes(page = 1, limit = 10) {

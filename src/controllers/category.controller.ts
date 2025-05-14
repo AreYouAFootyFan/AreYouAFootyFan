@@ -11,19 +11,22 @@ export class CategoryController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { page = 1, limit = 10 } = request.body;
+      const { page = 1, limit = 10 } = request.query;
 
       // Validate pagination parameters
-      if (!Number.isInteger(Number(page)) || Number(page) < 1) {
+      const pageNum = Number(page);
+      const limitNum = Number(limit);
+
+      if (!Number.isInteger(pageNum) || pageNum < 1) {
         throw ErrorUtils.badRequest("Page number must be a positive integer");
       }
-      if (!Number.isInteger(Number(limit)) || Number(limit) < 1 || Number(limit) > 100) {
+      if (!Number.isInteger(limitNum) || limitNum < 1 || limitNum > 100) {
         throw ErrorUtils.badRequest("Limit must be between 1 and 100");
       }
 
       const categories = await CategoryService.getAllCategories({
-        page: Number(page),
-        limit: Number(limit)
+        page: pageNum,
+        limit: limitNum
       });
       
       response.json(categories);

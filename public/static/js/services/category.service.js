@@ -2,7 +2,7 @@ import apiService from './api.service.js';
 
 class CategoryService {
     async getAllCategories(page = 1, limit = 4) {
-        return apiService.post('/api/categories', { page, limit });
+        return apiService.get(`/api/categories/list?page=${page}&limit=${limit}`);
     }
 
     async getCategoryById(id) {

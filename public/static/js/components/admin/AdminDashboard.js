@@ -513,7 +513,9 @@ class AdminDashboard extends HTMLElement {
         throw new Error("Quiz services not available");
       }
 
-      this.quizzes = await window.quizService.getAllQuizzes();
+      const response = await window.quizService.getAllQuizzes();
+      this.quizzes = response.data;
+      
       for (let i = 0; i < this.quizzes.length; i++) {
         const quiz = this.quizzes[i];
         try {
@@ -637,7 +639,8 @@ class AdminDashboard extends HTMLElement {
       contentSlot.appendChild(loadingText);
 
       if (this.quizzes.length === 0 && window.quizService) {
-        this.quizzes = await window.quizService.getAllQuizzes();
+        const response = await window.quizService.getAllQuizzes();
+        this.quizzes = response.data;
       }
 
       contentSlot.innerHTML = "";
@@ -731,7 +734,8 @@ class AdminDashboard extends HTMLElement {
         throw new Error("Category service not available");
       }
 
-      this.categories = await window.categoryService.getAllCategories();
+      const response = await window.categoryService.getAllCategories(1, 100);
+      this.categories = response.data;
 
       categoriesContainer.innerHTML = "";
 
@@ -825,7 +829,8 @@ class AdminDashboard extends HTMLElement {
       contentSlot.appendChild(loadingText);
 
       if (this.categories.length === 0 && window.categoryService) {
-        this.categories = await window.categoryService.getAllCategories();
+        const response = await window.categoryService.getAllCategories(1, 100);
+        this.categories = response.data;
       }
 
       contentSlot.innerHTML = "";

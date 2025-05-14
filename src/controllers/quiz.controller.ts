@@ -11,14 +11,17 @@ export class QuizController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const validOnly = request.body.valid === true;
-      const { page = 1, limit = 10, categoryId } = request.body;
+      const { valid, page = 1, limit = 10, categoryId } = request.query;
+      const validOnly = valid === 'true';
 
       // Validate pagination parameters
-      if (!Number.isInteger(page) || page < 1) {
+      const pageNum = Number(page);
+      const limitNum = Number(limit);
+
+      if (!Number.isInteger(pageNum) || pageNum < 1) {
         throw ErrorUtils.badRequest("Page number must be a positive integer");
       }
-      if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      if (!Number.isInteger(limitNum) || limitNum < 1 || limitNum > 100) {
         throw ErrorUtils.badRequest("Limit must be between 1 and 100");
       }
 
@@ -40,8 +43,8 @@ export class QuizController {
         categoryId: parsedCategoryId,
         validOnly,
         pagination: {
-          page,
-          limit
+          page: pageNum,
+          limit: limitNum
         }
       });
 
