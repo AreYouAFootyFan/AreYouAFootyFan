@@ -16,6 +16,17 @@ class QuizService {
         return this.getQuizzes({ limit: 100 }); // Get a large number of quizzes for admin
     }
 
+    async getQuizzesWithValidation(options = {}) {
+        const { page = 1, limit = 10, categoryId } = options;
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString(),
+            ...(categoryId && { categoryId: categoryId.toString() }),
+            valid: 'true'  // This will use the validation view
+        });
+        return apiService.get(`/api/quizzes/list?${params.toString()}`);
+    }
+
     async getValidQuizzes(page = 1, limit = 10) {
         return this.getQuizzes({ page, limit, valid: true });
     }

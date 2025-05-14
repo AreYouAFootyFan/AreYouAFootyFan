@@ -15,6 +15,7 @@ class AdminDashboard extends HTMLElement {
     this.quizzes = [];
     this.categories = [];
     this.viewMode = "dashboard";
+    this.currentPage = 1;
 
     this.changeView = this.changeView.bind(this);
     this.showCategoryModal = this.showCategoryModal.bind(this);
@@ -509,33 +510,25 @@ class AdminDashboard extends HTMLElement {
       loadingText.textContent = "Loading quizzes...";
       quizzesContainer.appendChild(loadingText);
 
-      if (!window.quizService || !window.quizValidatorService) {
-        throw new Error("Quiz services not available");
+      if (!window.quizService) {
+        throw new Error("Quiz service not available");
       }
 
-      const response = await window.quizService.getAllQuizzes();
-      this.quizzes = response.data;
+      // Get quizzes with validation in a single call
+      const response = await window.quizService.getQuizzesWithValidation({
+        page: this.currentPage || 1,
+        limit: 10
+      });
       
-      for (let i = 0; i < this.quizzes.length; i++) {
-        const quiz = this.quizzes[i];
-        try {
-          const validation = await window.quizValidatorService.validateQuiz(
-            quiz.quiz_id
-          );
-
-          quiz.valid_questions = validation.valid_questions;
-          quiz.question_count = validation.total_questions;
-          quiz.is_valid =
-            quiz.valid_questions >= 5 &&
-            quiz.valid_questions == quiz.question_count;
-          quiz.validation_message = validation.validation_message;
-        } catch (error) {
-          quiz.valid_questions = 0;
-          quiz.question_count = 0;
-          quiz.is_valid = false;
-          quiz.validation_message = "Unable to validate quiz";
-        }
+      // Check if response has the expected structure
+      if (!response || !response.data || !Array.isArray(response.data) || !response.pagination) {
+        console.error('Unexpected response structure:', response);
+        throw new Error('Invalid response format');
       }
+      
+      this.quizzes = response.data;
+      this.totalQuizzes = response.pagination.total;
+      this.totalPages = response.pagination.totalPages;
 
       quizzesContainer.innerHTML = "";
 
@@ -557,19 +550,15 @@ class AdminDashboard extends HTMLElement {
       ];
 
       table.data = this.quizzes.map((quiz) => {
-        const isValid = quiz.is_valid;
-        const statusClass = isValid ? "valid-status" : "invalid-status";
-        const statusText = isValid ? "Live" : `Not Live`;
-
         return {
           quiz_title: quiz.quiz_title,
           category_name: quiz.category_name || "Uncategorized",
           status: {
             type: "badge",
-            value: statusText,
-            class: statusClass,
+            value: quiz.is_valid ? "Live" : "Not Live",
+            class: quiz.is_valid ? "valid-status" : "invalid-status",
           },
-          question_count: quiz.question_count || 0,
+          question_count: `${quiz.valid_question_count || 0}/${quiz.question_count || 0}`,
           actions: {
             type: "actions",
             items: [
@@ -609,7 +598,19 @@ class AdminDashboard extends HTMLElement {
       });
 
       quizzesContainer.appendChild(table);
+
+      if (this.totalPages > 1) {
+        const pagination = document.createElement("pagination-controls");
+        pagination.setAttribute("current-page", this.currentPage || 1);
+        pagination.setAttribute("total-pages", this.totalPages);
+        pagination.addEventListener("page-change", (event) => {
+          this.currentPage = event.detail.page;
+          this.loadQuizzes();
+        });
+        quizzesContainer.appendChild(pagination);
+      }
     } catch (error) {
+      console.error('Error in loadQuizzes:', error);
       const quizzesContainer = this.shadowRoot.querySelector("#quizzes-list");
       if (quizzesContainer) {
         quizzesContainer.innerHTML = "";
@@ -638,10 +639,23 @@ class AdminDashboard extends HTMLElement {
       loadingText.textContent = "Loading quizzes...";
       contentSlot.appendChild(loadingText);
 
-      if (this.quizzes.length === 0 && window.quizService) {
-        const response = await window.quizService.getAllQuizzes();
-        this.quizzes = response.data;
+      if (!window.quizService) {
+        throw new Error("Quiz service not available");
       }
+
+      // Get recent quizzes with validation
+      const response = await window.quizService.getQuizzesWithValidation({
+        page: 1,
+        limit: 5
+      });
+
+      // Check if response has the expected structure
+      if (!response || !response.data || !Array.isArray(response.data) || !response.pagination) {
+        console.error('Unexpected response structure:', response);
+        throw new Error('Invalid response format');
+      }
+
+      this.quizzes = response.data;
 
       contentSlot.innerHTML = "";
 
@@ -653,8 +667,6 @@ class AdminDashboard extends HTMLElement {
         return;
       }
 
-      const recentQuizzes = this.quizzes.slice(0, 5);
-
       const table = document.createElement("admin-table");
       table.columns = [
         { key: "quiz_title", title: "Quiz Name" },
@@ -662,17 +674,13 @@ class AdminDashboard extends HTMLElement {
         { key: "actions", title: "Actions" },
       ];
 
-      table.data = recentQuizzes.map((quiz) => {
-        const isReady =
-          (quiz.valid_questions || 0) >= 5 &&
-          quiz.valid_questions == quiz.question_count;
-
+      table.data = this.quizzes.map((quiz) => {
         return {
           quiz_title: quiz.quiz_title,
           status: {
             type: "badge",
-            value: isReady ? "Live" : "Not Live",
-            class: isReady ? "valid-status" : "invalid-status",
+            value: quiz.is_valid ? "Live" : "Not Live",
+            class: quiz.is_valid ? "valid-status" : "invalid-status",
           },
           actions: {
             type: "actions",
@@ -702,6 +710,7 @@ class AdminDashboard extends HTMLElement {
 
       contentSlot.appendChild(table);
     } catch (error) {
+      console.error('Error in loadRecentQuizzes:', error);
       const dashboardView = this.shadowRoot.querySelector("#dashboard-view");
       if (dashboardView) {
         const quizzesCard = dashboardView.querySelector(
