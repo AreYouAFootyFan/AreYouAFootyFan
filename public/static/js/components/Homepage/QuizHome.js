@@ -21,11 +21,8 @@ class QuizHome extends HTMLElement {
     await this.loadData();
     this.checkUserRole();
     
-    // Create and append the live scores widget to the body
-    if (!document.querySelector('live-scores')) {
-      const liveScores = document.createElement('live-scores');
-      document.body.appendChild(liveScores);
-    }
+    // Create and append the live scores widget
+    this.initializeLiveScores();
   }
 
   disconnectedCallback() {
@@ -34,6 +31,23 @@ class QuizHome extends HTMLElement {
     if (liveScores) {
       liveScores.remove();
     }
+  }
+
+  initializeLiveScores() {
+    // Remove any existing live scores widget
+    const existingWidget = document.querySelector('live-scores');
+    if (existingWidget) {
+      existingWidget.remove();
+    }
+
+    // Create and append the new widget
+    const liveScores = document.createElement('live-scores');
+    document.body.appendChild(liveScores);
+
+    // Ensure the widget is visible in the DOM
+    liveScores.style.display = 'block';
+    liveScores.style.visibility = 'visible';
+    liveScores.style.opacity = '1';
   }
 
   async loadStyles() {

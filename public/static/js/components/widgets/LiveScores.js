@@ -12,7 +12,7 @@ class LiveScores extends HTMLElement {
         this.isLoading = true;
         this.error = null;
         this.isCollapsed = false;
-        this.isVisible = localStorage.getItem('liveScoresVisible') !== 'false';
+        this.isVisible = sessionStorage.getItem('liveScoresVisible') === null ? true : sessionStorage.getItem('liveScoresVisible') !== 'false';
         this.abortController = null;
         
         this.styleSheet = new CSSStyleSheet();
@@ -26,6 +26,13 @@ class LiveScores extends HTMLElement {
     
     async connectedCallback() {
         await this.loadStyles();
+        // Set initial visibility in sessionStorage if not set
+        if (sessionStorage.getItem('liveScoresVisible') === null) {
+            sessionStorage.setItem('liveScoresVisible', 'true');
+        }
+        console.log('LiveScores visibility:', this.isVisible);
+        console.log('LiveScores sessionStorage:', sessionStorage.getItem('liveScoresVisible'));
+        
         if (this.isVisible) {
             await this.loadAllMatches();
             this.setupPolling();
@@ -49,11 +56,16 @@ class LiveScores extends HTMLElement {
     }
     
     async loadStyles() {
-        await StyleLoader(
-            this.shadowRoot,
-            './static/css/styles.css',
-            './static/css/widgets/liveScores.css'
-        );
+        try {
+            await StyleLoader(
+                this.shadowRoot,
+                './static/css/styles.css',
+                './static/css/widgets/liveScores.css'
+            );
+            console.log('LiveScores styles loaded successfully');
+        } catch (error) {
+            console.error('Error loading LiveScores styles:', error);
+        }
     }
     
     handleLeagueChange(event) {
@@ -147,13 +159,31 @@ class LiveScores extends HTMLElement {
     }
     
     toggleCollapse() {
+        console.log('Toggling collapse from:', this.isCollapsed);
         this.isCollapsed = !this.isCollapsed;
-        this.render();
+        const container = this.shadowRoot.querySelector('.live-scores-widget');
+        const collapseBtn = this.shadowRoot.querySelector('.collapse-btn');
+        
+        if (container) {
+            if (this.isCollapsed) {
+                container.classList.add('collapsed');
+            } else {
+                container.classList.remove('collapsed');
+            }
+        }
+        
+        if (collapseBtn) {
+            collapseBtn.style.transform = this.isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+        console.log('Collapse toggled to:', this.isCollapsed);
     }
 
     toggleVisibility() {
+        console.log('Toggling visibility from:', this.isVisible);
         this.isVisible = !this.isVisible;
-        localStorage.setItem('liveScoresVisible', this.isVisible);
+        sessionStorage.setItem('liveScoresVisible', this.isVisible);
+        console.log('Visibility toggled to:', this.isVisible);
+        console.log('sessionStorage updated to:', sessionStorage.getItem('liveScoresVisible'));
         
         if (this.isVisible) {
             this.loadAllMatches();
@@ -170,6 +200,7 @@ class LiveScores extends HTMLElement {
     }
     
     render() {
+        console.log('LiveScores rendering, isVisible:', this.isVisible);
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.firstChild);
         }
@@ -179,7 +210,9 @@ class LiveScores extends HTMLElement {
             showButton.className = 'show-scores-btn';
             showButton.textContent = 'Show Live Scores';
             showButton.addEventListener('click', this.toggleVisibility);
+            showButton.setAttribute('aria-label', 'Show live football scores');
             this.shadowRoot.appendChild(showButton);
+            console.log('Show button rendered');
             return;
         }
         
@@ -200,8 +233,10 @@ class LiveScores extends HTMLElement {
         
         const collapseBtn = document.createElement('button');
         collapseBtn.className = 'collapse-btn';
-        collapseBtn.innerHTML = this.isCollapsed ? '▼' : '▲';
+        collapseBtn.innerHTML = '↑';
+        collapseBtn.style.transform = this.isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
         collapseBtn.title = this.isCollapsed ? 'Expand' : 'Collapse';
+        collapseBtn.setAttribute('aria-label', this.isCollapsed ? 'Expand live scores' : 'Collapse live scores');
         collapseBtn.addEventListener('click', this.toggleCollapse);
         
         const closeBtn = document.createElement('button');
@@ -216,6 +251,12 @@ class LiveScores extends HTMLElement {
         titleSection.appendChild(title);
         titleSection.appendChild(buttonGroup);
         header.appendChild(titleSection);
+        
+        container.appendChild(header);
+
+        // Wrap all non-header content in a container
+        const nonHeaderContent = document.createElement('div');
+        nonHeaderContent.className = 'non-header-content';
         
         // Only show league selector if there are multiple leagues and widget is not collapsed
         if (!this.isCollapsed && this.leagues.length > 1) {
@@ -237,10 +278,8 @@ class LiveScores extends HTMLElement {
                 leagueSelect.appendChild(option);
             });
             
-            header.appendChild(leagueSelect);
+            nonHeaderContent.appendChild(leagueSelect);
         }
-        
-        container.appendChild(header);
         
         // Content area - only show if not collapsed
         if (!this.isCollapsed) {
@@ -336,8 +375,10 @@ class LiveScores extends HTMLElement {
                 content.appendChild(matchesList);
             }
             
-            container.appendChild(content);
+            nonHeaderContent.appendChild(content);
         }
+        
+        container.appendChild(nonHeaderContent);
         
         this.shadowRoot.appendChild(container);
     }
