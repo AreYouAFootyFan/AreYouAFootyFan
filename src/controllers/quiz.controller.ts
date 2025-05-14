@@ -12,6 +12,7 @@ export class QuizController {
   ): Promise<void> {
     try {
       const { valid, page = 1, limit = 10, categoryId } = request.query;
+      const useValidationView = valid === 'validation';
       const validOnly = valid === 'true';
 
       // Validate pagination parameters
@@ -41,7 +42,8 @@ export class QuizController {
         userId,
         userRole,
         categoryId: parsedCategoryId,
-        validOnly,
+        validOnly: useValidationView ? undefined : validOnly,
+        useValidationView,
         pagination: {
           page: pageNum,
           limit: limitNum

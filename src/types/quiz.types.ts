@@ -42,4 +42,5 @@ export interface GetQuizzesOptions {
   userId?: number;
   userRole?: string;
   pagination?: PaginationOptions;
+  useValidationView?: boolean;
 }

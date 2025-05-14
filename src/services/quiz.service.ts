@@ -20,6 +20,30 @@ export class QuizService {
     const page = options.pagination?.page || 1;
     const limit = options.pagination?.limit || 10;
 
+    if (options.useValidationView) {
+      const quizzesWithValidation = await QuizModel.findQuizzesWithValidation({
+        categoryId: options.categoryId,
+        minQuestions: Config.Value.MIN_QUESTIONS_PER_QUIZ,
+        userId: options.userId,
+        userRole: options.userRole,
+      });
+
+      const total = quizzesWithValidation.length;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedQuizzes = quizzesWithValidation.slice(startIndex, endIndex);
+
+      return {
+        data: paginatedQuizzes,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit)
+        }
+      };
+    }
+
     if (options.validOnly) {
       const quizzesWithValidation = await QuizModel.findQuizzesWithValidation({
         categoryId: options.categoryId,

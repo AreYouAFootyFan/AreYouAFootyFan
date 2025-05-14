@@ -21,8 +21,8 @@ class QuizService {
         const params = new URLSearchParams({
             page: page.toString(),
             limit: limit.toString(),
-            ...(categoryId && { categoryId: categoryId.toString() }),
-            valid: 'true'  // This will use the validation view
+            valid: 'validation',  // Use the valid_quizzes view without filtering
+            ...(categoryId && { categoryId: categoryId.toString() })
         });
         return apiService.get(`/api/quizzes/list?${params.toString()}`);
     }
