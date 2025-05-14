@@ -384,15 +384,15 @@ class AdminDashboard extends HTMLElement {
   setupEventListeners() {
     const sidebar = this.shadowRoot.querySelector("admin-sidebar");
     if (sidebar) {
-      sidebar.addEventListener("change-view", (e) => {
-        this.changeView(e.detail.view);
+      sidebar.addEventListener("change-view", (event) => {
+        this.changeView(event.detail.view);
       });
     }
 
     const cards = this.shadowRoot.querySelectorAll("admin-card");
     cards.forEach((card) => {
-      card.addEventListener("action-click", (e) => {
-        this.changeView(e.detail.view);
+      card.addEventListener("action-click", (event) => {
+        this.changeView(event.detail.view);
       });
     });
 
@@ -403,8 +403,8 @@ class AdminDashboard extends HTMLElement {
 
     const categoryForm = this.shadowRoot.querySelector("#category-form");
     if (categoryForm) {
-      categoryForm.addEventListener("submit", (e) => {
-        e.preventDefault();
+      categoryForm.addEventListener("submit", (event) => {
+        event.preventDefault();
         this.handleCategorySubmit();
       });
     }
@@ -427,8 +427,8 @@ class AdminDashboard extends HTMLElement {
 
     const links = this.shadowRoot.querySelectorAll("[data-link]");
     links.forEach((link) => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
         window.history.pushState(null, null, link.getAttribute("href"));
         window.dispatchEvent(new PopStateEvent("popstate"));
       });
@@ -530,15 +530,20 @@ class AdminDashboard extends HTMLElement {
       // Get quizzes with validation in a single call
       const response = await window.quizService.getQuizzesWithValidation({
         page: this.currentPage || 1,
-        limit: 10
+        limit: 10,
       });
-      
+
       // Check if response has the expected structure
-      if (!response || !response.data || !Array.isArray(response.data) || !response.pagination) {
-        console.error('Unexpected response structure:', response);
-        throw new Error('Invalid response format');
+      if (
+        !response ||
+        !response.data ||
+        !Array.isArray(response.data) ||
+        !response.pagination
+      ) {
+        console.error("Unexpected response structure:", response);
+        throw new Error("Invalid response format");
       }
-      
+
       this.quizzes = response.data;
       this.totalQuizzes = response.pagination.total;
       this.totalPages = response.pagination.totalPages;
@@ -623,7 +628,7 @@ class AdminDashboard extends HTMLElement {
         const nav = document.createElement("nav");
         nav.className = "quiz-pagination";
         nav.setAttribute("aria-label", "Quiz pages navigation");
-        
+
         const pagination = document.createElement("pagination-controls");
         pagination.setAttribute("current-page", this.currentPage || 1);
         pagination.setAttribute("total-pages", this.totalPages);
@@ -631,12 +636,12 @@ class AdminDashboard extends HTMLElement {
           this.currentPage = event.detail.page;
           this.loadQuizzes();
         });
-        
+
         nav.appendChild(pagination);
         quizzesContainer.appendChild(nav);
       }
     } catch (error) {
-      console.error('Error in loadQuizzes:', error);
+      console.error("Error in loadQuizzes:", error);
       const quizzesContainer = this.shadowRoot.querySelector("#quizzes-list");
       if (quizzesContainer) {
         quizzesContainer.innerHTML = "";
@@ -672,13 +677,18 @@ class AdminDashboard extends HTMLElement {
       // Get recent quizzes with validation
       const response = await window.quizService.getQuizzesWithValidation({
         page: 1,
-        limit: 5
+        limit: 5,
       });
 
       // Check if response has the expected structure
-      if (!response || !response.data || !Array.isArray(response.data) || !response.pagination) {
-        console.error('Unexpected response structure:', response);
-        throw new Error('Invalid response format');
+      if (
+        !response ||
+        !response.data ||
+        !Array.isArray(response.data) ||
+        !response.pagination
+      ) {
+        console.error("Unexpected response structure:", response);
+        throw new Error("Invalid response format");
       }
 
       this.quizzes = response.data;
@@ -740,7 +750,7 @@ class AdminDashboard extends HTMLElement {
 
       contentSlot.appendChild(table);
     } catch (error) {
-      console.error('Error in loadRecentQuizzes:', error);
+      console.error("Error in loadRecentQuizzes:", error);
       const dashboardView = this.shadowRoot.querySelector("#dashboard-view");
       if (dashboardView) {
         const quizzesCard = dashboardView.querySelector(
