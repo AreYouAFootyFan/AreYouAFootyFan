@@ -11,12 +11,8 @@ export class QuizController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const validOnly = request.query.valid === "true";
-      const categoryId = request.query.category
-        ? parseInt(request.query.category as string)
-        : undefined;
-
-      const { page = 1, limit = 10 } = request.body;
+      const validOnly = request.body.valid === true;
+      const { page = 1, limit = 10, categoryId } = request.body;
 
       // Validate pagination parameters
       if (!Number.isInteger(page) || page < 1) {
@@ -26,13 +22,22 @@ export class QuizController {
         throw ErrorUtils.badRequest("Limit must be between 1 and 100");
       }
 
+      // Parse categoryId if provided
+      let parsedCategoryId: number | undefined;
+      if (categoryId !== undefined) {
+        parsedCategoryId = parseInt(categoryId.toString());
+        if (isNaN(parsedCategoryId)) {
+          throw ErrorUtils.badRequest(Message.Error.Category.INVALID);
+        }
+      }
+
       const userId = request.user?.id;
       const userRole = request.user?.role;
 
       const quizzes = await QuizService.getQuizzes({
         userId,
         userRole,
-        categoryId,
+        categoryId: parsedCategoryId,
         validOnly,
         pagination: {
           page,

@@ -45,12 +45,28 @@
     gap: clamp(0.75rem, 2vw, 1rem);
   }
   
+  .back-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s ease;
+  }
+
+  .back-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+  }
+  
   .section-title {
     /* Fluid typography */
     font-size: clamp(1.25rem, 4vw, 1.8rem);
     font-weight: 600;
     margin: 0;
     color: var(--gray-900);
+    flex: 1;
   }
   
   #category-filter {

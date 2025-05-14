@@ -11,9 +11,27 @@ class Quizzes extends HTMLElement {
     this.itemsPerPage = 8;
     this.totalPages = 1;
     this.isLoading = false;
+    this.categoryId = null;
+    this.categoryName = "All Categories";
   }
 
   async connectedCallback() {
+    // Get category ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    this.categoryId = urlParams.get('modeId');
+    
+    // If we have a category ID, get the category name
+    if (this.categoryId && window.categoryService) {
+      try {
+        const category = await window.categoryService.getCategoryById(this.categoryId);
+        if (category) {
+          this.categoryName = category.category_name;
+        }
+      } catch (error) {
+        console.error("Error fetching category:", error);
+      }
+    }
+    
     this.loadStyles();
     clearDOM(this.shadowRoot);
     await this.render();
@@ -51,8 +69,14 @@ class Quizzes extends HTMLElement {
 
     const sectionTitle = document.createElement("h2");
     sectionTitle.className = "section-title";
-    sectionTitle.textContent = "Choose a Quiz to test your Knowledge! ";
+    sectionTitle.textContent = `${this.categoryName} Quizzes`;
 
+    const backLink = document.createElement("a");
+    backLink.href = "/game-modes";
+    backLink.className = "back-link";
+    backLink.textContent = "← Back to Categories";
+
+    sectionHeader.appendChild(backLink);
     sectionHeader.appendChild(sectionTitle);
     contentSection.appendChild(sectionHeader);
 
@@ -202,7 +226,7 @@ class Quizzes extends HTMLElement {
       }
 
       const response = await window.quizService.getValidQuizzesByCategory(
-        this.getAttribute('mode-id'),
+        this.categoryId,
         this.currentPage,
         this.itemsPerPage
       );
