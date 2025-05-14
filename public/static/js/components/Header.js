@@ -153,15 +153,6 @@ class FootballQuizHeader extends HTMLElement {
 
     gameModeItem.appendChild(gameModeLink);
 
-    const liveScoreItem = document.createElement("li");
-    liveScoreItem.className = "nav-item";
-    const liveScoreLink = document.createElement("a");
-    liveScoreLink.href = "/live-scores";
-    liveScoreLink.className = "nav-link";
-    liveScoreLink.dataset.link = "";
-    liveScoreLink.textContent = "Live Scores";
-    liveScoreItem.appendChild(liveScoreLink);
-
     const adminItem = document.createElement("li");
     adminItem.className = "nav-item admin-item hidden";
 
@@ -175,8 +166,6 @@ class FootballQuizHeader extends HTMLElement {
 
     navList.appendChild(homeItem);
     navList.appendChild(gameModeItem);
-    navList.appendChild(liveScoreItem);
-
     navList.appendChild(adminItem);
     navInner.appendChild(navList);
     headerNav.appendChild(navInner);

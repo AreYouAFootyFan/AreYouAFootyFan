@@ -177,11 +177,11 @@ class QuizLeaderboard extends HTMLElement {
         const row = document.createElement('tr');
 
         const rankCell = document.createElement('td');
-        const rankSpan = document.createElement('span');
-        rankSpan.classList.add('rank');
-        if (player.rank <= 3) rankSpan.classList.add(`rank-${player.rank}`);
-        rankSpan.textContent = player.rank;
-        rankCell.appendChild(rankSpan);
+        const rankSection = document.createElement('section');
+        rankSection.classList.add('rank');
+        if (player.rank <= 3) rankSection.classList.add(`rank-${player.rank}`);
+        rankSection.textContent = player.rank;
+        rankCell.appendChild(rankSection);
     
         const usernameCell = document.createElement('td');
         usernameCell.textContent = player.username;

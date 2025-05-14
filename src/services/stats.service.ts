@@ -95,7 +95,7 @@ export class StatsService {
         topCategoriesResult.rows.forEach(category => {
             const topCategory = {
                 name: category.category_name,
-                accuracy: category.accuracy_rate
+                accuracy: category.accuracy_rate * 100
             };
 
             topCategories.push(topCategory);

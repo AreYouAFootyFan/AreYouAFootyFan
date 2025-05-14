@@ -1,5 +1,6 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { clearDOM } from "../../utils/domHelpers.js";
+import "../common/Pagination.js";
 
 class Quizzes extends HTMLElement {
   constructor() {
@@ -7,17 +8,33 @@ class Quizzes extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.quizzes = [];
     this.categories = [];
+    this.currentPage = 1;
+    this.itemsPerPage = 4;
+    this.totalPages = 1;
+    this.isLoading = false;
+    this.categoryId = null;
+    this.categoryName = "All Categories";
+  }
+
+  static get observedAttributes() {
+    return ['mode-id'];
+  }
+
+  async attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'mode-id' && oldValue !== newValue) {
+      this.categoryId = newValue;
+      if (this.isConnected) {
+        await this.loadData();
+      }
+    }
   }
 
   async connectedCallback() {
-    this.loadStyles();
-    clearDOM(this.shadowRoot);
-    await this.render();
+    await this.loadStyles();
+    this.render();
     this.setupEventListeners();
     await this.loadData();
-    this.checkUserRole();
   }
-
 
   async loadStyles() {
     await StyleLoader(
@@ -27,17 +44,14 @@ class Quizzes extends HTMLElement {
     );
   }
 
-
-  async render() {
+  render() {
     const shadow = this.shadowRoot;
     const homeContent = this.buildMainContent();
     shadow.appendChild(homeContent);
   }
 
-
   buildMainContent() {
     const main = document.createElement("main");
-
 
     // Content Section
     const contentSection = document.createElement("section");
@@ -48,8 +62,14 @@ class Quizzes extends HTMLElement {
 
     const sectionTitle = document.createElement("h2");
     sectionTitle.className = "section-title";
-    sectionTitle.textContent = "Choose a Quiz to test your Knowledge! ";
+    sectionTitle.textContent = `${this.categoryName} Quizzes`;
 
+    const backLink = document.createElement("a");
+    backLink.href = "/game-modes";
+    backLink.className = "back-link";
+    backLink.textContent = "← Back to Categories";
+
+    sectionHeader.appendChild(backLink);
     sectionHeader.appendChild(sectionTitle);
     contentSection.appendChild(sectionHeader);
 
@@ -72,58 +92,98 @@ class Quizzes extends HTMLElement {
     quizGrid.appendChild(loadingParagraph);
     contentSection.appendChild(quizGrid);
 
+    // Pagination Controls
+    const pagination = document.createElement("pagination-controls");
+    pagination.setAttribute("current-page", this.currentPage);
+    pagination.setAttribute("total-pages", this.totalPages);
+    pagination.addEventListener("page-change", (event) => {
+      this.handlePageChange(event.detail.page);
+    });
+    contentSection.appendChild(pagination);
+
     main.appendChild(contentSection);
-    
     return main;
   }
 
-  createEmptyQuizMessage() {
-    const article = document.createElement("article");
-    article.className = "empty-state";
-
-    const icon = document.createElement("p");
-    icon.className = "empty-icon";
-    icon.textContent = "🔍";
-
-    const title = document.createElement("h3");
-    title.className = "empty-title";
-    title.textContent = "No quizzes found";
-
-    const message = document.createElement("p");
-    message.className = "empty-message";
-    message.textContent = "Try selecting a different category or check back later for new quizzes.";
-
-    article.appendChild(icon);
-    article.appendChild(title);
-    article.appendChild(message);
-
-    return article;
+  setupEventListeners() {
+    // No need for pagination event listeners as they're handled by the pagination component
   }
 
-  setupEventListeners() {
-    
+  async handlePageChange(newPage) {
+    if (this.isLoading || newPage < 1 || newPage > this.totalPages) return;
+    this.currentPage = newPage;
+    await this.loadData();
+  }
+
+  updatePaginationControls() {
+    const pagination = this.shadowRoot.querySelector("pagination-controls");
+    if (pagination) {
+      pagination.setAttribute("current-page", this.currentPage);
+      pagination.setAttribute("total-pages", this.totalPages);
+    }
   }
 
   async loadData() {
+    if (!window.quizService) return;
+    
+    this.isLoading = true;
+    const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
+    
     try {
-      const dataPromises = [];
-      if (window.quizService) {
-        dataPromises.push(
-          window.quizService
-            .getValidQuizzesByCategory(this.getAttribute('mode-id'))
-            .then((quizzes) => {
-              this.quizzes = quizzes;
-              this.renderQuizzes();
-            })
-            .catch((error) => {
-              message.textContent = "Error loading quizzes:";
-            })
-        );
+//       const dataPromises = [];
+//       if (window.quizService) {
+//         dataPromises.push(
+//           window.quizService
+//             .getValidQuizzesByCategory(this.getAttribute('mode-id'))
+//             .then((quizzes) => {
+//               this.quizzes = quizzes;
+//               this.renderQuizzes();
+//             })
+//             .catch((error) => {
+//               message.textContent = "Error loading quizzes:";
+//             })
+//         );
+//       }
+      // Show loading state
+      if (quizGrid) {
+        clearDOM(quizGrid);
+        const loadingParagraph = document.createElement("p");
+        loadingParagraph.className = "loading";
+        const spinner = document.createElement("article");
+        spinner.className = "loading-spinner";
+        const loadingText = document.createElement("article");
+        loadingText.textContent = "Loading quizzes...";
+        loadingParagraph.appendChild(spinner);
+        loadingParagraph.appendChild(loadingText);
+        quizGrid.appendChild(loadingParagraph);
       }
 
-      await Promise.all(dataPromises);
+      const response = await window.quizService.getValidQuizzesByCategory(
+        this.categoryId,
+        this.currentPage,
+        this.itemsPerPage
+      );
+      
+      // Check if response has the expected structure
+      if (response && response.data) {
+        this.quizzes = response.data;
+        this.totalPages = response.pagination.totalPages;
+        this.currentPage = response.pagination.page;
+      } else {
+        // If response doesn't have the expected structure, treat it as an error
+        throw new Error('Invalid response format');
+      }
+      
+      this.renderQuizzes();
+      this.updatePaginationControls();
     } catch (error) {
       message.textContent = "Error loading data";
+      if (quizGrid) {
+        clearDOM(quizGrid);
+        quizGrid.appendChild(this.createErrorMessage());
+      }
+    } finally {
+      this.isLoading = false;
     }
   }
 
@@ -131,10 +191,10 @@ class Quizzes extends HTMLElement {
     const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
     if (!quizGrid) return;
 
-
     clearDOM(quizGrid);
 
-    if (this.quizzes.length === 0) {
+    // Check if this.quizzes is an array and has items
+    if (!Array.isArray(this.quizzes) || this.quizzes.length === 0) {
       const emptyQuiz = this.createEmptyQuizMessage();
       quizGrid.appendChild(emptyQuiz);
       return;
@@ -151,19 +211,51 @@ class Quizzes extends HTMLElement {
     });
   }
 
+  createEmptyQuizMessage() {
+    const emptyState = document.createElement("section");
+    emptyState.className = "empty-state";
 
-  checkUserRole() {
-    const authService = window.authService;
-    if (!authService) return;
+    const icon = document.createElement("p");
+    icon.className = "empty-icon";
+    icon.textContent = "📚";
 
-    const isQuizMaster = authService.isQuizMaster && authService.isQuizMaster();
+    const title = document.createElement("h3");
+    title.className = "empty-title";
+    title.textContent = "No Quizzes Found";
 
-    const notification = this.shadowRoot.querySelector("#quiz-maker-note");
-    if (notification && isQuizMaster) {
-      notification.style.display = "block";
-    }
+    const message = document.createElement("p");
+    message.className = "empty-message";
+    message.textContent = "There are no quizzes available in this category yet.";
+
+    emptyState.appendChild(icon);
+    emptyState.appendChild(title);
+    emptyState.appendChild(message);
+
+    return emptyState;
   }
 
+  createErrorMessage() {
+    const errorState = document.createElement("section");
+    errorState.className = "error-state";
+
+    const icon = document.createElement("p");
+    icon.className = "error-icon";
+    icon.textContent = "❌";
+
+    const title = document.createElement("h3");
+    title.className = "error-title";
+    title.textContent = "Error Loading Quizzes";
+
+    const message = document.createElement("p");
+    message.className = "error-message";
+    message.textContent = "Failed to load quizzes. Please try again later.";
+
+    errorState.appendChild(icon);
+    errorState.appendChild(title);
+    errorState.appendChild(message);
+
+    return errorState;
+  }
 
   handleStartQuiz(event, quizId) {
     event.preventDefault();
@@ -173,7 +265,6 @@ class Quizzes extends HTMLElement {
 
     const isQuizMaster = authService.isQuizMaster && authService.isQuizMaster();
     localStorage.setItem("selected_quiz_to_play_id", quizId);
-
     
     if (isQuizMaster) {
       this.showQuizMasterModal();
@@ -181,7 +272,6 @@ class Quizzes extends HTMLElement {
       window.location.href = "/quiz";
     }
   }
-
 
   showQuizMasterModal() {
     window.location.href = "/quiz";

@@ -35,7 +35,7 @@ class QuizResults extends HTMLElement {
             const loadingSection = document.createElement('section');
             loadingSection.classList.add('loading');
             
-            const loadingSpinner = document.createElement('span');
+            const loadingSpinner = document.createElement('section');
             loadingSpinner.classList.add('loading-spinner');
             
             const loadingText = document.createElement('p');

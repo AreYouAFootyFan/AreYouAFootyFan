@@ -61,7 +61,11 @@ class ProfileStats extends HTMLElement {
   
  
         statsContainer.appendChild(eloCard);
-        statsContainer.appendChild(rankCard);
+        
+        if(stats.role === 'Player'){
+            statsContainer.appendChild(rankCard);
+        }
+        
         statsContainer.appendChild(quizzesCard);
         statsContainer.appendChild(avgCard);
         

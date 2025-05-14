@@ -9,9 +9,22 @@ import {
 import { Config, User } from "../utils/enums";
 
 export class QuizModel {
-  static async findAll(): Promise<Quiz[]> {
-    const result = await db.query("SELECT * FROM active_quizzes");
-    return result.rows;
+  static async findAll(page: number = 1, limit: number = 10): Promise<{ quizzes: Quiz[], total: number }> {
+    const offset = (page - 1) * limit;
+    
+    const countResult = await db.query(
+      "SELECT COUNT(*) FROM active_quizzes"
+    );
+    
+    const result = await db.query(
+      "SELECT * FROM active_quizzes ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+      [limit, offset]
+    );
+    
+    return {
+      quizzes: result.rows,
+      total: parseInt(countResult.rows[0].count)
+    };
   }
 
   static async findByCreator(userId: number): Promise<Quiz[]> {
@@ -22,12 +35,23 @@ export class QuizModel {
     return result.rows;
   }
 
-  static async findByCategory(categoryId: number): Promise<Quiz[]> {
-    const result = await db.query(
-      "SELECT * FROM active_quizzes WHERE category_id = $1",
+  static async findByCategory(categoryId: number, page: number = 1, limit: number = 10): Promise<{ quizzes: Quiz[], total: number }> {
+    const offset = (page - 1) * limit;
+    
+    const countResult = await db.query(
+      "SELECT COUNT(*) FROM active_quizzes WHERE category_id = $1",
       [categoryId]
     );
-    return result.rows;
+    
+    const result = await db.query(
+      "SELECT * FROM active_quizzes WHERE category_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
+      [categoryId, limit, offset]
+    );
+    
+    return {
+      quizzes: result.rows,
+      total: parseInt(countResult.rows[0].count)
+    };
   }
 
   static async findById(id: number): Promise<Quiz | null> {

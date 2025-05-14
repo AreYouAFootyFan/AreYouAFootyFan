@@ -1,3 +1,5 @@
+import { PaginationOptions } from './pagination.types';
+
 export interface Quiz {
   quiz_id: number;
   quiz_title: string;
@@ -35,9 +37,10 @@ export interface QuizStatus {
 }
 
 export interface GetQuizzesOptions {
+  categoryId?: number;
+  validOnly?: boolean;
   userId?: number;
   userRole?: string;
-  categoryId?: number;
-  creatorId?: number;
-  validOnly?: boolean;
+  pagination?: PaginationOptions;
+  useValidationView?: boolean;
 }

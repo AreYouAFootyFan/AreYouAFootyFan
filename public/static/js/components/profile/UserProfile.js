@@ -18,7 +18,7 @@ class UserProfile extends HTMLElement {
   async connectedCallback() {
     this.userStats = await this.getStats();
     await this.loadStyles();
-    this.renderSkeleton();
+    this.render();
     this.loadUserData();
   }
 
@@ -30,7 +30,7 @@ class UserProfile extends HTMLElement {
     );
   }
 
-  renderSkeleton() {
+  render() {
     const main = document.createElement("main");
     main.className = "profile-page";
 

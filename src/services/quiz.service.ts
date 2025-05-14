@@ -3,6 +3,7 @@ import { CategoryModel } from "../models/category.model";
 import { ErrorUtils } from "../utils/error.utils";
 import { CreateQuizDto, UpdateQuizDto } from "../DTOs/quiz.dto";
 import { User, Message, Config } from "../utils/enums";
+import { PaginatedResponse } from "../types/pagination.types";
 import {
   Quiz,
   QuizWithQuestionCount,
@@ -15,7 +16,34 @@ import {
 export class QuizService {
   static async getQuizzes(
     options: GetQuizzesOptions = {}
-  ): Promise<(QuizWithQuestionCount | QuizWithValidation)[]> {
+  ): Promise<PaginatedResponse<QuizWithQuestionCount | QuizWithValidation>> {
+    const page = options.pagination?.page || 1;
+    const limit = options.pagination?.limit || 10;
+
+    if (options.useValidationView) {
+      const quizzesWithValidation = await QuizModel.findQuizzesWithValidation({
+        categoryId: options.categoryId,
+        minQuestions: Config.Value.MIN_QUESTIONS_PER_QUIZ,
+        userId: options.userId,
+        userRole: options.userRole,
+      });
+
+      const total = quizzesWithValidation.length;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedQuizzes = quizzesWithValidation.slice(startIndex, endIndex);
+
+      return {
+        data: paginatedQuizzes,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit)
+        }
+      };
+    }
+
     if (options.validOnly) {
       const quizzesWithValidation = await QuizModel.findQuizzesWithValidation({
         categoryId: options.categoryId,
@@ -24,28 +52,41 @@ export class QuizService {
         userRole: options.userRole,
       });
 
-      if (options.userId && options.userRole !== User.Role.MANAGER) {
-        return quizzesWithValidation
-          .filter((quiz) => quiz.is_valid)
-          .map((quiz) => ({
-            ...quiz,
-            in_progress: quiz.in_progress,
-          })) as QuizWithValidation[];
-      }
+      const filteredQuizzes = options.userId && options.userRole !== User.Role.MANAGER
+        ? quizzesWithValidation
+            .filter((quiz) => quiz.is_valid)
+            .map((quiz) => ({
+              ...quiz,
+              in_progress: quiz.in_progress,
+            }))
+        : quizzesWithValidation
+            .filter((quiz) => quiz.is_valid)
+            .map((quiz) => ({
+              ...quiz,
+              is_valid: true,
+            }));
 
-      return quizzesWithValidation
-        .filter((quiz) => quiz.is_valid)
-        .map((quiz) => ({
-          ...quiz,
-          is_valid: true,
-        })) as QuizWithValidation[];
+      const total = filteredQuizzes.length;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedQuizzes = filteredQuizzes.slice(startIndex, endIndex);
+
+      return {
+        data: paginatedQuizzes,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit)
+        }
+      };
     }
 
-    const quizzes = options.categoryId
-      ? await QuizModel.findByCategory(options.categoryId)
-      : await QuizModel.findAll();
+    const { quizzes, total } = options.categoryId
+      ? await QuizModel.findByCategory(options.categoryId, page, limit)
+      : await QuizModel.findAll(page, limit);
 
-    return Promise.all(
+    const quizzesWithCount = await Promise.all(
       quizzes.map(async (quiz) => {
         const questionCount = await QuizModel.countQuestions(quiz.quiz_id);
         return {
@@ -54,6 +95,16 @@ export class QuizService {
         } as QuizWithQuestionCount;
       })
     );
+
+    return {
+      data: quizzesWithCount,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
   }
 
   static async getQuizById(id: number): Promise<QuizWithCategoryAndCount> {

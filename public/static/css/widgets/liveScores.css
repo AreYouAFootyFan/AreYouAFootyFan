@@ -1,0 +1,281 @@
+.live-scores-widget {
+    /* Base styles */
+    --widget-spacing: clamp(1rem, 2vw, 2rem);
+    --widget-width: clamp(15rem, 90vw, 22rem);
+    --collapsed-width: clamp(11.25rem, 40vw, 12.5rem);
+    --widget-height: 25rem;
+    --collapsed-height: 3rem;
+    --transition-timing: 0.3s ease-in-out;
+    
+    background: var(--gray-100);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+    width: 100%;
+    max-width: var(--widget-width);
+    height: var(--widget-height);
+    position: fixed;
+    inset-block-end: var(--widget-spacing);
+    inset-inline-end: var(--widget-spacing);
+    z-index: 1000;
+    transition: max-width var(--transition-timing), height var(--transition-timing);
+    container-type: inline-size;
+    display: block !important;
+    visibility: visible !important;
+    overflow: hidden;
+}
+
+.live-scores-widget.collapsed {
+    max-width: var(--collapsed-width);
+    height: var(--collapsed-height);
+}
+
+.widget-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-block-end: 1rem;
+}
+
+.live-scores-widget.collapsed .widget-header {
+    margin-block-end: 0;
+    padding-block-end: 0;
+    border-block-end: none;
+}
+
+.title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.widget-header h2 {
+    margin: 0;
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    color: var(--gray-900);
+    white-space: nowrap;
+}
+
+.collapse-btn {
+    background: none;
+    border: none;
+    color: var(--gray-600);
+    cursor: pointer;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    transform-origin: center;
+    padding: 0;
+    font-size: 1.25rem;
+    transition: transform var(--transition-timing);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--gray-600);
+    cursor: pointer;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    font-size: 1.25rem;
+    padding: 0;
+}
+
+.non-header-content {
+    transition: opacity var(--transition-timing);
+    opacity: 1;
+    position: relative;
+    padding-top: 1rem;
+    border-top: 0.0625rem solid var(--gray-200);
+}
+
+.live-scores-widget.collapsed .non-header-content {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+}
+
+.league-select {
+    padding: 0.5rem;
+    border: 0.0625rem solid var(--gray-300);
+    border-radius: 0.25rem;
+    background: white;
+    color: var(--gray-900);
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.widget-content {
+    min-height: 12.5rem;
+    max-height: calc(var(--widget-height) - 8rem);
+    overflow-y: auto;
+    padding-bottom: 0.5rem;
+}
+
+.loading-text,
+.error-text,
+.prompt-text,
+.no-matches-text {
+    text-align: center;
+    padding: 2rem;
+    color: var(--gray-600);
+}
+
+.error-text {
+    color: var(--error);
+}
+
+.matches-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.league-header {
+    font-size: 1rem;
+    color: var(--gray-600);
+    margin: 1rem 0 0.5rem;
+    padding: 0 0.5rem;
+}
+
+.match-item {
+    padding: 1rem;
+    border-block-end: 0.0625rem solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: white;
+    margin-block-end: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.match-item:last-child {
+    margin-block-end: 0;
+}
+
+.teams {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.team-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.team-section.home {
+    justify-content: flex-end;
+    text-align: end;
+}
+
+.team-section.away {
+    justify-content: flex-start;
+    text-align: start;
+}
+
+.team-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.team-name {
+    font-weight: 500;
+    color: var(--gray-900);
+    font-size: clamp(0.8rem, 1vw, 0.9rem);
+}
+
+.score {
+    font-weight: bold;
+    color: var(--primary);
+    font-size: clamp(1rem, 1.1vw, 1.1rem);
+    padding: 0.25rem 0.5rem;
+    background: var(--gray-100);
+    border-radius: 0.25rem;
+    min-width: 3.75rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.match-time {
+    font-size: clamp(0.75rem, 0.8vw, 0.8rem);
+    color: var(--gray-600);
+    text-align: center;
+    display: block;
+}
+
+/* Scrollbar Styles */
+.widget-content::-webkit-scrollbar {
+    width: 0.375rem;
+}
+
+.widget-content::-webkit-scrollbar-track {
+    background: var(--gray-100);
+}
+
+.widget-content::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 0.1875rem;
+}
+
+.widget-content::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
+}
+
+/* Responsive Design */
+@container (inline-size <= 48rem) {
+    .live-scores-widget {
+        inset-block-end: 1rem;
+        inset-inline-end: 1rem;
+        max-width: calc(100% - 2rem);
+    }
+
+    .live-scores-widget.collapsed {
+        max-width: 11.25rem;
+    }
+}
+
+.button-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.close-btn:hover {
+    background-color: var(--gray-200);
+    color: var(--error);
+}
+
+.show-scores-btn {
+    position: fixed;
+    inset-block-end: var(--widget-spacing);
+    inset-inline-end: var(--widget-spacing);
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: block !important;
+    visibility: visible !important;
+}
+
+.show-scores-btn:hover {
+    background-color: var(--primary-dark);
+} 

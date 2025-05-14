@@ -79,3 +79,36 @@
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
+
+.content-grid {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr minmax(300px, 350px);
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+}
+
+.quiz-content {
+    width: 100%;
+}
+
+.sidebar {
+    position: sticky;
+    top: 1rem;
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

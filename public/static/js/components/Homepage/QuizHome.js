@@ -1,5 +1,8 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
+import { clearDOM } from "../../utils/domHelpers.js";
+import "../../components/widgets/LiveScores.js";
+
 
 class QuizHome extends HTMLElement {
   constructor() {
@@ -18,13 +21,42 @@ class QuizHome extends HTMLElement {
     this.setupEventListeners();
     await this.loadData();
     this.checkUserRole();
+    
+    // Create and append the live scores widget
+    this.initializeLiveScores();
+  }
+
+  disconnectedCallback() {
+    // Remove the live scores widget when navigating away
+    const liveScores = document.querySelector('live-scores');
+    if (liveScores) {
+      liveScores.remove();
+    }
+  }
+
+  initializeLiveScores() {
+    // Remove any existing live scores widget
+    const existingWidget = document.querySelector('live-scores');
+    if (existingWidget) {
+      existingWidget.remove();
+    }
+
+    // Create and append the new widget
+    const liveScores = document.createElement('live-scores');
+    document.body.appendChild(liveScores);
+
+    // Ensure the widget is visible in the DOM
+    liveScores.style.display = 'block';
+    liveScores.style.visibility = 'visible';
+    liveScores.style.opacity = '1';
   }
 
   async loadStyles() {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
-      "./static/css/home/home.css"
+      "./static/css/home/home.css",
+      "./static/css/widgets/liveScores.css"
     );
   }
 
@@ -97,10 +129,10 @@ class QuizHome extends HTMLElement {
     const loadingParagraph = document.createElement("p");
     loadingParagraph.className = "loading";
 
-    const spinner = document.createElement("span");
+    const spinner = document.createElement("section");
     spinner.className = "loading-spinner";
 
-    const loadingText = document.createElement("span");
+    const loadingText = document.createElement("section");
     loadingText.textContent = "Loading quizzes...";
 
     loadingParagraph.appendChild(spinner);
@@ -217,6 +249,11 @@ class QuizHome extends HTMLElement {
     try {
       const dataPromises = [];
 
+      // Verify football service is available
+      if (!window.footballService) {
+        console.warn("Football service not available. Live scores widget may not work.");
+      }
+
       if (window.categoryService) {
         dataPromises.push(
           window.categoryService
@@ -235,12 +272,25 @@ class QuizHome extends HTMLElement {
         dataPromises.push(
           window.quizService
             .getValidQuizzes()
-            .then((quizzes) => {
-              this.quizzes = quizzes;
-              this.renderQuizzes();
+            .then((response) => {
+              // Handle paginated response
+              if (response && response.data && Array.isArray(response.data)) {
+                this.quizzes = response.data;
+                this.renderQuizzes();
+              } else {
+                throw new Error('Invalid quiz data format');
+              }
             })
             .catch((error) => {
               this.showNotification("Error loading quizzes:", "error");
+              const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
+              if (quizGrid) {
+                quizGrid.innerHTML = "";
+                const errorMessage = document.createElement("p");
+                errorMessage.className = "error-message";
+                errorMessage.textContent = "Error loading quizzes. Please try again later.";
+                quizGrid.appendChild(errorMessage);
+              }
             })
         );
       }

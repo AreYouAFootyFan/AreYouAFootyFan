@@ -1,38 +1,17 @@
 import express from "express";
 import { CategoryController } from "../controllers/category.controller";
-import {
-  authenticate,
-  requireUsername,
-  requireRole,
-} from "../middleware/auth.middleware";
+import { authenticate, requireUsername, requireRole } from "../middleware/auth.middleware";
 import { User } from "../utils/enums";
 
 const router = express.Router();
 
-router.use(authenticate);
-
-router.get("/", CategoryController.getAllCategories);
+// Public routes
+router.get("/list", CategoryController.getAllCategories);
 router.get("/:id", CategoryController.getCategoryById);
 
-router.post(
-  "/",
-  requireUsername,
-  requireRole(User.Role.MANAGER),
-  CategoryController.createCategory
-);
-
-router.put(
-  "/:id",
-  requireUsername,
-  requireRole(User.Role.MANAGER),
-  CategoryController.updateCategory
-);
-
-router.delete(
-  "/:id",
-  requireUsername,
-  requireRole(User.Role.MANAGER),
-  CategoryController.deleteCategory
-);
+// Protected routes
+router.post("/", authenticate, requireUsername, requireRole(User.Role.MANAGER), CategoryController.createCategory);
+router.put("/:id", authenticate, requireUsername, requireRole(User.Role.MANAGER), CategoryController.updateCategory);
+router.delete("/:id", authenticate, requireUsername, requireRole(User.Role.MANAGER), CategoryController.deleteCategory);
 
 export default router;

@@ -1,12 +1,17 @@
 import categoryService from "../../services/category.service.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { clearDOM } from "../../utils/domHelpers.js";
+import "../common/Pagination.js";
+
 
 class GameModes extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.gameModes;
+    this.page = 1;
+    this.limit = 4;
+    this.totalPages = 1;
   }
 
   async connectedCallback() {
@@ -16,6 +21,11 @@ class GameModes extends HTMLElement {
     this.setupEventListeners();
   }
 
+  clearDOM(element) {
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
+  }
 
   async loadStyles() {
     await StyleLoader(
@@ -43,8 +53,7 @@ class GameModes extends HTMLElement {
 
     const heroTitle = document.createElement("h2");
     heroTitle.className = "hero-title";
-    heroTitle.textContent =
-      "Choose from a variety of game modes and challenge yourself";
+    heroTitle.textContent = "Choose from a variety of categories and challenge yourself";
 
     heroContent.appendChild(heroTitle);
     hero.appendChild(heroContent);
@@ -67,20 +76,49 @@ class GameModes extends HTMLElement {
     gameModeGrid.id = "game-mode-grid";
     gameModeGrid.className = "game-mode-grid";
 
+    // Add pagination component
+    const pagination = document.createElement("pagination-controls");
+    pagination.setAttribute("current-page", this.page);
+    pagination.setAttribute("total-pages", this.totalPages);
+    pagination.addEventListener("page-change", (event) => {
+      this.page = event.detail.page;
+      this.renderGameModeCards(gameModeGrid);
+    });
+
     this.renderGameModeCards(gameModeGrid);
     contentSection.appendChild(gameModeGrid);
+    contentSection.appendChild(pagination);
+
 
     main.appendChild(contentSection);
+
+    const leaderboard = document.createElement("quiz-leaderboard");
+    leaderboard.id = "leaderboard";
+    main.appendChild(leaderboard);
 
     return main;
   }
 
   async renderGameModeCards(container) {
-    this.gameModes = await categoryService.getAllCategories();
-    this.gameModes.forEach((gameMode) => {
+    const response = await categoryService.getAllCategories(this.page, this.limit);
+    this.gameModes = response.data;
+    this.totalPages = response.pagination.totalPages;
+    
+    // Clear existing cards
+    this.clearDOM(container);
+    
+    // Render game mode cards
+    this.gameModes.forEach(gameMode => {
       const card = this.createGameModeCard(gameMode);
       container.appendChild(card);
     });
+
+    // Update pagination
+    const pagination = this.shadowRoot.querySelector("pagination-controls");
+    if (pagination) {
+      pagination.setAttribute("current-page", this.page);
+      pagination.setAttribute("total-pages", this.totalPages);
+    }
   }
 
   createGameModeCard(gameMode) {

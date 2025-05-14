@@ -17,7 +17,7 @@ import questionService from "./services/question.service.js";
 import GameModeView from "./views/GameModeView.js";
 import PlayQuizView from "./views/PlayQuizVuew.js";
 
-
+// Initialize services
 window.authService = authService;
 window.categoryService = categoryService;
 window.quizService = quizService;
@@ -28,7 +28,10 @@ window.statsService = statsService;
 window.answerService = answerService;
 window.difficultyService = difficultyService;
 window.questionService = questionService;
+window.footballService = footballService;
 
+// Initialize football service with API key
+footballService.setApiKey('53aaedf27c25807e38c5e99b22a319ab');
 
 let currentView = null;
 
