@@ -3,12 +3,13 @@ import "../components/PlayQuizzes/PlayQuizzes.js";
 import "../components/Homepage/QuizHome.js";
 import "../components/Homepage/QuizCard.js";
 import "../components/Homepage/QuizLeaderboard.js";
-import "../components/Homepage/QuizCategoryFilter.js"
+import "../components/Homepage/QuizCategoryFilter.js";
+import { Message } from "../enums/index.js";
 
 export default class PlayQuizView extends AbstractView {
     constructor(params) {
         super();
-        this.setTitle("Play Quiz");
+        this.setTitle(Message.View.Title.PLAY_QUIZ);
         
         this.modeId = this.extractQueryParameter('modeId') || params?.id || null;
     }
