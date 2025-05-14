@@ -12,6 +12,8 @@ class LiveScores extends HTMLElement {
         this.isLoading = true;
         this.error = null;
         this.isCollapsed = false;
+        this.isVisible = localStorage.getItem('liveScoresVisible') !== 'false';
+        this.abortController = null;
         
         this.styleSheet = new CSSStyleSheet();
 
@@ -19,17 +21,30 @@ class LiveScores extends HTMLElement {
         this.handleLeagueChange = this.handleLeagueChange.bind(this);
         this.loadAllMatches = this.loadAllMatches.bind(this);
         this.toggleCollapse = this.toggleCollapse.bind(this);
+        this.toggleVisibility = this.toggleVisibility.bind(this);
     }
     
     async connectedCallback() {
         await this.loadStyles();
-        await this.loadAllMatches();
-        this.setupPolling();
+        if (this.isVisible) {
+            await this.loadAllMatches();
+            this.setupPolling();
+        }
+        this.render();
     }
     
     disconnectedCallback() {
+        this.cleanup();
+    }
+    
+    cleanup() {
         if (this.pollInterval) {
             clearInterval(this.pollInterval);
+            this.pollInterval = null;
+        }
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
         }
     }
     
@@ -64,11 +79,25 @@ class LiveScores extends HTMLElement {
                 throw new Error('Football service not available');
             }
             
+            // Cancel any existing request
+            if (this.abortController) {
+                this.abortController.abort();
+            }
+            
+            // Create new abort controller for this request
+            this.abortController = new AbortController();
+            
             this.isLoading = true;
             this.render();
             
             // Load all live matches first
-            const response = await window.footballService.getLiveMatches();
+            const response = await window.footballService.getLiveMatches(this.abortController.signal);
+            
+            // If widget was hidden during the request, don't update state
+            if (!this.isVisible) {
+                return;
+            }
+            
             this.allMatches = response.data;
             
             // Extract unique leagues from matches and create unique identifiers
@@ -121,10 +150,37 @@ class LiveScores extends HTMLElement {
         this.isCollapsed = !this.isCollapsed;
         this.render();
     }
+
+    toggleVisibility() {
+        this.isVisible = !this.isVisible;
+        localStorage.setItem('liveScoresVisible', this.isVisible);
+        
+        if (this.isVisible) {
+            this.loadAllMatches();
+            this.setupPolling();
+        } else {
+            this.cleanup();
+            this.allMatches = [];
+            this.filteredMatches = [];
+            this.leagues = [];
+            this.error = null;
+        }
+        
+        this.render();
+    }
     
     render() {
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+        }
+
+        if (!this.isVisible) {
+            const showButton = document.createElement('button');
+            showButton.className = 'show-scores-btn';
+            showButton.textContent = 'Show Live Scores';
+            showButton.addEventListener('click', this.toggleVisibility);
+            this.shadowRoot.appendChild(showButton);
+            return;
         }
         
         const container = document.createElement('aside');
@@ -139,13 +195,26 @@ class LiveScores extends HTMLElement {
         const title = document.createElement('h2');
         title.textContent = 'Live Scores';
         
+        const buttonGroup = document.createElement('section');
+        buttonGroup.className = 'button-group';
+        
         const collapseBtn = document.createElement('button');
         collapseBtn.className = 'collapse-btn';
         collapseBtn.innerHTML = this.isCollapsed ? '▼' : '▲';
+        collapseBtn.title = this.isCollapsed ? 'Expand' : 'Collapse';
         collapseBtn.addEventListener('click', this.toggleCollapse);
         
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.innerHTML = '&#215;';
+        closeBtn.title = 'Close Live Scores';
+        closeBtn.addEventListener('click', this.toggleVisibility);
+        
+        buttonGroup.appendChild(collapseBtn);
+        buttonGroup.appendChild(closeBtn);
+        
         titleSection.appendChild(title);
-        titleSection.appendChild(collapseBtn);
+        titleSection.appendChild(buttonGroup);
         header.appendChild(titleSection);
         
         // Only show league selector if there are multiple leagues and widget is not collapsed

@@ -8,7 +8,7 @@ class FootballService {
         this.API_KEY = apiKey;
     }
 
-    async makeRequest(endpoint) {
+    async makeRequest(endpoint, signal) {
         if (!this.API_KEY) {
             throw new Error('API key not set. Please configure your API key first.');
         }
@@ -18,7 +18,8 @@ class FootballService {
             headers: {
                 'x-rapidapi-host': 'v3.football.api-sports.io',
                 'x-rapidapi-key': this.API_KEY
-            }
+            },
+            signal
         });
 
         if (!response.ok) {
@@ -32,8 +33,8 @@ class FootballService {
         };
     }
 
-    async getLeagues() {
-        const response = await this.makeRequest('/leagues');
+    async getLeagues(signal) {
+        const response = await this.makeRequest('/leagues', signal);
         return {
             data: response.data.map(league => ({
                 league_id: league.league.id,
@@ -45,8 +46,8 @@ class FootballService {
         };
     }
 
-    async getLiveMatches(leagueId) {
-        const response = await this.makeRequest(`/fixtures?live=all${leagueId ? `&league=${leagueId}` : ''}`);
+    async getLiveMatches(signal, leagueId) {
+        const response = await this.makeRequest(`/fixtures?live=all${leagueId ? `&league=${leagueId}` : ''}`, signal);
         return {
             data: response.data.map(match => ({
                 match_id: match.fixture.id,

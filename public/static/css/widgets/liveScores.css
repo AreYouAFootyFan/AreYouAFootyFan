@@ -204,4 +204,50 @@
     .live-scores-widget.collapsed {
         max-width: 11.25rem;
     }
+}
+
+.button-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--gray-600);
+    cursor: pointer;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    font-size: 1.25rem;
+    padding: 0;
+}
+
+.close-btn:hover {
+    background-color: var(--gray-200);
+    color: var(--error);
+}
+
+.show-scores-btn {
+    position: fixed;
+    inset-block-end: var(--widget-spacing);
+    inset-inline-end: var(--widget-spacing);
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
+}
+
+.show-scores-btn:hover {
+    background-color: var(--primary-dark);
 } 
