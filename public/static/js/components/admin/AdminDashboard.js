@@ -562,7 +562,8 @@ class AdminDashboard extends HTMLElement {
         { key: "quiz_title", title: "Quiz Name" },
         { key: "category_name", title: "Category" },
         { key: "status", title: "Status" },
-        { key: "question_count", title: "Questions" },
+        { key: "total_questions", title: "Total Questions" },
+        { key: "valid_questions", title: "Valid Questions" },
         { key: "actions", title: "Actions" },
       ];
 
@@ -575,7 +576,8 @@ class AdminDashboard extends HTMLElement {
             value: quiz.is_valid ? "Live" : "Not Live",
             class: quiz.is_valid ? "valid-status" : "invalid-status",
           },
-          question_count: `${quiz.valid_question_count || 0}/${quiz.question_count || 0}`,
+          total_questions: quiz.question_count || 0,
+          valid_questions: quiz.valid_question_count || 0,
           actions: {
             type: "actions",
             items: [
@@ -695,6 +697,8 @@ class AdminDashboard extends HTMLElement {
       table.columns = [
         { key: "quiz_title", title: "Quiz Name" },
         { key: "status", title: "Status" },
+        { key: "total_questions", title: "Total Questions" },
+        { key: "valid_questions", title: "Valid Questions" },
         { key: "actions", title: "Actions" },
       ];
 
@@ -706,6 +710,8 @@ class AdminDashboard extends HTMLElement {
             value: quiz.is_valid ? "Live" : "Not Live",
             class: quiz.is_valid ? "valid-status" : "invalid-status",
           },
+          total_questions: quiz.question_count || 0,
+          valid_questions: quiz.valid_question_count || 0,
           actions: {
             type: "actions",
             items: [
