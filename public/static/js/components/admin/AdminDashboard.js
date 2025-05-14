@@ -7,6 +7,7 @@ import "./AdminNotification.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
 import { clearDOM } from "../../utils/domHelpers.js";
+import { navigator } from "../../index.js";
 
 class AdminDashboard extends HTMLElement {
   constructor() {
@@ -420,18 +421,18 @@ class AdminDashboard extends HTMLElement {
     try {
       const isAuthenticated = await authService.checkAuthentication();
       if (!isAuthenticated) {
-        window.location.href = "/login";
+        navigator("/login");
         return;
       }
 
       if (!authService.isQuizMaster()) {
-        window.location.href = "/home";
+        navigator("/home");
         return;
       }
 
       this.loadInitialData();
     } catch (error) {
-      window.location.href = "/login";
+      navigator("/login");
     }
   }
 
@@ -909,7 +910,7 @@ class AdminDashboard extends HTMLElement {
   handleManageQuestions(quizId, quizTitle) {
     localStorage.setItem("selected_quiz_id", quizId);
     localStorage.setItem("selected_quiz_title", quizTitle);
-    window.location.href = "/create-quiz";
+    navigator("/create-quiz");
   }
 
   confirmDeleteQuiz(quizId, quizTitle) {

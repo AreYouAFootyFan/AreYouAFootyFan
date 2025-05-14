@@ -2,7 +2,7 @@ import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
 import { clearDOM } from "../../utils/domHelpers.js";
 import "../../components/widgets/LiveScores.js";
-
+import { navigator } from "../../index.js";
 
 class QuizHome extends HTMLElement {
   constructor() {
@@ -21,14 +21,14 @@ class QuizHome extends HTMLElement {
     this.setupEventListeners();
     await this.loadData();
     this.checkUserRole();
-    
+
     // Create and append the live scores widget
     this.initializeLiveScores();
   }
 
   disconnectedCallback() {
     // Remove the live scores widget when navigating away
-    const liveScores = document.querySelector('live-scores');
+    const liveScores = document.querySelector("live-scores");
     if (liveScores) {
       liveScores.remove();
     }
@@ -36,19 +36,19 @@ class QuizHome extends HTMLElement {
 
   initializeLiveScores() {
     // Remove any existing live scores widget
-    const existingWidget = document.querySelector('live-scores');
+    const existingWidget = document.querySelector("live-scores");
     if (existingWidget) {
       existingWidget.remove();
     }
 
     // Create and append the new widget
-    const liveScores = document.createElement('live-scores');
+    const liveScores = document.createElement("live-scores");
     document.body.appendChild(liveScores);
 
     // Ensure the widget is visible in the DOM
-    liveScores.style.display = 'block';
-    liveScores.style.visibility = 'visible';
-    liveScores.style.opacity = '1';
+    liveScores.style.display = "block";
+    liveScores.style.visibility = "visible";
+    liveScores.style.opacity = "1";
   }
 
   async loadStyles() {
@@ -251,7 +251,9 @@ class QuizHome extends HTMLElement {
 
       // Verify football service is available
       if (!window.footballService) {
-        console.warn("Football service not available. Live scores widget may not work.");
+        console.warn(
+          "Football service not available. Live scores widget may not work."
+        );
       }
 
       if (window.categoryService) {
@@ -278,7 +280,7 @@ class QuizHome extends HTMLElement {
                 this.quizzes = response.data;
                 this.renderQuizzes();
               } else {
-                throw new Error('Invalid quiz data format');
+                throw new Error("Invalid quiz data format");
               }
             })
             .catch((error) => {
@@ -288,7 +290,8 @@ class QuizHome extends HTMLElement {
                 quizGrid.innerHTML = "";
                 const errorMessage = document.createElement("p");
                 errorMessage.className = "error-message";
-                errorMessage.textContent = "Error loading quizzes. Please try again later.";
+                errorMessage.textContent =
+                  "Error loading quizzes. Please try again later.";
                 quizGrid.appendChild(errorMessage);
               }
             })
@@ -372,7 +375,7 @@ class QuizHome extends HTMLElement {
     if (isQuizMaster) {
       this.showQuizMasterModal();
     } else {
-      window.location.href = "/quiz";
+      navigator("/quiz");
     }
   }
 
@@ -390,22 +393,22 @@ class QuizHome extends HTMLElement {
     }
   }
 
-  showNotification(message, type = 'success') {
-      const notification = this.shadowRoot.querySelector('#notification');
-      if (!notification) return;
-      
-      while (notification.firstChild) {
-          notification.removeChild(notification.firstChild);
-      }
-      
-      notification.textContent = message;
-      notification.className = `notification ${type}`;
-      notification.classList.add('visible');
-      
-      setTimeout(() => {
-          notification.classList.remove('visible');
-      }, 3000);
+  showNotification(message, type = "success") {
+    const notification = this.shadowRoot.querySelector("#notification");
+    if (!notification) return;
+
+    while (notification.firstChild) {
+      notification.removeChild(notification.firstChild);
     }
+
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.classList.add("visible");
+
+    setTimeout(() => {
+      notification.classList.remove("visible");
+    }, 3000);
+  }
 }
 
 customElements.define("quiz-home", QuizHome);

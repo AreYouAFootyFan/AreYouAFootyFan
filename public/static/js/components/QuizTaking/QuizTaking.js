@@ -65,7 +65,7 @@ class QuizTaking extends HTMLElement {
     const authService = window.authService;
 
     if (!authService || !authService.isAuthenticated()) {
-      window.location.href = "/";
+      navigator("/");
       return;
     }
 
@@ -84,7 +84,6 @@ class QuizTaking extends HTMLElement {
       this.timer = null;
     }
   }
-
 
   async startQuiz(quizId) {
     try {
@@ -249,7 +248,6 @@ class QuizTaking extends HTMLElement {
           this.currentQuestionIndex === this.quizData.totalQuestions - 1
       );
     } catch (error) {
-
       const questionElement = this.shadowRoot.querySelector("quiz-question");
       if (questionElement) {
         questionElement.setAttribute("submitting", "false");
@@ -342,7 +340,7 @@ class QuizTaking extends HTMLElement {
       this.submitAnswer();
     } else {
       await this.submitNoAnswer();
-      
+
       questionElement.setAttribute("time-up", "true");
 
       this.currentQuestion.answers.forEach((answer) => {
@@ -390,7 +388,6 @@ class QuizTaking extends HTMLElement {
       questionElement.setAttribute("feedback-points", response.points_earned);
       questionElement.setAttribute("score", this.score);
       questionElement.setAttribute("no-answer", "true");
-
     } catch (error) {
       this.showError("Error submitting no-answer:", error);
     }

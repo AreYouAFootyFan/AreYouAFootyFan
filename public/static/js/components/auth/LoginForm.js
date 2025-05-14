@@ -1,3 +1,4 @@
+import { navigator } from "../../index.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { clearDOM } from "../../utils/domHelpers.js";
 
@@ -178,7 +179,7 @@ class LoginForm extends HTMLElement {
       const isAuthenticated = await window.authService.checkAuthentication();
       if (isAuthenticated) {
         if (window.authService.hasUsername()) {
-          window.location.href = "/home";
+          navigator("/home");
         } else {
           this.displayUsernameForm();
         }
@@ -197,7 +198,7 @@ class LoginForm extends HTMLElement {
       if (result.requiresUsername) {
         this.displayUsernameForm();
       } else {
-        window.location.href = "/home";
+        navigator("/home");
       }
     } catch (error) {
       this.hideLoadingState();
@@ -272,7 +273,7 @@ class LoginForm extends HTMLElement {
     try {
       this.showLoadingState("Setting username...");
       await window.authService.setUsername(username);
-      window.location.href = "/home";
+      navigator("/home");
     } catch (error) {
       this.hideLoadingState();
       this.showError("Failed to set username. It might already be taken.");

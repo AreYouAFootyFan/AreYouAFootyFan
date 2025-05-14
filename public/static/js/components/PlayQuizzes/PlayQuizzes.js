@@ -1,3 +1,4 @@
+import { navigator } from "../../index.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { clearDOM } from "../../utils/domHelpers.js";
 import "../common/Pagination.js";
@@ -17,11 +18,11 @@ class Quizzes extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['mode-id'];
+    return ["mode-id"];
   }
 
   async attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'mode-id' && oldValue !== newValue) {
+    if (name === "mode-id" && oldValue !== newValue) {
       this.categoryId = newValue;
       if (this.isConnected) {
         await this.loadData();
@@ -125,25 +126,25 @@ class Quizzes extends HTMLElement {
 
   async loadData() {
     if (!window.quizService) return;
-    
+
     this.isLoading = true;
     const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
-    
+
     try {
-//       const dataPromises = [];
-//       if (window.quizService) {
-//         dataPromises.push(
-//           window.quizService
-//             .getValidQuizzesByCategory(this.getAttribute('mode-id'))
-//             .then((quizzes) => {
-//               this.quizzes = quizzes;
-//               this.renderQuizzes();
-//             })
-//             .catch((error) => {
-//               message.textContent = "Error loading quizzes:";
-//             })
-//         );
-//       }
+      //       const dataPromises = [];
+      //       if (window.quizService) {
+      //         dataPromises.push(
+      //           window.quizService
+      //             .getValidQuizzesByCategory(this.getAttribute('mode-id'))
+      //             .then((quizzes) => {
+      //               this.quizzes = quizzes;
+      //               this.renderQuizzes();
+      //             })
+      //             .catch((error) => {
+      //               message.textContent = "Error loading quizzes:";
+      //             })
+      //         );
+      //       }
       // Show loading state
       if (quizGrid) {
         clearDOM(quizGrid);
@@ -163,7 +164,7 @@ class Quizzes extends HTMLElement {
         this.currentPage,
         this.itemsPerPage
       );
-      
+
       // Check if response has the expected structure
       if (response && response.data) {
         this.quizzes = response.data;
@@ -171,9 +172,9 @@ class Quizzes extends HTMLElement {
         this.currentPage = response.pagination.page;
       } else {
         // If response doesn't have the expected structure, treat it as an error
-        throw new Error('Invalid response format');
+        throw new Error("Invalid response format");
       }
-      
+
       this.renderQuizzes();
       this.updatePaginationControls();
     } catch (error) {
@@ -203,7 +204,7 @@ class Quizzes extends HTMLElement {
     this.quizzes.forEach((quiz) => {
       const quizCard = document.createElement("quiz-card");
       quizCard.quiz = quiz;
-      
+
       quizCard.addEventListener("quiz-start", (e) => {
         this.handleStartQuiz(e, quiz.quiz_id);
       });
@@ -225,7 +226,8 @@ class Quizzes extends HTMLElement {
 
     const message = document.createElement("p");
     message.className = "empty-message";
-    message.textContent = "There are no quizzes available in this category yet.";
+    message.textContent =
+      "There are no quizzes available in this category yet.";
 
     emptyState.appendChild(icon);
     emptyState.appendChild(title);
@@ -265,16 +267,16 @@ class Quizzes extends HTMLElement {
 
     const isQuizMaster = authService.isQuizMaster && authService.isQuizMaster();
     localStorage.setItem("selected_quiz_to_play_id", quizId);
-    
+
     if (isQuizMaster) {
       this.showQuizMasterModal();
     } else {
-      window.location.href = "/quiz";
+      navigator("/quiz");
     }
   }
 
   showQuizMasterModal() {
-    window.location.href = "/quiz";
+    navigator("/quiz");
   }
 }
 

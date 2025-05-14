@@ -1,8 +1,8 @@
+import { navigator } from "../../index.js";
 import categoryService from "../../services/category.service.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { clearDOM } from "../../utils/domHelpers.js";
 import "../common/Pagination.js";
-
 
 class GameModes extends HTMLElement {
   constructor() {
@@ -53,7 +53,8 @@ class GameModes extends HTMLElement {
 
     const heroTitle = document.createElement("h2");
     heroTitle.className = "hero-title";
-    heroTitle.textContent = "Choose from a variety of categories and challenge yourself";
+    heroTitle.textContent =
+      "Choose from a variety of categories and challenge yourself";
 
     heroContent.appendChild(heroTitle);
     hero.appendChild(heroContent);
@@ -89,7 +90,6 @@ class GameModes extends HTMLElement {
     contentSection.appendChild(gameModeGrid);
     contentSection.appendChild(pagination);
 
-
     main.appendChild(contentSection);
 
     const leaderboard = document.createElement("quiz-leaderboard");
@@ -100,15 +100,18 @@ class GameModes extends HTMLElement {
   }
 
   async renderGameModeCards(container) {
-    const response = await categoryService.getAllCategories(this.page, this.limit);
+    const response = await categoryService.getAllCategories(
+      this.page,
+      this.limit
+    );
     this.gameModes = response.data;
     this.totalPages = response.pagination.totalPages;
-    
+
     // Clear existing cards
     this.clearDOM(container);
-    
+
     // Render game mode cards
-    this.gameModes.forEach(gameMode => {
+    this.gameModes.forEach((gameMode) => {
       const card = this.createGameModeCard(gameMode);
       container.appendChild(card);
     });
@@ -167,7 +170,7 @@ class GameModes extends HTMLElement {
   }
 
   handleGameModeSelection(modeId) {
-    window.location.href = `/play-quiz?modeId=${encodeURIComponent(modeId)}`;
+    navigator(`/play-quiz?modeId=${encodeURIComponent(modeId)}`);
   }
 }
 

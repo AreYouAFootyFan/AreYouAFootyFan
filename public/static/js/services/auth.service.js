@@ -1,3 +1,5 @@
+import { navigator } from "../index.js";
+
 class AuthService {
   constructor() {
     this.token = localStorage.getItem("authToken");
@@ -86,7 +88,7 @@ class AuthService {
     this.user = null;
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
-    window.location.href = "/";
+    navigator("/");
   }
 
   async refreshUserData() {

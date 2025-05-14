@@ -3,6 +3,7 @@ import { Role } from "../../enums/users.js";
 import "./ProfileStats.js";
 import "./ProfileCategories.js";
 import "./ProfileBadges.js";
+import { navigator } from "../../index.js";
 
 class UserProfile extends HTMLElement {
   constructor() {
@@ -12,7 +13,6 @@ class UserProfile extends HTMLElement {
     this.userStats = null;
     this.errorMessage = "";
     this.styleSheet = new CSSStyleSheet();
-    
   }
 
   async connectedCallback() {
@@ -26,7 +26,7 @@ class UserProfile extends HTMLElement {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
-      "./static/css/profile/profile.css",
+      "./static/css/profile/profile.css"
     );
   }
 
@@ -69,117 +69,116 @@ class UserProfile extends HTMLElement {
     this.shadowRoot.appendChild(main);
   }
 
-    createUserStatsView(userStats) {
-        const authService = window.authService;
+  createUserStatsView(userStats) {
+    const authService = window.authService;
 
-        const statsView = document.createElement("section");
-        statsView.id = "user-stats-view";
+    const statsView = document.createElement("section");
+    statsView.id = "user-stats-view";
 
-        // Header
-        const statsHeader = document.createElement("header");
-        statsHeader.className = "page-header";
+    // Header
+    const statsHeader = document.createElement("header");
+    statsHeader.className = "page-header";
 
-        const statsTitle = document.createElement("h1");
-        statsTitle.textContent = "Your Quiz Stats";
+    const statsTitle = document.createElement("h1");
+    statsTitle.textContent = "Your Quiz Stats";
 
-        statsHeader.appendChild(statsTitle);
-        statsView.appendChild(statsHeader);
+    statsHeader.appendChild(statsTitle);
+    statsView.appendChild(statsHeader);
 
-        // Stats Summary
-        const user = authService.getUser();
-        const isPlayer = user.role_id === 1;
+    // Stats Summary
+    const user = authService.getUser();
+    const isPlayer = user.role_id === 1;
 
-        const statsSummary = document.createElement("profile-stats");
-        statsSummary.id = "user-stats-summary";
-        if(isPlayer){
-            statsSummary.setAttribute("statistics", JSON.stringify(
-                {   
-                    role: 'Player',
-                    elo: userStats.elo,
-                    rank: userStats.rank,
-                    quizzesCompleted: userStats.quizzesCompleted,
-                    avgScore: userStats.avgScore,
-                }
-            ));
-        }else{
-            statsSummary.setAttribute("statistics", JSON.stringify(
-                {   
-                    role: 'Manager',
-                    quizzesCreated: userStats.quizzesCreated,
-                    quizAttempts: userStats.quizAttempts,
-                    rank: userStats.rank,
-                    avgScore: userStats.avgScore,
-                }
-            ));
-        }
-
-        statsView.appendChild(statsSummary);
-
-        // Cards for Top Categories and Badges
-        const statsCards = document.createElement("section");
-        statsCards.className = "admin-cards";
-
-        // Top Categories Card
-        const topCategoriesCard = document.createElement("top-categories");
-        topCategoriesCard.setAttribute("title", "Your 3 Best Categories");
-
-        const categories = [];
-        userStats.topCategories.forEach(category => {
-            if(isPlayer){
-                categories.push({
-                    role: 'Player',
-                    name: category.name,
-                    averageScore: parseFloat(category.accuracy)
-                });
-            }else{
-                categories.push({
-                    role: 'Manager',
-                    name: category.name,
-                    count: parseInt(category.count)
-                });
-            }
-
-        });
-
-        topCategoriesCard.setAttribute("data-top-categories", 
-            JSON.stringify(categories)
-        );
-
-        statsCards.appendChild(topCategoriesCard);
-
-        // Badges Card
-        if(isPlayer){
-            const badgesCard = document.createElement("badges-earned");
-            badgesCard.setAttribute("title", "Badges Earned");
-            
-            const badgeMap = {
-                Rookie: { src: './static/img/badges/rookie.png', alt: '' },
-                Amateur: { src: './static/img/badges/amateur.png', alt: '' },
-                'Semi-Pro': { src: './static/img/badges/semi-pro.png', alt: '' },
-                Professional: { src: './static/img/badges/professional.png', alt: '' },
-                'World Class': { src: './static/img/badges/world-class.png', alt: '' },
-                Legendary: { src: './static/img/badges/legendary.png', alt: '' }
-            };
-
-            const badges = userStats.badges
-                .map(name => badgeMap[name])
-                .filter(Boolean);
-
-            badgesCard.setAttribute("badges-earned", 
-                JSON.stringify(badges)
-            );
-            statsCards.appendChild(badgesCard);
-        }
-        statsView.appendChild(statsCards);
-
-        return statsView;
+    const statsSummary = document.createElement("profile-stats");
+    statsSummary.id = "user-stats-summary";
+    if (isPlayer) {
+      statsSummary.setAttribute(
+        "statistics",
+        JSON.stringify({
+          role: "Player",
+          elo: userStats.elo,
+          rank: userStats.rank,
+          quizzesCompleted: userStats.quizzesCompleted,
+          avgScore: userStats.avgScore,
+        })
+      );
+    } else {
+      statsSummary.setAttribute(
+        "statistics",
+        JSON.stringify({
+          role: "Manager",
+          quizzesCreated: userStats.quizzesCreated,
+          quizAttempts: userStats.quizAttempts,
+          rank: userStats.rank,
+          avgScore: userStats.avgScore,
+        })
+      );
     }
 
+    statsView.appendChild(statsSummary);
+
+    // Cards for Top Categories and Badges
+    const statsCards = document.createElement("section");
+    statsCards.className = "admin-cards";
+
+    // Top Categories Card
+    const topCategoriesCard = document.createElement("top-categories");
+    topCategoriesCard.setAttribute("title", "Your 3 Best Categories");
+
+    const categories = [];
+    userStats.topCategories.forEach((category) => {
+      if (isPlayer) {
+        categories.push({
+          role: "Player",
+          name: category.name,
+          averageScore: parseFloat(category.accuracy),
+        });
+      } else {
+        categories.push({
+          role: "Manager",
+          name: category.name,
+          count: parseInt(category.count),
+        });
+      }
+    });
+
+    topCategoriesCard.setAttribute(
+      "data-top-categories",
+      JSON.stringify(categories)
+    );
+
+    statsCards.appendChild(topCategoriesCard);
+
+    // Badges Card
+    if (isPlayer) {
+      const badgesCard = document.createElement("badges-earned");
+      badgesCard.setAttribute("title", "Badges Earned");
+
+      const badgeMap = {
+        Rookie: { src: "./static/img/badges/rookie.png", alt: "" },
+        Amateur: { src: "./static/img/badges/amateur.png", alt: "" },
+        "Semi-Pro": { src: "./static/img/badges/semi-pro.png", alt: "" },
+        Professional: { src: "./static/img/badges/professional.png", alt: "" },
+        "World Class": { src: "./static/img/badges/world-class.png", alt: "" },
+        Legendary: { src: "./static/img/badges/legendary.png", alt: "" },
+      };
+
+      const badges = userStats.badges
+        .map((name) => badgeMap[name])
+        .filter(Boolean);
+
+      badgesCard.setAttribute("badges-earned", JSON.stringify(badges));
+      statsCards.appendChild(badgesCard);
+    }
+    statsView.appendChild(statsCards);
+
+    return statsView;
+  }
 
   async loadUserData() {
     try {
       if (!authService || !authService.isAuthenticated()) {
-        window.location.href = "/";
+        navigator("/");
         return;
       }
 
@@ -198,17 +197,17 @@ class UserProfile extends HTMLElement {
     }
   }
 
-    async getStats() {
-        try {
-            const statsService = window.statsService;
-            if (statsService) {
-                const stats = await statsService.getProfileStats();
-                return stats;
-            }
-            } catch (error) {
-            statsComponent.setError(error);
-        }
+  async getStats() {
+    try {
+      const statsService = window.statsService;
+      if (statsService) {
+        const stats = await statsService.getProfileStats();
+        return stats;
+      }
+    } catch (error) {
+      statsComponent.setError(error);
     }
+  }
 
   updateUserInfo() {
     const profileContent = this.shadowRoot.querySelector("#profile-content");

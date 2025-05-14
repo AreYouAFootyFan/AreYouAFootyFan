@@ -1,6 +1,7 @@
 import { StyleLoader } from "../utils/cssLoader.js";
 import { Role } from "../enums/users.js";
 import { clearDOM } from "../utils/domHelpers.js";
+import { navigator } from "../index.js";
 
 class FootballQuizHeader extends HTMLElement {
   constructor() {
@@ -101,8 +102,10 @@ class FootballQuizHeader extends HTMLElement {
     profileButton.type = "button";
     profileButton.className = "logout-btn";
     profileButton.textContent = "Profile";
-    profileButton.addEventListener("click", () => {
-      window.location.href = "/profile";
+    profileButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      // history.pushState({}, "", "/profile");
+      navigator("/profile");
     });
     profileItem.appendChild(profileButton);
 
@@ -142,6 +145,16 @@ class FootballQuizHeader extends HTMLElement {
 
     homeItem.appendChild(homeLink);
 
+    // const profileItem = document.createElement("li");
+    // profileItem.className = "nav-item";
+
+    // const profile = document.createElement("a");
+    // profile.href = "/profile";
+    // profile.className = "nav-link";
+    // profile.dataset.link = "";
+    // profile.textContent = "Profile";
+    // profileItem.appendChild(profile);
+
     const gameModeItem = document.createElement("li");
     gameModeItem.className = "nav-item";
 
@@ -165,6 +178,7 @@ class FootballQuizHeader extends HTMLElement {
     adminItem.appendChild(adminLink);
 
     navList.appendChild(homeItem);
+    // navList.appendChild(profileItem);
     navList.appendChild(gameModeItem);
     navList.appendChild(adminItem);
     navInner.appendChild(navList);
@@ -281,7 +295,7 @@ class FootballQuizHeader extends HTMLElement {
     } else {
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
-      window.location.href = "/";
+      navigator("/");
     }
   }
 
