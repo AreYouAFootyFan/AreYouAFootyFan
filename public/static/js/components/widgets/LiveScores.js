@@ -127,13 +127,13 @@ class LiveScores extends HTMLElement {
             this.shadowRoot.removeChild(this.shadowRoot.firstChild);
         }
         
-        const container = document.createElement('section');
+        const container = document.createElement('aside');
         container.className = `live-scores-widget ${this.isCollapsed ? 'collapsed' : ''}`;
         
         const header = document.createElement('header');
         header.className = 'widget-header';
         
-        const titleSection = document.createElement('div');
+        const titleSection = document.createElement('section');
         titleSection.className = 'title-section';
         
         const title = document.createElement('h2');
@@ -175,7 +175,7 @@ class LiveScores extends HTMLElement {
         
         // Content area - only show if not collapsed
         if (!this.isCollapsed) {
-            const content = document.createElement('section');
+            const content = document.createElement('main');
             content.className = 'widget-content';
             
             if (this.isLoading) {
@@ -215,7 +215,6 @@ class LiveScores extends HTMLElement {
                     if (!this.selectedLeague) {
                         const leagueHeader = document.createElement('h3');
                         leagueHeader.className = 'league-header';
-                        // Find the league info to get the display name
                         const leagueInfo = this.leagues.find(league => league.league_name === leagueName);
                         leagueHeader.textContent = leagueInfo ? leagueInfo.display_name : leagueName;
                         leagueSection.appendChild(leagueHeader);
@@ -225,30 +224,30 @@ class LiveScores extends HTMLElement {
                         const matchItem = document.createElement('li');
                         matchItem.className = 'match-item';
                         
-                        const teams = document.createElement('section');
+                        const teams = document.createElement('article');
                         teams.className = 'teams';
                         
-                        const homeTeamSection = document.createElement('div');
+                        const homeTeamSection = document.createElement('section');
                         homeTeamSection.className = 'team-section home';
                         
-                        const homeTeam = document.createElement('span');
+                        const homeTeam = document.createElement('strong');
                         homeTeam.className = 'team-name';
                         homeTeam.textContent = match.home_team;
                         homeTeamSection.appendChild(homeTeam);
                         
-                        const score = document.createElement('span');
+                        const score = document.createElement('output');
                         score.className = 'score';
                         score.textContent = `${match.home_score} - ${match.away_score}`;
                         
-                        const awayTeamSection = document.createElement('div');
+                        const awayTeamSection = document.createElement('section');
                         awayTeamSection.className = 'team-section away';
                         
-                        const awayTeam = document.createElement('span');
+                        const awayTeam = document.createElement('strong');
                         awayTeam.className = 'team-name';
                         awayTeam.textContent = match.away_team;
                         awayTeamSection.appendChild(awayTeam);
                         
-                        const matchTime = document.createElement('span');
+                        const matchTime = document.createElement('time');
                         matchTime.className = 'match-time';
                         matchTime.textContent = match.match_time;
                         
