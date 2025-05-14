@@ -115,8 +115,9 @@
 
 .widget-content {
     min-height: 12.5rem;
-    max-height: calc(var(--widget-height) - 6rem);
+    max-height: calc(var(--widget-height) - 8rem);
     overflow-y: auto;
+    padding-bottom: 0.5rem;
 }
 
 .loading-text,
