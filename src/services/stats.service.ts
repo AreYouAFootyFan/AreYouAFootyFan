@@ -63,7 +63,6 @@ export class StatsService {
         questions_answered: parseInt(questionsAnsweredResult.rows[0].count),
       };
     } catch (error) {
-      console.error("Error fetching dashboard stats:", error);
       throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
     }
   }
@@ -124,7 +123,6 @@ export class StatsService {
         }
 
     } catch (error) {
-      console.error("Error fetching dashboard stats:", error);
       throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
     }
   }
@@ -175,7 +173,6 @@ export class StatsService {
         }
 
     } catch (error) {
-      console.error("Error fetching dashboard stats:", error);
       throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
     }
   }

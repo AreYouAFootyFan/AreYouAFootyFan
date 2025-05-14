@@ -6,6 +6,7 @@ import "./AdminCard.js";
 import "./AdminNotification.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
 import { Role } from "../../enums/users.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 
 class AdminDashboard extends HTMLElement {
   constructor() {
@@ -43,53 +44,40 @@ class AdminDashboard extends HTMLElement {
   }
 
   render() {
-    // Clear existing content
-    while (this.shadowRoot.firstChild) {
-      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-    }
+    clearDOM(this.shadowRoot);
 
-    // Create main container
     const main = document.createElement("main");
     main.className = "admin-page";
 
-    // Create admin container
     const adminContainer = document.createElement("section");
     adminContainer.className = "admin-container";
 
-    // Create sidebar
     const sidebar = document.createElement("admin-sidebar");
     sidebar.setAttribute("active-view", this.viewMode);
 
     adminContainer.appendChild(sidebar);
 
-    // Create content section
     const adminContent = document.createElement("section");
     adminContent.className = "admin-content";
 
-    // Dashboard View
     const dashboardView = this.createDashboardView();
     adminContent.appendChild(dashboardView);
 
-    // Quizzes View
     const quizzesView = this.createQuizzesView();
     adminContent.appendChild(quizzesView);
 
-    // Categories View
     const categoriesView = this.createCategoriesView();
     adminContent.appendChild(categoriesView);
 
     adminContainer.appendChild(adminContent);
     main.appendChild(adminContainer);
 
-    // Create modals
     const categoryModal = this.createCategoryModal();
     const confirmModal = this.createConfirmModal();
 
-    // Create notification toast
     const notification = document.createElement("admin-notification");
     notification.id = "notification-toast";
 
-    // Add everything to shadow DOM
     this.shadowRoot.appendChild(main);
     this.shadowRoot.appendChild(categoryModal);
     this.shadowRoot.appendChild(confirmModal);
@@ -103,7 +91,6 @@ class AdminDashboard extends HTMLElement {
       this.viewMode === "dashboard" ? "" : "hidden"
     }`;
 
-    // Dashboard Header
     const dashboardHeader = document.createElement("header");
     dashboardHeader.className = "admin-header";
 
@@ -125,16 +112,13 @@ class AdminDashboard extends HTMLElement {
 
     dashboardView.appendChild(dashboardHeader);
 
-    // Dashboard Stats
     const adminStats = document.createElement("admin-stats");
     adminStats.id = "admin-stats";
     dashboardView.appendChild(adminStats);
 
-    // Dashboard Cards
     const adminCards = document.createElement("section");
     adminCards.className = "admin-cards";
 
-    // Recent Quizzes Card
     const recentQuizzesCard = document.createElement("admin-card");
     recentQuizzesCard.setAttribute("title", "Recently Created Quizzes");
     recentQuizzesCard.setAttribute("action", "View All");
@@ -147,7 +131,6 @@ class AdminDashboard extends HTMLElement {
 
     recentQuizzesCard.appendChild(quizzesLoading);
 
-    // Categories Card
     const categoriesCard = document.createElement("admin-card");
     categoriesCard.setAttribute("title", "Categories");
     categoriesCard.setAttribute("action", "View All");
@@ -175,7 +158,6 @@ class AdminDashboard extends HTMLElement {
       this.viewMode === "quizzes" ? "" : "hidden"
     }`;
 
-    // Quizzes Header
     const quizzesHeader = document.createElement("header");
     quizzesHeader.className = "admin-header";
 
@@ -197,7 +179,6 @@ class AdminDashboard extends HTMLElement {
 
     quizzesView.appendChild(quizzesHeader);
 
-    // Quizzes Card
     const quizzesCard = document.createElement("admin-card");
     quizzesCard.setAttribute("full-width", "");
 
@@ -221,7 +202,6 @@ class AdminDashboard extends HTMLElement {
       this.viewMode === "categories" ? "" : "hidden"
     }`;
 
-    // Categories Header
     const categoriesHeader = document.createElement("header");
     categoriesHeader.className = "admin-header";
 
@@ -242,7 +222,6 @@ class AdminDashboard extends HTMLElement {
 
     categoriesView.appendChild(categoriesHeader);
 
-    // Categories Card
     const categoriesCard = document.createElement("admin-card");
     categoriesCard.setAttribute("full-width", "");
 
@@ -660,16 +639,12 @@ class AdminDashboard extends HTMLElement {
       ];
 
       table.data = recentQuizzes.map((quiz) => {
-        const isReady =
-          (quiz.valid_questions || 0) >= 5 &&
-          quiz.valid_questions == quiz.question_count;
-
         return {
           quiz_title: quiz.quiz_title,
           status: {
             type: "badge",
-            value: isReady ? "Live" : "Not Live",
-            class: isReady ? "valid-status" : "invalid-status",
+            value: quiz.is_valid ? "Live" : "Not Live",
+            class: quiz.is_valid ? "valid-status" : "invalid-status",
           },
           actions: {
             type: "actions",

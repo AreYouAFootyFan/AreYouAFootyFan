@@ -16,17 +16,7 @@ import difficultyService from "./services/difficulty.service.js";
 import questionService from "./services/question.service.js";
 import GameModeView from "./views/GameModeView.js";
 import PlayQuizView from "./views/PlayQuizVuew.js";
-import "./services/api.service.js";
-import "./services/category.service.js";
-import "./services/difficulty.service.js";
-import "./services/quiz.service.js";
-import "./services/question.service.js";
-import "./services/answer.service.js";
-import "./services/quiz-attempt.service.js";
-import "./services/quiz-validator.service.js";
-import "./services/stats.service.js";
-import "./services/difficulty.service.js";
-import "./services/question.service.js";
+
 
 window.authService = authService;
 window.categoryService = categoryService;
@@ -100,12 +90,7 @@ const router = async () => {
   
   if (header) {
     header.style.display = isLoginPage ? 'none' : 'block';
-    // Update header UI after view is loaded
     if (!isLoginPage) {
-      // We need to update the header UI twice:
-      // 1. Immediately to catch the current auth state
-      // 2. After a short delay to ensure everything is loaded
-      updateHeaderUI();
       setTimeout(updateHeaderUI, 100);
     }
   }
@@ -123,7 +108,6 @@ const router = async () => {
   }
 };
 
-// Global function to update header UI - can be called from anywhere
 function updateHeaderUI() {
   const header = document.querySelector('football-quiz-header');
   if (header && typeof header.updateUserUI === 'function') {
@@ -134,10 +118,8 @@ function updateHeaderUI() {
   }
 }
 
-// Make updateHeaderUI accessible globally
 window.updateHeaderUI = updateHeaderUI;
 
-// Listen for auth state changes in the authService
 const originalLoginWithGoogle = authService.loginWithGoogle;
 if (originalLoginWithGoogle) {
   authService.loginWithGoogle = async function(...args) {
@@ -165,12 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
             navigator(event.target.href);
         }
     });
-
-    // const script = document.createElement('script');
-    // script.src = 'https://accounts.google.com/gsi/client';
-    // script.async = true;
-    // script.defer = true;
-    // document.head.appendChild(script);
 
     router();
 });

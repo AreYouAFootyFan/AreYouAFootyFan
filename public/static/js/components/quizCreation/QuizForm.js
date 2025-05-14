@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class QuizForm extends HTMLElement {
   static get observedAttributes() {
     return ["editing", "quiz-id", "quiz-title"];
@@ -48,9 +49,7 @@ class QuizForm extends HTMLElement {
   render() {
     const isEditing = this.getAttribute("editing") === "true";
 
-    while (this.shadowRoot.firstChild) {
-      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-    }
+    clearDOM(this.shadowRoot);
 
     const form = document.createElement("form");
     form.className = "creator-form";

@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class BadgesCard extends HTMLElement {
     static get observedAttributes() {
         return ['title', 'action', 'action-view', 'full-width'];
@@ -31,9 +32,7 @@ class BadgesCard extends HTMLElement {
     }
     
     render() {
-        while (this.shadowRoot.firstChild) {
-            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-        }
+        clearDOM(this.shadowRoot);
 
         const title = this.getAttribute('title') || '';
         const fullWidth = this.hasAttribute('full-width');
@@ -61,11 +60,7 @@ class BadgesCard extends HTMLElement {
         grid.className = 'badges-grid';
         grid.setAttribute('aria-label', 'Badges Earned');
 
-        try {
-            badges = JSON.parse(badgesJson || '[]');
-        } catch (e) {
-            console.error('Invalid JSON in badges-earned:', e);
-        }
+        badges = JSON.parse(badgesJson || '[]');
 
         badges.forEach(badge => {
             const figure = document.createElement('figure');

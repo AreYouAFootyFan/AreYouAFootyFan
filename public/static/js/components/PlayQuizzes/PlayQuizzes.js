@@ -116,14 +116,14 @@ class Quizzes extends HTMLElement {
               this.renderQuizzes();
             })
             .catch((error) => {
-              console.error("Error loading quizzes:", error);
+              message.textContent = "Error loading quizzes:";
             })
         );
       }
 
       await Promise.all(dataPromises);
     } catch (error) {
-      console.error("Error loading data:", error);
+      message.textContent = "Error loading data";
     }
   }
 
@@ -184,7 +184,6 @@ class Quizzes extends HTMLElement {
 
 
   showQuizMasterModal() {
-    // Could show a modal asking if they want to play or edit. Placeholder implementation - redirect to quiz page
     window.location.href = "/quiz";
   }
 }

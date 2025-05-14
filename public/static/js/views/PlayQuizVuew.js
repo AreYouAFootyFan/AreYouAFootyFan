@@ -1,5 +1,4 @@
 import AbstractView from "./AbstractView.js";
-import Quizzes from "../components/PlayQuizzes/PlayQuizzes.js";
 import "../components/PlayQuizzes/PlayQuizzes.js";
 import "../components/Homepage/QuizHome.js";
 import "../components/Homepage/QuizCard.js";
@@ -31,6 +30,5 @@ export default class PlayQuizView extends AbstractView {
     }
     
     async mount() {
-        // Any additional mounting logic can go here
     }
 }

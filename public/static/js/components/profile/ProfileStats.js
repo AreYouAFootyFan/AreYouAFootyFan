@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 import "../shared/StatsCard.js";
 
 class ProfileStats extends HTMLElement {
@@ -22,9 +23,7 @@ class ProfileStats extends HTMLElement {
     }
     
     render() {
-        while (this.shadowRoot.firstChild) {
-            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-        }
+        clearDOM(this.shadowRoot);
         
         const statsContainer = document.createElement('section');
         const stats = JSON.parse(this.getAttribute('statistics'));
@@ -75,9 +74,7 @@ class ProfileStats extends HTMLElement {
     }
     
     setError(error) {
-        while (this.shadowRoot.firstChild) {
-            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-        }
+        clearDOM(this.shadowRoot);
         
         const errorMessage = document.createElement('p');
         errorMessage.className = 'error-message';

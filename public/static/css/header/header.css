@@ -158,7 +158,7 @@ header {
 }
 
 .dropdown-menu.visible {
-    max-height: 10rem; /* Enough height to show content */
+    max-height: 10rem;
 }
 
 .logout-btn {

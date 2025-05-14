@@ -36,33 +36,36 @@ class QuizLeaderboard extends HTMLElement {
     }
     
     createLeaderboardSection() {
-        const section = document.createElement('section');
-        section.className = 'leaderboard';
-    
-        const inner = document.createElement('section');
-        inner.className = 'leaderboard-inner';
-    
-        const header = document.createElement('header');
-        header.className = 'section-header';
-    
-        const title = document.createElement('h2');
-        title.className = 'section-title';
-        title.textContent = 'Top Players';
-    
-        const button = document.createElement('button');
-        button.className = 'view-all';
-        button.id = 'view-full-leaderboard';
-        button.textContent = 'View Full Leaderboard';
-    
-        header.appendChild(title);
-        header.appendChild(button);
-    
-        const table = this.createLeaderboardTable('leaderboard-body', 'Loading leaderboard data...');
-        inner.appendChild(header);
-        inner.appendChild(table);
-    
-        section.appendChild(inner);
-        return section;
+      const section = document.createElement("section");
+      section.className = "leaderboard";
+
+      const inner = document.createElement("section");
+      inner.className = "leaderboard-inner";
+
+      const header = document.createElement("header");
+      header.className = "section-header";
+
+      const title = document.createElement("h2");
+      title.className = "section-title";
+      title.textContent = "Top Players";
+
+      const button = document.createElement("button");
+      button.className = "view-all";
+      button.id = "view-full-leaderboard";
+      button.textContent = "View Full Leaderboard";
+
+      header.appendChild(title);
+      header.appendChild(button);
+
+      const table = this.createLeaderboardTable(
+        "leaderboard-body",
+        "Loading leaderboard data..."
+      );
+      inner.appendChild(header);
+      inner.appendChild(table);
+
+      section.appendChild(inner);
+      return section;
     }
     
     createModalSection() {
@@ -230,7 +233,6 @@ class QuizLeaderboard extends HTMLElement {
             });
         }
         
-        // Handle modal background clicks
         const leaderboardModal = this.shadowRoot.querySelector('#full-leaderboard-modal');
         if (leaderboardModal) {
             leaderboardModal.addEventListener('click', (e) => {

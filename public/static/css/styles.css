@@ -124,13 +124,11 @@ p {
   margin-bottom: 1rem;
 } 
 
-/* Common Utility Styles */
 .hidden {
     display: none !important;
 }
 
 
-/* Navigation Components */
 .nav-list {
     display: flex;
     list-style: none;
@@ -138,7 +136,6 @@ p {
     padding: 0;
 }
 
-/* Container Layouts */
 .container {
     width: 100%;
     max-width: var(--container-max-width);
@@ -146,12 +143,10 @@ p {
     padding: 0 1rem;
 }
 
-/* Icon Styles */
 i {
     font-style: normal;
 }
 
-/* Common Dropdowns */
 .dropdown-menu {
     background-color: white;
     border-radius: 0.25rem;
@@ -165,7 +160,6 @@ i {
     padding: 0.5rem;
 }
 
-/* Common Structural Host */
 :host {
     display: block;
     width: 100%;

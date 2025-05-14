@@ -20,7 +20,6 @@ class StatsCard extends HTMLElement {
         }
         return true;
     } catch (error) {
-        console.error('Error loading QuizCard styles:', error);
         return false;
     }
   }
