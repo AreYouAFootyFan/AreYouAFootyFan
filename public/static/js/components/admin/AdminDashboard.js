@@ -24,6 +24,19 @@ class AdminDashboard extends HTMLElement {
     this.confirmDeleteQuiz = this.confirmDeleteQuiz.bind(this);
 
     this.styleSheet = new CSSStyleSheet();
+    this.styleSheet.replaceSync(`
+      .table-wrapper {
+        margin-bottom: 2rem;
+        width: 100%;
+      }
+
+      .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+        width: 100%;
+      }
+    `);
   }
 
   async connectedCallback() {
@@ -540,6 +553,10 @@ class AdminDashboard extends HTMLElement {
         return;
       }
 
+      // Create a section for the table content
+      const tableSection = document.createElement("section");
+      tableSection.className = "quiz-table-section";
+
       const table = document.createElement("admin-table");
       table.columns = [
         { key: "quiz_title", title: "Quiz Name" },
@@ -597,9 +614,14 @@ class AdminDashboard extends HTMLElement {
         }
       });
 
-      quizzesContainer.appendChild(table);
+      tableSection.appendChild(table);
+      quizzesContainer.appendChild(tableSection);
 
       if (this.totalPages > 1) {
+        const nav = document.createElement("nav");
+        nav.className = "quiz-pagination";
+        nav.setAttribute("aria-label", "Quiz pages navigation");
+        
         const pagination = document.createElement("pagination-controls");
         pagination.setAttribute("current-page", this.currentPage || 1);
         pagination.setAttribute("total-pages", this.totalPages);
@@ -607,7 +629,9 @@ class AdminDashboard extends HTMLElement {
           this.currentPage = event.detail.page;
           this.loadQuizzes();
         });
-        quizzesContainer.appendChild(pagination);
+        
+        nav.appendChild(pagination);
+        quizzesContainer.appendChild(nav);
       }
     } catch (error) {
       console.error('Error in loadQuizzes:', error);
