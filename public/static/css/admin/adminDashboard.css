@@ -25,7 +25,6 @@
     width: 100%;
 }
 
-/* Admin Headers */
 .admin-header {
     display: flex;
     justify-content: space-between;
@@ -50,7 +49,6 @@
     gap: 0.75rem;
 }
 
-/* Admin Views */
 .admin-view {
     width: 100%;
 }
@@ -59,7 +57,6 @@
     display: none;
 }
 
-/* Quiz Table Section */
 .quiz-table-section {
     margin-block-end: 2rem;
     width: 100%;
@@ -72,7 +69,6 @@
     width: 100%;
 }
 
-/* Quiz Pagination */
 .quiz-pagination {
     display: flex;
     justify-content: center;
@@ -80,14 +76,12 @@
     width: 100%;
 }
 
-/* Ensure table takes full width */
 admin-table {
     width: 100%;
     min-width: 100%;
     display: block;
 }
 
-/* Container for both table and pagination */
 #quizzes-list {
     display: flex;
     flex-direction: column;
@@ -95,13 +89,12 @@ admin-table {
     gap: 1rem;
 }
 
-/* Action buttons */
+
 .action-icon {
     font-style: normal;
     font-size: 1rem;
 }
 
-/* Loading and Error States */
 .loading-text,
 .error-message,
 .empty-message {
@@ -114,7 +107,6 @@ admin-table {
     color: var(--error-color);
 }
 
-/* Responsive Layout Adjustments */
 .admin-content {
     padding-inline: clamp(1rem, 5vw, 2rem);
 }

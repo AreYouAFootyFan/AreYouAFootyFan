@@ -1,5 +1,4 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
-import { clearDOM } from "../../utils/domHelpers.js";
 class QuizResults extends HTMLElement {
     constructor() {
         super();

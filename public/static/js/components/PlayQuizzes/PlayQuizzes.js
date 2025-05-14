@@ -130,6 +130,20 @@ class Quizzes extends HTMLElement {
     const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
     
     try {
+//       const dataPromises = [];
+//       if (window.quizService) {
+//         dataPromises.push(
+//           window.quizService
+//             .getValidQuizzesByCategory(this.getAttribute('mode-id'))
+//             .then((quizzes) => {
+//               this.quizzes = quizzes;
+//               this.renderQuizzes();
+//             })
+//             .catch((error) => {
+//               message.textContent = "Error loading quizzes:";
+//             })
+//         );
+//       }
       // Show loading state
       if (quizGrid) {
         clearDOM(quizGrid);
@@ -163,7 +177,7 @@ class Quizzes extends HTMLElement {
       this.renderQuizzes();
       this.updatePaginationControls();
     } catch (error) {
-      console.error("Error loading quizzes:", error);
+      message.textContent = "Error loading data";
       if (quizGrid) {
         clearDOM(quizGrid);
         quizGrid.appendChild(this.createErrorMessage());

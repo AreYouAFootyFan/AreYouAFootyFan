@@ -1,11 +1,9 @@
 import categoryService from "../../services/category.service.js";
-import quizService from "../../services/quiz.service.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 import "../common/Pagination.js";
 
-/**
- * GameModes component displays available game modes for selection
- */
+
 class GameModes extends HTMLElement {
   constructor() {
     super();
@@ -18,7 +16,7 @@ class GameModes extends HTMLElement {
 
   async connectedCallback() {
     await this.loadStyles();
-    this.clearDOM(this.shadowRoot);
+    clearDOM(this.shadowRoot);
     await this.render();
     this.setupEventListeners();
   }
@@ -47,7 +45,6 @@ class GameModes extends HTMLElement {
   buildMainContent() {
     const main = document.createElement("main");
 
-    // Hero Section
     const hero = document.createElement("section");
     hero.className = "hero";
 
@@ -62,7 +59,6 @@ class GameModes extends HTMLElement {
     hero.appendChild(heroContent);
     main.appendChild(hero);
 
-    // Content Section
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
 
@@ -76,7 +72,6 @@ class GameModes extends HTMLElement {
     sectionHeader.appendChild(sectionTitle);
     contentSection.appendChild(sectionHeader);
 
-    // Game Modes Grid
     const gameModeGrid = document.createElement("section");
     gameModeGrid.id = "game-mode-grid";
     gameModeGrid.className = "game-mode-grid";
@@ -96,10 +91,10 @@ class GameModes extends HTMLElement {
 
 
     main.appendChild(contentSection);
+
     const leaderboard = document.createElement("quiz-leaderboard");
     leaderboard.id = "leaderboard";
     main.appendChild(leaderboard);
-
 
     return main;
   }
@@ -134,37 +129,36 @@ class GameModes extends HTMLElement {
     const iconContainer = document.createElement("section");
     iconContainer.className = "mode-icon";
     iconContainer.textContent = gameMode.icon;
-    
+
     const content = document.createElement("section");
     content.className = "mode-content";
-    
+
     const title = document.createElement("h3");
     title.className = "mode-title";
     title.textContent = gameMode.category_name;
-    
+
     const description = document.createElement("p");
     description.className = "mode-description";
     description.textContent = gameMode.category_description;
-    
+
     const playButton = document.createElement("button");
     playButton.className = "mode-play-button";
     playButton.textContent = "Play Now";
-    
+
     content.appendChild(title);
     content.appendChild(description);
-    
+
     card.appendChild(content);
     card.appendChild(playButton);
-    
+
     return card;
   }
 
   setupEventListeners() {
     this.shadowRoot.addEventListener("click", (event) => {
-      // Handle game mode selection
       const playButton = event.target.closest(".mode-play-button");
       const card = event.target.closest(".game-mode-card");
-      
+
       if (playButton && card) {
         const modeId = card.dataset.modeId;
         this.handleGameModeSelection(modeId);

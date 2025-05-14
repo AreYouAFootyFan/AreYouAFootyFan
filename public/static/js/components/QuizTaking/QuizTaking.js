@@ -216,7 +216,7 @@ class QuizTaking extends HTMLElement {
       const userResponseService = window.userResponseService;
 
       if (!userResponseService && !window.quizAttemptService) {
-        console.warn("Response services not available.");
+        this.showError("Response services not available.");
         return;
       }
 
@@ -236,7 +236,7 @@ class QuizTaking extends HTMLElement {
           });
         }
       } catch (e) {
-        console.warn("API call failed.", e);
+        this.showError("API call failed.");
         return;
       }
 
@@ -376,7 +376,7 @@ class QuizTaking extends HTMLElement {
         questionElement.setAttribute("submitting", "true");
       }
       if (!window.quizAttemptService) {
-        console.warn("User response service not available.");
+        this.showError("User response service not available.");
         return;
       }
       const response = await window.quizAttemptService.submitNoAnswer({
@@ -392,7 +392,7 @@ class QuizTaking extends HTMLElement {
       questionElement.setAttribute("no-answer", "true");
 
     } catch (error) {
-      console.error("Error submitting no-answer:", error);
+      this.showError("Error submitting no-answer:", error);
     }
   }
 
@@ -401,7 +401,7 @@ class QuizTaking extends HTMLElement {
       const quizAttemptService = window.quizAttemptService;
 
       if (!quizAttemptService) {
-        console.warn("Quiz attempt service not available.");
+        this.showError("Quiz attempt service not available.");
         return;
       }
 
@@ -412,7 +412,7 @@ class QuizTaking extends HTMLElement {
         );
         this.showQuizResults(summary);
       } catch (e) {
-        console.warn("API call failed.", e);
+        this.showError("API call failed.");
         throw e;
       }
 

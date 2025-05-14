@@ -1,5 +1,6 @@
 import { StyleLoader } from "../utils/cssLoader.js";
 import { Role } from "../enums/users.js";
+import { clearDOM } from "../utils/domHelpers.js";
 
 class FootballQuizHeader extends HTMLElement {
   constructor() {
@@ -30,9 +31,7 @@ class FootballQuizHeader extends HTMLElement {
   }
 
   render() {
-    while (this.shadowRoot.firstChild) {
-      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-    }
+    clearDOM(this.shadowRoot);
 
     const header = document.createElement("header");
 
@@ -240,7 +239,6 @@ class FootballQuizHeader extends HTMLElement {
     const authService = window.authService;
 
     if (!authService) {
-      console.warn("Auth service not available");
       return;
     }
 

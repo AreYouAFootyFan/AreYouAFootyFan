@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class CategoryCard extends HTMLElement {
     static get observedAttributes() {
         return ['title', 'action', 'action-view', 'full-width'];
@@ -31,12 +32,9 @@ class CategoryCard extends HTMLElement {
     }
     
     render() {
-        while (this.shadowRoot.firstChild) {
-            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-        }
+        clearDOM(this.shadowRoot);
 
         const title = this.getAttribute('title') || '';
-        const fullWidth = this.hasAttribute('full-width');
 
         const card = document.createElement('article');
         card.className = 'categories-card';
@@ -57,12 +55,8 @@ class CategoryCard extends HTMLElement {
 
         const topCategoriesJson = this.getAttribute('data-top-categories');
         let topCategories = [];
+        topCategories = JSON.parse(topCategoriesJson || '[]');
 
-        try {
-            topCategories = JSON.parse(topCategoriesJson || '[]');
-        } catch (e) {
-            console.error('Invalid JSON in data-top-categories');
-        }
 
         const podium = document.createElement('section');
         podium.className = 'podium';

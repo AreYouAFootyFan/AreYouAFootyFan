@@ -3,6 +3,7 @@ import "./QuestionList.js";
 import "./QuestionForm.js";
 import "./AnswerList.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class QuizCreator extends HTMLElement {
     constructor() {
         super();
@@ -53,9 +54,7 @@ class QuizCreator extends HTMLElement {
     }
     
     render() {
-        while (this.shadowRoot.firstChild) {
-            this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-        }
+        clearDOM(this.shadowRoot);
 
         this.quizId = localStorage.getItem('selected_quiz_id');
         this.quizTitle = localStorage.getItem('selected_quiz_title');
@@ -95,15 +94,12 @@ class QuizCreator extends HTMLElement {
         const sidebar = document.createElement('aside');
         sidebar.className = 'creator-sidebar';
         
-        // Create navigation container that holds both steps and button
         const navigationContainer = document.createElement('section');
         navigationContainer.className = 'creator-navigation';
         
-        // Create steps container
         const stepsContainer = document.createElement('section');
         stepsContainer.className = 'sidebar-steps';
         
-        // Step 1
         const step1 = document.createElement('section');
         step1.className = `step-indicator ${this.viewMode === 'quiz' ? 'active' : this.isEditing ? 'completed' : ''}`;
         
@@ -119,7 +115,6 @@ class QuizCreator extends HTMLElement {
         step1.appendChild(step1Label);
         stepsContainer.appendChild(step1);
         
-        // Step 2
         const step2 = document.createElement('section');
         step2.className = `step-indicator ${this.viewMode === 'questions' ? 'active' : ''}`;
         
@@ -135,7 +130,6 @@ class QuizCreator extends HTMLElement {
         step2.appendChild(step2Label);
         stepsContainer.appendChild(step2);
         
-        // Step 3
         const step3 = document.createElement('section');
         step3.className = `step-indicator ${this.viewMode === 'question-form' || this.viewMode === 'answers' ? 'active' : ''}`;
         
@@ -151,15 +145,12 @@ class QuizCreator extends HTMLElement {
         step3.appendChild(step3Label);
         stepsContainer.appendChild(step3);
         
-        // Back to Dashboard button now in the navigation container
         const sidebarActions = document.createElement('section');
         sidebarActions.className = 'sidebar-actions';
                 
-        // Append both steps and actions to the navigation container
         navigationContainer.appendChild(stepsContainer);
         navigationContainer.appendChild(sidebarActions);
         
-        // Append navigation container to sidebar
         sidebar.appendChild(navigationContainer);
         
         return sidebar;
@@ -397,7 +388,7 @@ class QuizCreator extends HTMLElement {
         try {
             const categoryService = window.categoryService;
             if (!categoryService) {
-                console.warn("Category service not available");
+                this.showNotification("Category service not available","error");
                 return;
             }
             
@@ -418,7 +409,7 @@ class QuizCreator extends HTMLElement {
         try {
             const difficultyService = window.difficultyService;
             if (!difficultyService) {
-                console.warn("Difficulty service not available");
+                this.showNotification("Difficulty service not available","error");
                 return;
             }
             
@@ -440,7 +431,7 @@ class QuizCreator extends HTMLElement {
         try {
             const quizService = window.quizService;
             if (!quizService) {
-                console.warn("Quiz service not available");
+                this.showNotification("Quiz service not available","error");
                 return;
             }
             
@@ -473,7 +464,7 @@ class QuizCreator extends HTMLElement {
             questionsList.setLoading(true);
             
             if (!window.quizValidatorService) {
-                console.warn("Quiz validator service not available");
+                this.showNotification("Quiz validator service not available", "error");
                 return;
             }
             

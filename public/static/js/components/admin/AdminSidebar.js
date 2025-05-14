@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 
 class AdminSidebar extends HTMLElement {
   static get observedAttributes() {
@@ -33,9 +34,7 @@ class AdminSidebar extends HTMLElement {
   }
 
   render() {
-    while (this.shadowRoot.firstChild) {
-      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-    }
+    clearDOM(this.shadowRoot);
 
     const activeView = this.getAttribute("active-view") || "dashboard";
 
