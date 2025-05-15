@@ -2,6 +2,7 @@ import { StyleLoader } from "../utils/cssLoader.js";
 import { Role } from "../enums/index.js";
 import { clearDOM } from "../utils/domHelpers.js";
 import { navigator } from "../index.js";
+import authService from "../services/auth.service.js";
 
 class FootballQuizHeader extends HTMLElement {
   constructor() {
@@ -109,6 +110,19 @@ class FootballQuizHeader extends HTMLElement {
     });
     profileItem.appendChild(profileButton);
 
+    const quizmakerItem = document.createElement("li");
+
+    const quizmakerButton = document.createElement("button");
+    quizmakerButton.id = "quizmaker-button";
+    quizmakerButton.type = "button";
+    quizmakerButton.className = "logout-btn";
+    quizmakerButton.textContent = "Become a quizmaker";
+
+  
+    quizmakerItem.appendChild(quizmakerButton);
+    
+    dropdownList.appendChild(quizmakerItem);
+
     dropdownList.appendChild(logoutItem);
     dropdownList.appendChild(profileItem);
 
@@ -195,10 +209,12 @@ class FootballQuizHeader extends HTMLElement {
     const usernameButton = this.shadowRoot.querySelector(".username-btn");
     const dropdownMenu = this.shadowRoot.querySelector(".dropdown-menu");
     const userDropdown = this.shadowRoot.querySelector("#user-dropdown");
+    const quizmakerButton = this.shadowRoot.querySelector("#quizmaker-button");
+
 
     if (usernameButton && dropdownMenu) {
-      usernameButton.addEventListener("click", (e) => {
-        e.preventDefault();
+      usernameButton.addEventListener("click", (clickEvent) => {
+        clickEvent.preventDefault();
         dropdownMenu.classList.toggle("visible");
       });
     }
@@ -216,6 +232,17 @@ class FootballQuizHeader extends HTMLElement {
           dropdownMenu.classList.remove("visible");
         }
       }
+    });
+
+    quizmakerButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      const username =  authService.getUser().username;
+      const subject = encodeURIComponent("Quizmaker Request");
+      const body = encodeURIComponent(
+        `Hey , I would like to become a Manager \n Thak you \n kind regards \n ${username} `
+      );
+      const mailtoLink = `mailto:tevlen.naidoo@bbd.co.za?subject=${subject}&body=${body}`;
+      window.location.href = mailtoLink;
     });
 
     this.shadowRoot.querySelectorAll("[data-link]").forEach((link) => {
