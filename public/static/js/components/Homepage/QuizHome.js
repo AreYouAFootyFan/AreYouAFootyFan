@@ -16,7 +16,7 @@ class QuizHome extends HTMLElement {
 
   async connectedCallback() {
     await this.loadStyles();
-    this.shadowRoot.innerHTML = "";
+    clearDOM(this.shadowRoot);
     await this.render();
     this.setupEventListeners();
     await this.loadData();
@@ -276,7 +276,7 @@ class QuizHome extends HTMLElement {
               this.showNotification("Error loading quizzes:", "error");
               const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
               if (quizGrid) {
-                quizGrid.innerHTML = "";
+                clearDOM(quizGrid)
                 const errorMessage = document.createElement("p");
                 errorMessage.className = "error-message";
                 errorMessage.textContent =
@@ -311,13 +311,13 @@ class QuizHome extends HTMLElement {
       : this.quizzes;
 
     if (filteredQuizzes.length === 0) {
-      quizGrid.innerHTML = "";
+      clearDOM(quizGrid);
       const emptyQuiz = this.createEmptyQuizMessage();
       quizGrid.appendChild(emptyQuiz);
       return;
     }
 
-    quizGrid.innerHTML = "";
+    clearDOM(quizGrid);
 
     filteredQuizzes.forEach((quiz) => {
       const quizCard = document.createElement("quiz-card");

@@ -218,7 +218,7 @@ class LiveScores extends HTMLElement {
 
     const collapseBtn = document.createElement("button");
     collapseBtn.className = "collapse-btn";
-    collapseBtn.innerHTML = "↑";
+    collapseBtn.textContent = "↑";
     collapseBtn.style.transform = this.isCollapsed
       ? "rotate(180deg)"
       : "rotate(0deg)";
@@ -231,7 +231,7 @@ class LiveScores extends HTMLElement {
 
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-btn";
-    closeBtn.innerHTML = "&#215;";
+    closeBtn.textContent = "X";
     closeBtn.title = "Close Live Scores";
     closeBtn.addEventListener("click", this.toggleVisibility);
 

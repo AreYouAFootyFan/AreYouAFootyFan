@@ -39,7 +39,7 @@ class AdminNotification extends HTMLElement {
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-toast";
     closeBtn.id = "close-btn";
-    closeBtn.innerHTML = "&times;";
+    closeBtn.textContent = "X";
 
     toast.appendChild(message);
     toast.appendChild(closeBtn);
