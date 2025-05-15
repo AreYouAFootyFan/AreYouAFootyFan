@@ -21,7 +21,7 @@
 .football {
     position: fixed;
     top: -2rem;
-    animation: floatBall 12s linear infinite;
+    animation: floatBall 10s linear infinite;
     opacity: 0.12;
     user-select: none;
     pointer-events: none;

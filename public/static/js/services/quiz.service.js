@@ -13,7 +13,8 @@ class QuizService {
     }
 
     async getAllQuizzes() {
-        return this.getQuizzes({ limit: 100 }); 
+        return this.getQuizzes({ limit: 100 });  
+
     }
 
     async getQuizzesWithValidation(options = {}) {
@@ -21,6 +22,7 @@ class QuizService {
         const params = new URLSearchParams({
             page: page.toString(),
             limit: limit.toString(),
+
             valid: 'validation',  
             ...(categoryId && { categoryId: categoryId.toString() })
         });
