@@ -33,7 +33,6 @@ class Quizzes extends HTMLElement {
   async connectedCallback() {
     await this.loadStyles();
     this.render();
-    this.setupEventListeners();
     await this.loadData();
   }
 
@@ -55,21 +54,21 @@ class Quizzes extends HTMLElement {
     const main = document.createElement("main");
 
     const contentSection = document.createElement("section");
-    contentSection.className = "content-section";
-
+    contentSection.className = "content-section";    
     const sectionHeader = document.createElement("header");
     sectionHeader.className = "section-header";
 
-    const sectionTitle = document.createElement("h2");
-    sectionTitle.className = "section-title";
-    sectionTitle.textContent = `${this.categoryName} Quizzes`;
 
     const backLink = document.createElement("a");
     backLink.href = "/game-modes";
     backLink.className = "back-link";
     backLink.textContent = "← Back to Categories";
+    contentSection.appendChild(backLink);
 
-    sectionHeader.appendChild(backLink);
+    const sectionTitle = document.createElement("h2");
+    sectionTitle.className = "section-title";
+    sectionTitle.textContent = `${this.categoryName} Quizzes`;
+
     sectionHeader.appendChild(sectionTitle);
     contentSection.appendChild(sectionHeader);
 
