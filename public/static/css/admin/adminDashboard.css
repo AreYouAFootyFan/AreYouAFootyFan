@@ -93,6 +93,8 @@ admin-table {
 .action-icon {
     font-style: normal;
     font-size: 1rem;
+    border: none;
+    background-color: transparent;
 }
 
 .loading-text,

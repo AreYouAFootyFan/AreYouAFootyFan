@@ -208,10 +208,10 @@ class QuizCreator extends HTMLElement {
     const h1 = document.createElement("h1");
     h1.textContent = "Questions for ";
 
-    const titleSpan = document.createElement("span");
-    titleSpan.id = "current-quiz-title";
-    titleSpan.textContent = this.quizTitle || "Quiz";
-    h1.appendChild(titleSpan);
+    const titleSection = document.createElement("section");
+    titleSection.id = "current-quiz-title";
+    titleSection.textContent = this.quizTitle || "Quiz";
+    h1.appendChild(titleSection);
 
     const quizStatus = document.createElement("section");
     quizStatus.id = "quiz-status";
@@ -569,7 +569,7 @@ class QuizCreator extends HTMLElement {
         );
     }
 
-    const statusBadge = document.createElement("span");
+    const statusBadge = document.createElement("fig");
     statusBadge.className = `status-badge ${
       isValid ? "status-valid" : "status-invalid"
     }`;
