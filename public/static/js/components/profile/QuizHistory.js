@@ -75,7 +75,7 @@ class QuizHistory extends HTMLElement {
 
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
-    const rowHeaders = ["Quiz Name", "Quiz Categpry", "Score", "Day Played"];
+    const rowHeaders = ["Quiz Name", "Quiz Category", "Score", "Day Played"];
     rowHeaders.forEach((text) => {
       const th = document.createElement("th");
       th.textContent = text;
