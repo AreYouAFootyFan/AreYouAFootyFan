@@ -213,7 +213,7 @@ export class QuizModel {
       c.category_description,
       COALESCE(qs.question_count, 0) AS question_count,
       COALESCE(qs.valid_question_count, 0) AS valid_question_count,
-      CASE WHEN COALESCE(qs.valid_question_count, 0) >= $1 THEN true ELSE false END AS is_valid
+      CASE WHEN COALESCE(qs.valid_question_count, 0) >= $1 AND (valid_question_count = question_count ) THEN true ELSE false END AS is_valid
   `;
 
     if (options.userId) {
@@ -277,7 +277,7 @@ export class QuizModel {
       SELECT qz.*, c.category_name, c.category_description, 
         COALESCE(qs.question_count, 0) AS question_count,
         COALESCE(qs.valid_question_count, 0) AS valid_question_count,
-        CASE WHEN COALESCE(qs.valid_question_count, 0) >= $2 THEN true ELSE false END AS is_valid
+        CASE WHEN (COALESCE(qs.valid_question_count, 0) >= $2 AND (valid_question_count = question_count)) THEN true ELSE false END AS is_valid
       FROM active_quizzes qz
       LEFT JOIN categories c ON qz.category_id = c.category_id
       LEFT JOIN question_stats qs ON qz.quiz_id = qs.quiz_id

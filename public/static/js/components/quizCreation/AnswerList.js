@@ -88,8 +88,14 @@ class AnswersList extends HTMLElement {
       );
     });
 
+    const notification = document.createElement("section");
+    notification.id = "notification";
+    notification.className = "notification";
+
     navigationActions.appendChild(backButton);
     this.shadowRoot.appendChild(navigationActions);
+    this.shadowRoot.appendChild(notification);
+
   }
 
   createQuestionPreview() {
@@ -374,7 +380,7 @@ class AnswersList extends HTMLElement {
     const isCorrect = correctCheckbox.checked;
 
     if (!text) {
-      alert("Answer text is required");
+      this.showNotification("Answer text is required", "error");
       return;
     }
 
@@ -389,18 +395,11 @@ class AnswersList extends HTMLElement {
           (a) => a.answer_id === this.editingAnswerId
         );
 
-        if (
-          isCorrect &&
-          !currentAnswer.is_correct &&
-          this.answers.some((a) => a.is_correct)
-        ) {
-          if (
-            !confirm(
-              "This question already has a correct answer. Do you want to mark this as the new correct answer?"
-            )
-          ) {
-            return;
-          }
+        const answers = this.answers.filter((x)=> x.answer_id != this.editingAnswerId).map(x=>x.answer_text)
+
+        if (answers.includes(text)){
+          this.showNotification("Can not update to an existing answer", "error");
+          return;
         }
 
         await answerService.updateAnswer(this.editingAnswerId, {
@@ -414,14 +413,11 @@ class AnswersList extends HTMLElement {
 
         this.editingAnswerId = null;
       } else {
-        if (isCorrect && this.answers.some((a) => a.is_correct)) {
-          if (
-            !confirm(
-              "This question already has a correct answer. Do you want to mark this as the new correct answer?"
-            )
-          ) {
-            return;
-          }
+        const answers = this.answers.map(x=>x.answer_text)
+
+        if (answers.includes(text)){
+          this.showNotification("An answer with this answer text already exists.", "error")
+          return
         }
 
         await answerService.createAnswer({
@@ -437,7 +433,7 @@ class AnswersList extends HTMLElement {
 
       await this.loadAnswers();
     } catch (error) {
-      alert("Failed to save answer: " + (error.message || "Unknown error"));
+      this.showNotification("Failed to save answer: Unknown error", "error");
     }
   }
 
@@ -487,11 +483,26 @@ class AnswersList extends HTMLElement {
 
       await this.loadAnswers();
     } catch (error) {
-      alert(
-        "Failed to mark answer as correct: " +
-          (error.message || "Unknown error")
-      );
+      this.showNotification(
+        "Failed to mark answer as correct: Unknown error","error");
     }
+  }
+
+   showNotification(message, type = "success") {
+    const notification = this.shadowRoot.querySelector("#notification");
+    if (!notification) return;
+
+    while (notification.firstChild) {
+      notification.removeChild(notification.firstChild);
+    }
+
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.classList.add("visible");
+
+    setTimeout(() => {
+      notification.classList.remove("visible");
+    }, 3000);
   }
 }
 

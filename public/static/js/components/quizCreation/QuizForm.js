@@ -157,7 +157,12 @@ class QuizForm extends HTMLElement {
     form.appendChild(descGroup);
     form.appendChild(actions);
 
+    const notification = document.createElement("section");
+    notification.id = "notification";
+    notification.className = "notification";
+
     this.shadowRoot.appendChild(form);
+    this.shadowRoot.appendChild(notification);
   }
 
   handleSubmit(event) {
@@ -174,9 +179,20 @@ class QuizForm extends HTMLElement {
     const description = descriptionInput ? descriptionInput.value.trim() : "";
 
     if (!title) {
-      alert("Quiz title is required");
+      this.showNotification("Quiz title is required", "error");
       return;
     }
+
+    if (!categoryId) {
+      this.showNotification("Category required.", "error");
+      return;
+    }
+
+    if(!description) {
+      this.showNotification("Description is required.", "error");
+      return;
+    }
+
 
     const quizId = this.getAttribute("quiz-id");
     const isNew = !quizId;
@@ -218,6 +234,23 @@ class QuizForm extends HTMLElement {
     };
 
     this.render();
+  }
+
+    showNotification(message, type = "success") {
+    const notification = this.shadowRoot.querySelector("#notification");
+    if (!notification) return;
+
+    while (notification.firstChild) {
+      notification.removeChild(notification.firstChild);
+    }
+
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.classList.add("visible");
+
+    setTimeout(() => {
+      notification.classList.remove("visible");
+    }, 3000);
   }
 }
 
