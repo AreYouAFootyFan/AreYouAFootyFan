@@ -116,7 +116,7 @@ class FootballQuizHeader extends HTMLElement {
     quizmakerButton.id = "quizmaker-button";
     quizmakerButton.type = "button";
     quizmakerButton.className = "logout-btn";
-    quizmakerButton.textContent = "Become a quizmaker";
+    quizmakerButton.textContent = "Become a manager";
 
   
     quizmakerItem.appendChild(quizmakerButton);
