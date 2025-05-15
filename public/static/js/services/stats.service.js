@@ -9,8 +9,8 @@ class StatsService {
     return apiService.get('/api/stats/profile')
   }
 
-  async getPlayedQuizzes() {
-    return apiService.get('/api/stats/played')
+  async getPlayedQuizzes(page = 1, limit = 6) {
+    return apiService.get(`/api/stats/played?page=${page}&limit=${limit}`);
   }
 }
 

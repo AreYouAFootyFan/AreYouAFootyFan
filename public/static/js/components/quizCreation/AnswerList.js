@@ -127,7 +127,7 @@ class AnswersList extends HTMLElement {
     const loadingSection = document.createElement("section");
     loadingSection.className = "loading";
 
-    const spinner = document.createElement("span");
+    const spinner = document.createElement("section");
     spinner.className = "loading-spinner";
 
     const loadingText = document.createElement("p");
@@ -165,7 +165,7 @@ class AnswersList extends HTMLElement {
     const contentSection = document.createElement("section");
     contentSection.className = "answer-content";
 
-    const marker = document.createElement("span");
+    const marker = document.createElement("fig");
     marker.className = "answer-marker";
     marker.textContent = answer.is_correct ? "✓" : "";
 
@@ -185,8 +185,9 @@ class AnswersList extends HTMLElement {
       markCorrectBtn.title = "Mark as Correct";
       markCorrectBtn.dataset.id = answer.answer_id;
 
-      const markIcon = document.createElement("span");
+      const markIcon = document.createElement("button");
       markIcon.setAttribute("aria-hidden", "true");
+      markIcon.className = "icon-button";
       markIcon.textContent = "✓";
 
       markCorrectBtn.appendChild(markIcon);
@@ -202,8 +203,9 @@ class AnswersList extends HTMLElement {
     editBtn.title = "Edit Answer";
     editBtn.dataset.id = answer.answer_id;
 
-    const editIcon = document.createElement("span");
+    const editIcon = document.createElement("button");
     editIcon.setAttribute("aria-hidden", "true");
+    editIcon.className = "icon-button";
     editIcon.textContent = "✏️";
 
     editBtn.appendChild(editIcon);
