@@ -244,7 +244,7 @@ class LiveScores extends HTMLElement {
 
     container.appendChild(header);
 
-    const nonHeaderContent = document.createElement("div");
+    const nonHeaderContent = document.createElement("section");
     nonHeaderContent.className = "non-header-content";
 
     if (!this.isCollapsed && this.leagues.length > 1) {
