@@ -94,8 +94,6 @@ class UserProfile extends HTMLElement {
     statsHeader.appendChild(statsTitle);
     statsView.appendChild(statsHeader);
 
-
-
     const statsSummary = document.createElement("profile-stats");
     statsSummary.id = "user-stats-summary";
     if (isPlayer) {

@@ -64,7 +64,6 @@ class FootballService {
     }
 }
 
-// Create and export a singleton instance
 const footballService = new FootballService();
 window.footballService = footballService;
 

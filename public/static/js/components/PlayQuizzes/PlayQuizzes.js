@@ -54,7 +54,6 @@ class Quizzes extends HTMLElement {
   buildMainContent() {
     const main = document.createElement("main");
 
-    // Content Section
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
 
@@ -74,7 +73,6 @@ class Quizzes extends HTMLElement {
     sectionHeader.appendChild(sectionTitle);
     contentSection.appendChild(sectionHeader);
 
-    // Quiz Grid
     const quizGrid = document.createElement("section");
     quizGrid.id = "quiz-grid";
     quizGrid.className = "quiz-grid";
@@ -93,7 +91,6 @@ class Quizzes extends HTMLElement {
     quizGrid.appendChild(loadingParagraph);
     contentSection.appendChild(quizGrid);
 
-    // Pagination Controls
     const pagination = document.createElement("pagination-controls");
     pagination.setAttribute("current-page", this.currentPage);
     pagination.setAttribute("total-pages", this.totalPages);
@@ -104,10 +101,6 @@ class Quizzes extends HTMLElement {
 
     main.appendChild(contentSection);
     return main;
-  }
-
-  setupEventListeners() {
-    // No need for pagination event listeners as they're handled by the pagination component
   }
 
   async handlePageChange(newPage) {
@@ -131,21 +124,6 @@ class Quizzes extends HTMLElement {
     const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
 
     try {
-      //       const dataPromises = [];
-      //       if (window.quizService) {
-      //         dataPromises.push(
-      //           window.quizService
-      //             .getValidQuizzesByCategory(this.getAttribute('mode-id'))
-      //             .then((quizzes) => {
-      //               this.quizzes = quizzes;
-      //               this.renderQuizzes();
-      //             })
-      //             .catch((error) => {
-      //               message.textContent = "Error loading quizzes:";
-      //             })
-      //         );
-      //       }
-      // Show loading state
       if (quizGrid) {
         clearDOM(quizGrid);
         const loadingParagraph = document.createElement("p");
@@ -165,13 +143,11 @@ class Quizzes extends HTMLElement {
         this.itemsPerPage
       );
 
-      // Check if response has the expected structure
       if (response && response.data) {
         this.quizzes = response.data;
         this.totalPages = response.pagination.totalPages;
         this.currentPage = response.pagination.page;
       } else {
-        // If response doesn't have the expected structure, treat it as an error
         throw new Error("Invalid response format");
       }
 
@@ -194,7 +170,6 @@ class Quizzes extends HTMLElement {
 
     clearDOM(quizGrid);
 
-    // Check if this.quizzes is an array and has items
     if (!Array.isArray(this.quizzes) || this.quizzes.length === 0) {
       const emptyQuiz = this.createEmptyQuizMessage();
       quizGrid.appendChild(emptyQuiz);

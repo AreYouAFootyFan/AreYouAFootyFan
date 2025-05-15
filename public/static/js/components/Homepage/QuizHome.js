@@ -26,7 +26,6 @@ class QuizHome extends HTMLElement {
   }
 
   disconnectedCallback() {
-    // Remove the live scores widget when navigating away
     const liveScores = document.querySelector("live-scores");
     if (liveScores) {
       liveScores.remove();
@@ -34,17 +33,14 @@ class QuizHome extends HTMLElement {
   }
 
   initializeLiveScores() {
-    // Remove any existing live scores widget
     const existingWidget = document.querySelector("live-scores");
     if (existingWidget) {
       existingWidget.remove();
     }
 
-    // Create and append the new widget
     const liveScores = document.createElement("live-scores");
     document.body.appendChild(liveScores);
 
-    // Ensure the widget is visible in the DOM
     liveScores.style.display = "block";
     liveScores.style.visibility = "visible";
     liveScores.style.opacity = "1";
@@ -136,12 +132,9 @@ class QuizHome extends HTMLElement {
     notificationSection.appendChild(noteMessage);
     main.appendChild(notificationSection);
   
-    // Content wrapper with white background
     const contentWrapper = document.createElement("section");
     contentWrapper.className = "content-wrapper";
     
-  
-    // Main content section with quizzes
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
   
@@ -181,9 +174,6 @@ class QuizHome extends HTMLElement {
     loadingContainer.appendChild(loadingText);
     quizGrid.appendChild(loadingContainer);
     contentSection.appendChild(quizGrid);
-  
-    // contentWrapper.appendChild(contentSection);
-    // main.appendChild(contentWrapper);
   
     const modal = document.createElement("dialog");
     modal.id = "quiz-master-modal";
@@ -285,7 +275,6 @@ class QuizHome extends HTMLElement {
     try {
       const dataPromises = [];
 
-      // Verify football service is available
       if (!window.footballService) {
         console.warn(
           "Football service not available. Live scores widget may not work."
@@ -311,7 +300,6 @@ class QuizHome extends HTMLElement {
           window.quizService
             .getValidQuizzes()
             .then((response) => {
-              // Handle paginated response
               if (response && response.data && Array.isArray(response.data)) {
                 this.quizzes = response.data;
                 this.renderQuizzes();

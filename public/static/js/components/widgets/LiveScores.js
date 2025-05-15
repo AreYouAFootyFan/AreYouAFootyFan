@@ -68,11 +68,9 @@ class LiveScores extends HTMLElement {
     const leagueId = event.target.value;
     this.selectedLeague = leagueId === "" ? null : leagueId;
 
-    // Reset to all matches if 'All Leagues' is selected
     if (this.selectedLeague === null) {
       this.filteredMatches = [...this.allMatches];
     } else {
-      // Filter matches for selected league
       this.filteredMatches = this.allMatches.filter(
         (match) => match.league_id.toString() === this.selectedLeague
       );
@@ -87,7 +85,6 @@ class LiveScores extends HTMLElement {
         throw new Error("Football service not available");
       }
 
-      // Cancel any existing request
       if (this.abortController) {
         this.abortController.abort();
       }
