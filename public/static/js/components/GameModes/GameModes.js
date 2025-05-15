@@ -91,11 +91,6 @@ class GameModes extends HTMLElement {
     contentSection.appendChild(pagination);
 
     main.appendChild(contentSection);
-
-    const leaderboard = document.createElement("quiz-leaderboard");
-    leaderboard.id = "leaderboard";
-    main.appendChild(leaderboard);
-
     return main;
   }
 
