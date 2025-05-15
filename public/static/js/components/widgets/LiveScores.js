@@ -163,7 +163,6 @@ class LiveScores extends HTMLElement {
   }
 
   toggleVisibility() {
-    console.log("Toggling visibility from:", this.isVisible);
     this.isVisible = !this.isVisible;
     sessionStorage.setItem("liveScoresVisible", this.isVisible);
 

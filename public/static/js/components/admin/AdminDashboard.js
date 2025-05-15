@@ -518,7 +518,6 @@ class AdminDashboard extends HTMLElement {
         !Array.isArray(response.data) ||
         !response.pagination
       ) {
-        console.error("Unexpected response structure:", response);
         throw new Error("Invalid response format");
       }
 
@@ -618,7 +617,6 @@ class AdminDashboard extends HTMLElement {
         quizzesContainer.appendChild(nav);
       }
     } catch (error) {
-      console.error("Error in loadQuizzes:", error);
       const quizzesContainer = this.shadowRoot.querySelector("#quizzes-list");
       if (quizzesContainer) {
         clearDOM(quizzesContainer);
@@ -662,7 +660,6 @@ class AdminDashboard extends HTMLElement {
         !Array.isArray(response.data) ||
         !response.pagination
       ) {
-        console.error("Unexpected response structure:", response);
         throw new Error("Invalid response format");
       }
 
@@ -725,7 +722,6 @@ class AdminDashboard extends HTMLElement {
 
       contentSlot.appendChild(table);
     } catch (error) {
-      console.error("Error in loadRecentQuizzes:", error);
       const dashboardView = this.shadowRoot.querySelector("#dashboard-view");
       if (dashboardView) {
         const quizzesCard = dashboardView.querySelector(

@@ -190,7 +190,7 @@ class Quizzes extends HTMLElement {
     const emptyState = document.createElement("section");
     emptyState.className = "empty-state";
 
-    const icon = document.createElement("p");
+    const icon = document.createElement("fig");
     icon.className = "empty-icon";
     icon.textContent = "📚";
 
@@ -214,7 +214,7 @@ class Quizzes extends HTMLElement {
     const errorState = document.createElement("section");
     errorState.className = "error-state";
 
-    const icon = document.createElement("p");
+    const icon = document.createElement("fig");
     icon.className = "error-icon";
     icon.textContent = "❌";
 

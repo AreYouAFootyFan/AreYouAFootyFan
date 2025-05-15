@@ -51,7 +51,7 @@ class FootballQuizHeader extends HTMLElement {
     logo.className = "logo";
     logo.dataset.link = "";
 
-    const logoIcon = document.createElement("i");
+    const logoIcon = document.createElement("fig");
     logoIcon.className = "logo-icon";
     logoIcon.setAttribute("aria-hidden", "true");
     logoIcon.textContent = "⚽";

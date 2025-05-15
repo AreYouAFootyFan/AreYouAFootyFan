@@ -40,7 +40,7 @@ class LoginForm extends HTMLElement {
     const authHeader = document.createElement("header");
     authHeader.className = "auth-header";
 
-    const logoIcon = document.createElement("i");
+    const logoIcon = document.createElement("fig");
     logoIcon.className = "logo-icon";
     logoIcon.setAttribute("aria-hidden", "true");
     logoIcon.textContent = "⚽";
@@ -276,7 +276,7 @@ class LoginForm extends HTMLElement {
       navigator("/home");
     } catch (error) {
       this.hideLoadingState();
-      this.showError("Failed to set username. It might already be taken.");
+      this.showError(`Failed to set username: ${error.message}`);
     }
   }
 

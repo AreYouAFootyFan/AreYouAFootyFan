@@ -69,6 +69,10 @@ class AuthService {
         body: JSON.stringify({ username }),
       });
 
+      if(response.status == Http.Status.CONFLICT){
+        throw new Error(Message.Error.Auth.USERNAME_EXISTS);
+      }
+
       if (!response.ok) {
         throw new Error(Message.Error.Auth.FAILED_USERNAME);
       }
