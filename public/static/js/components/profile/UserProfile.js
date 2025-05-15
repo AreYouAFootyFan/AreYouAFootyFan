@@ -3,6 +3,7 @@ import { Role } from "../../enums/users.js";
 import "./ProfileStats.js";
 import "./ProfileCategories.js";
 import "./ProfileBadges.js";
+import "./QuizHistory.js";
 import { navigator } from "../../index.js";
 
 class UserProfile extends HTMLElement {
@@ -65,6 +66,9 @@ class UserProfile extends HTMLElement {
 
     const stats = this.createUserStatsView(this.userStats);
     main.appendChild(stats);
+
+    const quizHistory = document.createElement("quiz-history");
+    main.appendChild(quizHistory);
 
     this.shadowRoot.appendChild(main);
   }
