@@ -276,7 +276,6 @@ class LoginForm extends HTMLElement {
       navigator("/home");
     } catch (error) {
       this.hideLoadingState();
-      console.log(error);
       this.showError(`Failed to set username: ${error.message}`);
     }
   }

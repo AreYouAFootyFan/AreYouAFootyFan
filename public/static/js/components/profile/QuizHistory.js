@@ -250,7 +250,6 @@ class QuizHistory extends HTMLElement {
         this.createPagination();
       }
     } catch (error) {
-      console.error("Error loading history data:", error);
       const historyBody = this.shadowRoot.querySelector("#history-body");
       if (historyBody) {
         clearDOM(historyBody);
