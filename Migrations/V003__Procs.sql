@@ -1,11 +1,3 @@
---   _____       _           
---  |  __ \     | |          
---  | |__) |___ | | ___  ___ 
---  |  _  // _ \| |/ _ \/ __|
---  | | \ \ (_) | |  __/\__ \
---  |_|  \_\___/|_|\___||___/
---
--- Roles CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_role (
   p_role_name VARCHAR(32),
@@ -14,7 +6,6 @@ OR REPLACE PROCEDURE create_role (
 DECLARE
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_role_name IS NULL OR TRIM(p_role_name) = '' THEN
     RAISE EXCEPTION 'Role name cannot be null or empty';
   END IF;
@@ -39,12 +30,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_role_id IS NULL THEN
     RAISE EXCEPTION 'Role ID cannot be null';
   END IF;
   
-  -- Check if role exists
   SELECT COUNT(*) INTO v_count FROM roles WHERE role_id = p_role_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Role with ID % not found', p_role_id;
@@ -66,7 +55,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_role_id IS NULL THEN
     RAISE EXCEPTION 'Role ID cannot be null';
   END IF;
@@ -75,7 +63,6 @@ BEGIN
     RAISE EXCEPTION 'Role name cannot be null or empty';
   END IF;
 
-  -- Check if role exists
   SELECT COUNT(*) INTO v_count FROM roles WHERE role_id = p_role_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Role with ID % not found', p_role_id;
@@ -105,18 +92,15 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_role_id IS NULL THEN
     RAISE EXCEPTION 'Role ID cannot be null';
   END IF;
 
-  -- Check if role exists
   SELECT COUNT(*) INTO v_count FROM roles WHERE role_id = p_role_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Role with ID % not found', p_role_id;
   END IF;
 
-  -- Check if role is being used by users
   SELECT COUNT(*) INTO v_count FROM users WHERE role_id = p_role_id;
   IF v_count > 0 THEN
     RAISE EXCEPTION 'Cannot delete role with ID % as it is being used by % user(s)', p_role_id, v_count;
@@ -139,14 +123,6 @@ BEGIN
 END;
 $$;
 
---   _    _                   
---  | |  | |                  
---  | |  | |___  ___ _ __ ___ 
---  | |  | / __|/ _ \ '__/ __|
---  | |__| \__ \  __/ |  \__ \
---   \____/|___/\___|_|  |___/
---
--- Users CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_user (
   p_google_id VARCHAR(256),
@@ -158,7 +134,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_google_id IS NULL OR TRIM(p_google_id) = '' THEN
     RAISE EXCEPTION 'Google ID cannot be null or empty';
   END IF;
@@ -167,7 +142,6 @@ BEGIN
     RAISE EXCEPTION 'Username cannot be empty';
   END IF;
 
-  -- Check if role exists
   SELECT COUNT(*) INTO v_count FROM roles WHERE role_id = p_role_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Role with ID % not found', p_role_id;
@@ -179,7 +153,6 @@ BEGIN
     RETURNING user_id INTO p_user_id;
   EXCEPTION
     WHEN unique_violation THEN
-      -- Determine which constraint was violated
       IF EXISTS (SELECT 1 FROM users WHERE google_id = p_google_id) THEN
         RAISE EXCEPTION 'User with Google ID "%" already exists', p_google_id;
       ELSE
@@ -200,12 +173,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_user_id IS NULL THEN
     RAISE EXCEPTION 'User ID cannot be null';
   END IF;
   
-  -- Check if user exists
   SELECT COUNT(*) INTO v_count FROM users WHERE user_id = p_user_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User with ID % not found', p_user_id;
@@ -232,7 +203,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_user_id IS NULL THEN
     RAISE EXCEPTION 'User ID cannot be null';
   END IF;
@@ -241,13 +211,11 @@ BEGIN
     RAISE EXCEPTION 'Username cannot be empty';
   END IF;
 
-  -- Check if user exists
   SELECT COUNT(*) INTO v_count FROM users WHERE user_id = p_user_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User with ID % not found', p_user_id;
   END IF;
 
-  -- Check if role exists when provided
   IF p_role_id IS NOT NULL THEN
     SELECT COUNT(*) INTO v_count FROM roles WHERE role_id = p_role_id;
     IF v_count = 0 THEN
@@ -284,19 +252,16 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_user_id IS NULL THEN
     RAISE EXCEPTION 'User ID cannot be null';
   END IF;
 
-  -- Check if user exists
   SELECT COUNT(*) INTO v_count FROM users WHERE user_id = p_user_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User with ID % not found', p_user_id;
   END IF;
 
   BEGIN
-    -- Soft delete by setting deactivated_at
     UPDATE users
     SET deactivated_at = CURRENT_TIMESTAMP
     WHERE user_id = p_user_id;
@@ -312,16 +277,6 @@ BEGIN
 END;
 $$;
 
---   ____            _                 
---  |  _ \          | |                
---  | |_) | __ _  __| | __ _  ___  ___ 
---  |  _ < / _` |/ _` |/ _` |/ _ \/ __|
---  | |_) | (_| | (_| | (_| |  __/\__ \
---  |____/ \__,_|\__,_|\__, |\___||___/
---                      __/ |          
---                     |___/           
---
--- Badges CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_badge (
   p_badge_name VARCHAR(32),
@@ -331,7 +286,6 @@ OR REPLACE PROCEDURE create_badge (
 DECLARE
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_badge_name IS NULL OR TRIM(p_badge_name) = '' THEN
     RAISE EXCEPTION 'Badge name cannot be null or empty';
   END IF;
@@ -360,12 +314,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_badge_id IS NULL THEN
     RAISE EXCEPTION 'Badge ID cannot be null';
   END IF;
   
-  -- Check if badge exists
   SELECT COUNT(*) INTO v_count FROM badges WHERE badge_id = p_badge_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Badge with ID % not found', p_badge_id;
@@ -391,7 +343,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_badge_id IS NULL THEN
     RAISE EXCEPTION 'Badge ID cannot be null';
   END IF;
@@ -400,7 +351,6 @@ BEGIN
     RAISE EXCEPTION 'Badge name cannot be empty';
   END IF;
 
-  -- Check if badge exists
   SELECT COUNT(*) INTO v_count FROM badges WHERE badge_id = p_badge_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Badge with ID % not found', p_badge_id;
@@ -432,18 +382,15 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_badge_id IS NULL THEN
     RAISE EXCEPTION 'Badge ID cannot be null';
   END IF;
 
-  -- Check if badge exists
   SELECT COUNT(*) INTO v_count FROM badges WHERE badge_id = p_badge_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Badge with ID % not found', p_badge_id;
   END IF;
 
-  -- Check if badge is being used in badge_history
   SELECT COUNT(*) INTO v_count FROM badge_history WHERE badge_id = p_badge_id;
   IF v_count > 0 THEN
     RAISE EXCEPTION 'Cannot delete badge with ID % as it is referenced in badge history % time(s)', p_badge_id, v_count;
@@ -466,16 +413,6 @@ BEGIN
 END;
 $$;
 
---   ____            _              _    _ _     _                   
---  |  _ \          | |            | |  | (_)   | |                  
---  | |_) | __ _  __| | __ _  ___  | |__| |_ ___| |_ ___  _ __ _   _ 
---  |  _ < / _` |/ _` |/ _` |/ _ \ |  __  | / __| __/ _ \| '__| | | |
---  | |_) | (_| | (_| | (_| |  __/ | |  | | \__ \ || (_) | |  | |_| |
---  |____/ \__,_|\__,_|\__, |\___| |_|  |_|_|___/\__\___/|_|   \__, |
---                      __/ |                                   __/ |
---                     |___/                                   |___/ 
---
--- Badge History CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_badge_history (
   p_user_id INT,
@@ -487,7 +424,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_user_id IS NULL THEN
     RAISE EXCEPTION 'User ID cannot be null';
   END IF;
@@ -496,13 +432,11 @@ BEGIN
     RAISE EXCEPTION 'Badge ID cannot be null';
   END IF;
 
-  -- Check if user exists
   SELECT COUNT(*) INTO v_count FROM users WHERE user_id = p_user_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User with ID % not found', p_user_id;
   END IF;
 
-  -- Check if badge exists
   SELECT COUNT(*) INTO v_count FROM badges WHERE badge_id = p_badge_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Badge with ID % not found', p_badge_id;
@@ -532,12 +466,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_badge_history_id IS NULL THEN
     RAISE EXCEPTION 'Badge history ID cannot be null';
   END IF;
   
-  -- Check if badge history exists
   SELECT COUNT(*) INTO v_count FROM badge_history WHERE badge_history_id = p_badge_history_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Badge history with ID % not found', p_badge_history_id;
@@ -564,18 +496,15 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_badge_history_id IS NULL THEN
     RAISE EXCEPTION 'Badge history ID cannot be null';
   END IF;
 
-  -- Check if badge history exists
   SELECT COUNT(*) INTO v_count FROM badge_history WHERE badge_history_id = p_badge_history_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Badge history with ID % not found', p_badge_history_id;
   END IF;
 
-  -- Check if user exists when provided
   IF p_user_id IS NOT NULL THEN
     SELECT COUNT(*) INTO v_count FROM users WHERE user_id = p_user_id;
     IF v_count = 0 THEN
@@ -583,7 +512,6 @@ BEGIN
     END IF;
   END IF;
 
-  -- Check if badge exists when provided
   IF p_badge_id IS NOT NULL THEN
     SELECT COUNT(*) INTO v_count FROM badges WHERE badge_id = p_badge_id;
     IF v_count = 0 THEN
@@ -622,12 +550,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_badge_history_id IS NULL THEN
     RAISE EXCEPTION 'Badge history ID cannot be null';
   END IF;
 
-  -- Check if badge history exists
   SELECT COUNT(*) INTO v_count FROM badge_history WHERE badge_history_id = p_badge_history_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Badge history with ID % not found', p_badge_history_id;
@@ -648,16 +574,6 @@ BEGIN
 END;
 $$;
 
---    _____      _                        _           
---   / ____|    | |                      (_)          
---  | |     __ _| |_ ___  __ _  ___  _ __ _  ___  ___ 
---  | |    / _` | __/ _ \/ _` |/ _ \| '__| |/ _ \/ __|
---  | |___| (_| | ||  __/ (_| | (_) | |  | |  __/\__ \
---   \_____\__,_|\__\___|\__, |\___/|_|  |_|\___||___/
---                        __/ |                       
---                       |___/                        
---
--- Categories CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_category (
   p_category_name VARCHAR(32),
@@ -667,7 +583,6 @@ OR REPLACE PROCEDURE create_category (
 DECLARE
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_category_name IS NULL OR TRIM(p_category_name) = '' THEN
     RAISE EXCEPTION 'Category name cannot be null or empty';
   END IF;
@@ -694,12 +609,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_category_id IS NULL THEN
     RAISE EXCEPTION 'Category ID cannot be null';
   END IF;
   
-  -- Check if category exists
   SELECT COUNT(*) INTO v_count FROM categories WHERE category_id = p_category_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Category with ID % not found', p_category_id;
@@ -726,7 +639,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_category_id IS NULL THEN
     RAISE EXCEPTION 'Category ID cannot be null';
   END IF;
@@ -739,7 +651,6 @@ BEGIN
     RAISE EXCEPTION 'Category description cannot be empty';
   END IF;
 
-  -- Check if category exists
   SELECT COUNT(*) INTO v_count FROM categories WHERE category_id = p_category_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Category with ID % not found', p_category_id;
@@ -770,25 +681,21 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_category_id IS NULL THEN
     RAISE EXCEPTION 'Category ID cannot be null';
   END IF;
 
-  -- Check if category exists
   SELECT COUNT(*) INTO v_count FROM categories WHERE category_id = p_category_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Category with ID % not found', p_category_id;
   END IF;
 
-  -- Check if there are quizzes in this category
   SELECT COUNT(*) INTO v_count FROM quizzes WHERE category_id = p_category_id;
   IF v_count > 0 THEN
     RAISE NOTICE 'Category has % related quiz(zes). Proceeding with soft delete.', v_count;
   END IF;
 
   BEGIN
-    -- Soft delete by setting deactivated_at
     UPDATE categories
     SET deactivated_at = CURRENT_TIMESTAMP
     WHERE category_id = p_category_id;
@@ -804,14 +711,6 @@ BEGIN
 END;
 $$;
 
---    ____        _                  
---   / __ \      (_)                 
---  | |  | |_   _ _ ___________  ___ 
---  | |  | | | | | |_  /_  / _ \/ __|
---  | |__| | |_| | |/ / / /  __/\__ \
---   \___\_\\__,_|_/___/___\___||___/
---
--- Quizzes CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_quiz (
   p_quiz_title VARCHAR(64),
@@ -824,7 +723,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_quiz_title IS NULL OR TRIM(p_quiz_title) = '' THEN
     RAISE EXCEPTION 'Quiz title cannot be null or empty';
   END IF;
@@ -841,25 +739,21 @@ BEGIN
     RAISE EXCEPTION 'Created by user ID cannot be null';
   END IF;
 
-  -- Check if category exists
   SELECT COUNT(*) INTO v_count FROM categories WHERE category_id = p_category_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Category with ID % not found', p_category_id;
   END IF;
 
-  -- Check if category is active
   SELECT COUNT(*) INTO v_count FROM categories WHERE category_id = p_category_id AND deactivated_at IS NULL;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Category with ID % is deactivated', p_category_id;
   END IF;
 
-  -- Check if user exists
   SELECT COUNT(*) INTO v_count FROM users WHERE user_id = p_created_by;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User with ID % not found', p_created_by;
   END IF;
 
-  -- Check if user is active
   SELECT COUNT(*) INTO v_count FROM users WHERE user_id = p_created_by AND deactivated_at IS NULL;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User with ID % is deactivated', p_created_by;
@@ -889,12 +783,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_quiz_id IS NULL THEN
     RAISE EXCEPTION 'Quiz ID cannot be null';
   END IF;
   
-  -- Check if quiz exists
   SELECT COUNT(*) INTO v_count FROM quizzes WHERE quiz_id = p_quiz_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz with ID % not found', p_quiz_id;
@@ -922,7 +814,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_quiz_id IS NULL THEN
     RAISE EXCEPTION 'Quiz ID cannot be null';
   END IF;
@@ -935,20 +826,17 @@ BEGIN
     RAISE EXCEPTION 'Quiz description cannot be empty';
   END IF;
 
-  -- Check if quiz exists
   SELECT COUNT(*) INTO v_count FROM quizzes WHERE quiz_id = p_quiz_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz with ID % not found', p_quiz_id;
   END IF;
 
-  -- Check if category exists when provided
   IF p_category_id IS NOT NULL THEN
     SELECT COUNT(*) INTO v_count FROM categories WHERE category_id = p_category_id;
     IF v_count = 0 THEN
       RAISE EXCEPTION 'Category with ID % not found', p_category_id;
     END IF;
     
-    -- Check if category is active
     SELECT COUNT(*) INTO v_count FROM categories WHERE category_id = p_category_id AND deactivated_at IS NULL;
     IF v_count = 0 THEN
       RAISE EXCEPTION 'Category with ID % is deactivated', p_category_id;
@@ -985,31 +873,26 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_quiz_id IS NULL THEN
     RAISE EXCEPTION 'Quiz ID cannot be null';
   END IF;
 
-  -- Check if quiz exists
   SELECT COUNT(*) INTO v_count FROM quizzes WHERE quiz_id = p_quiz_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz with ID % not found', p_quiz_id;
   END IF;
 
-  -- Check if there are questions for this quiz
   SELECT COUNT(*) INTO v_count FROM questions WHERE quiz_id = p_quiz_id;
   IF v_count > 0 THEN
     RAISE NOTICE 'Quiz has % question(s). Proceeding with soft delete.', v_count;
   END IF;
 
-  -- Check if there are quiz attempts for this quiz
   SELECT COUNT(*) INTO v_count FROM quiz_attempts WHERE quiz_id = p_quiz_id;
   IF v_count > 0 THEN
     RAISE NOTICE 'Quiz has % attempt(s). Proceeding with soft delete.', v_count;
   END IF;
 
   BEGIN
-    -- Soft delete by setting deactivated_at
     UPDATE quizzes
     SET deactivated_at = CURRENT_TIMESTAMP
     WHERE quiz_id = p_quiz_id;
@@ -1025,15 +908,6 @@ BEGIN
 END;
 $$;
 
---   _____  _  __  __ _            _ _           _                    _     
---  |  __ \(_)/ _|/ _(_)          | | |         | |                  | |    
---  | |  | |_| |_| |_ _  ___ _   _| | |_ _   _  | |     _____   _____| |___ 
---  | |  | | |  _|  _| |/ __| | | | | __| | | | | |    / _ \ \ / / _ \ / __|
---  | |__| | | | | | | | (__| |_| | | |_| |_| | | |___|  __/\ V /  __/ \__ \
---  |_____/|_|_| |_| |_|\___|\__,_|_|\__|\__, | |______\___| \_/ \___|_|___/
---                                        __/ |                             
---                                       |___/                              
--- Difficulty Levels CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_difficulty (
   p_difficulty_level VARCHAR(16),
@@ -1045,7 +919,6 @@ OR REPLACE PROCEDURE create_difficulty (
 DECLARE
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_difficulty_level IS NULL OR TRIM(p_difficulty_level) = '' THEN
     RAISE EXCEPTION 'Difficulty level cannot be null or empty';
   END IF;
@@ -1082,12 +955,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_difficulty_id IS NULL THEN
     RAISE EXCEPTION 'Difficulty ID cannot be null';
   END IF;
   
-  -- Check if difficulty exists
   SELECT COUNT(*) INTO v_count FROM difficulty_levels WHERE difficulty_id = p_difficulty_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Difficulty level with ID % not found', p_difficulty_id;
@@ -1115,7 +986,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_difficulty_id IS NULL THEN
     RAISE EXCEPTION 'Difficulty ID cannot be null';
   END IF;
@@ -1136,7 +1006,6 @@ BEGIN
     RAISE EXCEPTION 'Points on incorrect must be a non-positive integer';
   END IF;
 
-  -- Check if difficulty exists
   SELECT COUNT(*) INTO v_count FROM difficulty_levels WHERE difficulty_id = p_difficulty_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Difficulty level with ID % not found', p_difficulty_id;
@@ -1170,18 +1039,15 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_difficulty_id IS NULL THEN
     RAISE EXCEPTION 'Difficulty ID cannot be null';
   END IF;
 
-  -- Check if difficulty exists
   SELECT COUNT(*) INTO v_count FROM difficulty_levels WHERE difficulty_id = p_difficulty_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Difficulty level with ID % not found', p_difficulty_id;
   END IF;
 
-  -- Check if there are questions using this difficulty
   SELECT COUNT(*) INTO v_count FROM questions WHERE difficulty_id = p_difficulty_id;
   IF v_count > 0 THEN
     RAISE EXCEPTION 'Cannot delete difficulty level with ID % as it is being used by % question(s)', p_difficulty_id, v_count;
@@ -1204,14 +1070,6 @@ BEGIN
 END;
 $$;
 
---    ____                  _   _                 
---   / __ \                | | (_)                
---  | |  | |_   _  ___  ___| |_ _  ___  _ __  ___ 
---  | |  | | | | |/ _ \/ __| __| |/ _ \| '_ \/ __|
---  | |__| | |_| |  __/\__ \ |_| | (_) | | | \__ \
---   \___\_\\__,_|\___||___/\__|_|\___/|_| |_|___/
---
--- Questions CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_question (
   p_quiz_id INT,
@@ -1223,7 +1081,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_quiz_id IS NULL THEN
     RAISE EXCEPTION 'Quiz ID cannot be null';
   END IF;
@@ -1236,19 +1093,16 @@ BEGIN
     RAISE EXCEPTION 'Difficulty ID cannot be null';
   END IF;
 
-  -- Check if quiz exists
   SELECT COUNT(*) INTO v_count FROM quizzes WHERE quiz_id = p_quiz_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz with ID % not found', p_quiz_id;
   END IF;
 
-  -- Check if quiz is active
   SELECT COUNT(*) INTO v_count FROM quizzes WHERE quiz_id = p_quiz_id AND deactivated_at IS NULL;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz with ID % is deactivated', p_quiz_id;
   END IF;
 
-  -- Check if difficulty exists
   SELECT COUNT(*) INTO v_count FROM difficulty_levels WHERE difficulty_id = p_difficulty_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Difficulty level with ID % not found', p_difficulty_id;
@@ -1280,12 +1134,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_question_id IS NULL THEN
     RAISE EXCEPTION 'Question ID cannot be null';
   END IF;
   
-  -- Check if question exists
   SELECT COUNT(*) INTO v_count FROM questions WHERE question_id = p_question_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Question with ID % not found', p_question_id;
@@ -1311,7 +1163,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_question_id IS NULL THEN
     RAISE EXCEPTION 'Question ID cannot be null';
   END IF;
@@ -1320,13 +1171,11 @@ BEGIN
     RAISE EXCEPTION 'Question text cannot be empty';
   END IF;
 
-  -- Check if question exists
   SELECT COUNT(*) INTO v_count FROM questions WHERE question_id = p_question_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Question with ID % not found', p_question_id;
   END IF;
 
-  -- Check if difficulty exists when provided
   IF p_difficulty_id IS NOT NULL THEN
     SELECT COUNT(*) INTO v_count FROM difficulty_levels WHERE difficulty_id = p_difficulty_id;
     IF v_count = 0 THEN
@@ -1362,24 +1211,20 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_question_id IS NULL THEN
     RAISE EXCEPTION 'Question ID cannot be null';
   END IF;
 
-  -- Check if question exists
   SELECT COUNT(*) INTO v_count FROM questions WHERE question_id = p_question_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Question with ID % not found', p_question_id;
   END IF;
 
-  -- Check if there are answers for this question
   SELECT COUNT(*) INTO v_count FROM answers WHERE question_id = p_question_id;
   IF v_count > 0 THEN
     RAISE EXCEPTION 'Cannot delete question with ID % as it has % answer(s)', p_question_id, v_count;
   END IF;
 
-  -- Check if there are user responses for this question
   SELECT COUNT(*) INTO v_count FROM user_responses WHERE question_id = p_question_id;
   IF v_count > 0 THEN
     RAISE EXCEPTION 'Cannot delete question with ID % as it has % user response(s)', p_question_id, v_count;
@@ -1402,7 +1247,6 @@ BEGIN
 END;
 $$;
 
--- Answers CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_answer (
   p_question_id INT,
@@ -1415,7 +1259,6 @@ DECLARE
   v_correct_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_question_id IS NULL THEN
     RAISE EXCEPTION 'Question ID cannot be null';
   END IF;
@@ -1428,13 +1271,11 @@ BEGIN
     RAISE EXCEPTION 'Is correct flag cannot be null';
   END IF;
 
-  -- Check if question exists
   SELECT COUNT(*) INTO v_count FROM questions WHERE question_id = p_question_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Question with ID % not found', p_question_id;
   END IF;
 
-  -- Check if there's already a correct answer for this question if adding a correct answer
   IF p_is_correct THEN
     SELECT COUNT(*) INTO v_correct_count FROM answers WHERE question_id = p_question_id AND is_correct = TRUE;
     IF v_correct_count > 0 THEN
@@ -1464,12 +1305,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_answer_id IS NULL THEN
     RAISE EXCEPTION 'Answer ID cannot be null';
   END IF;
   
-  -- Check if answer exists
   SELECT COUNT(*) INTO v_count FROM answers WHERE answer_id = p_answer_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Answer with ID % not found', p_answer_id;
@@ -1498,7 +1337,6 @@ DECLARE
   v_correct_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_answer_id IS NULL THEN
     RAISE EXCEPTION 'Answer ID cannot be null';
   END IF;
@@ -1507,17 +1345,14 @@ BEGIN
     RAISE EXCEPTION 'Answer text cannot be empty';
   END IF;
 
-  -- Check if answer exists
   SELECT COUNT(*) INTO v_count FROM answers WHERE answer_id = p_answer_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Answer with ID % not found', p_answer_id;
   END IF;
 
-  -- Get current values to check for changes in is_correct
   SELECT question_id, is_correct INTO v_question_id, v_current_is_correct 
   FROM answers WHERE answer_id = p_answer_id;
 
-  -- Check if changing from incorrect to correct and there's already a correct answer
   IF p_is_correct IS NOT NULL AND p_is_correct = TRUE AND v_current_is_correct = FALSE THEN
     SELECT COUNT(*) INTO v_correct_count 
     FROM answers 
@@ -1557,28 +1392,23 @@ DECLARE
   v_remaining_correct_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_answer_id IS NULL THEN
     RAISE EXCEPTION 'Answer ID cannot be null';
   END IF;
 
-  -- Check if answer exists
   SELECT COUNT(*) INTO v_count FROM answers WHERE answer_id = p_answer_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Answer with ID % not found', p_answer_id;
   END IF;
 
-  -- Check if there are user responses for this answer
   SELECT COUNT(*) INTO v_count FROM user_responses WHERE chosen_answer = p_answer_id;
   IF v_count > 0 THEN
     RAISE EXCEPTION 'Cannot delete answer with ID % as it has % user response(s)', p_answer_id, v_count;
   END IF;
 
-  -- Get answer info to check for correct answer status
   SELECT is_correct, question_id INTO v_is_correct, v_question_id 
   FROM answers WHERE answer_id = p_answer_id;
 
-  -- Check if this is the only correct answer for the question
   IF v_is_correct THEN
     SELECT COUNT(*) INTO v_remaining_correct_count 
     FROM answers 
@@ -1606,7 +1436,6 @@ BEGIN
 END;
 $$;
 
--- Quiz Attempts CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_quiz_attempt (
   p_user_id INT,
@@ -1618,7 +1447,6 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_user_id IS NULL THEN
     RAISE EXCEPTION 'User ID cannot be null';
   END IF;
@@ -1627,25 +1455,21 @@ BEGIN
     RAISE EXCEPTION 'Quiz ID cannot be null';
   END IF;
 
-  -- Check if user exists
   SELECT COUNT(*) INTO v_count FROM users WHERE user_id = p_user_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User with ID % not found', p_user_id;
   END IF;
 
-  -- Check if user is active
   SELECT COUNT(*) INTO v_count FROM users WHERE user_id = p_user_id AND deactivated_at IS NULL;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User with ID % is deactivated', p_user_id;
   END IF;
 
-  -- Check if quiz exists
   SELECT COUNT(*) INTO v_count FROM quizzes WHERE quiz_id = p_quiz_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz with ID % not found', p_quiz_id;
   END IF;
 
-  -- Check if quiz is active
   SELECT COUNT(*) INTO v_count FROM quizzes WHERE quiz_id = p_quiz_id AND deactivated_at IS NULL;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz with ID % is deactivated', p_quiz_id;
@@ -1675,12 +1499,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_attempt_id IS NULL THEN
     RAISE EXCEPTION 'Attempt ID cannot be null';
   END IF;
   
-  -- Check if quiz attempt exists
   SELECT COUNT(*) INTO v_count FROM quiz_attempts WHERE attempt_id = p_attempt_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz attempt with ID % not found', p_attempt_id;
@@ -1706,18 +1528,15 @@ DECLARE
   v_start_time TIMESTAMP;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_attempt_id IS NULL THEN
     RAISE EXCEPTION 'Attempt ID cannot be null';
   END IF;
 
-  -- Check if quiz attempt exists
   SELECT COUNT(*) INTO v_count FROM quiz_attempts WHERE attempt_id = p_attempt_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz attempt with ID % not found', p_attempt_id;
   END IF;
 
-  -- Get start time to check end time is after start time
   SELECT start_time INTO v_start_time FROM quiz_attempts WHERE attempt_id = p_attempt_id;
 
   IF p_end_time IS NOT NULL AND p_end_time <= v_start_time THEN
@@ -1749,18 +1568,15 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_attempt_id IS NULL THEN
     RAISE EXCEPTION 'Attempt ID cannot be null';
   END IF;
 
-  -- Check if quiz attempt exists
   SELECT COUNT(*) INTO v_count FROM quiz_attempts WHERE attempt_id = p_attempt_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz attempt with ID % not found', p_attempt_id;
   END IF;
 
-  -- Check if there are user responses for this attempt
   SELECT COUNT(*) INTO v_count FROM user_responses WHERE attempt_id = p_attempt_id;
   IF v_count > 0 THEN
     RAISE EXCEPTION 'Cannot delete quiz attempt with ID % as it has % user response(s)', p_attempt_id, v_count;
@@ -1783,7 +1599,6 @@ BEGIN
 END;
 $$;
 
--- User Responses CRUD Procedures
 CREATE
 OR REPLACE PROCEDURE create_user_response (
   p_attempt_id INT,
@@ -1799,7 +1614,6 @@ DECLARE
   v_answer_question_id INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_attempt_id IS NULL THEN
     RAISE EXCEPTION 'Attempt ID cannot be null';
   END IF;
@@ -1820,38 +1634,32 @@ BEGIN
     RAISE EXCEPTION 'Points earned must be between -100 and 100';
   END IF;
 
-  -- Check if quiz attempt exists
   SELECT COUNT(*) INTO v_count FROM quiz_attempts WHERE attempt_id = p_attempt_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Quiz attempt with ID % not found', p_attempt_id;
   END IF;
 
-  -- Check if question exists
   SELECT COUNT(*) INTO v_count FROM questions WHERE question_id = p_question_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Question with ID % not found', p_question_id;
   END IF;
 
-  -- Check if answer exists
   SELECT COUNT(*) INTO v_count FROM answers WHERE answer_id = p_chosen_answer;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'Answer with ID % not found', p_chosen_answer;
   END IF;
 
-  -- Check if answer belongs to the question
   SELECT question_id INTO v_answer_question_id FROM answers WHERE answer_id = p_chosen_answer;
   IF v_answer_question_id != p_question_id THEN
     RAISE EXCEPTION 'Answer with ID % does not belong to question with ID %', p_chosen_answer, p_question_id;
   END IF;
 
-  -- Check if question belongs to the quiz in the attempt
   SELECT quiz_id INTO v_quiz_id FROM quiz_attempts WHERE attempt_id = p_attempt_id;
   SELECT quiz_id INTO v_question_quiz_id FROM questions WHERE question_id = p_question_id;
   IF v_quiz_id != v_question_quiz_id THEN
     RAISE EXCEPTION 'Question with ID % does not belong to quiz with ID % in attempt %', p_question_id, v_quiz_id, p_attempt_id;
   END IF;
 
-  -- Check if this question has already been answered in this attempt
   SELECT COUNT(*) INTO v_count FROM user_responses WHERE attempt_id = p_attempt_id AND question_id = p_question_id;
   IF v_count > 0 THEN
     RAISE EXCEPTION 'Question with ID % has already been answered in attempt %', p_question_id, p_attempt_id;
@@ -1885,12 +1693,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_response_id IS NULL THEN
     RAISE EXCEPTION 'Response ID cannot be null';
   END IF;
   
-  -- Check if user response exists
   SELECT COUNT(*) INTO v_count FROM user_responses WHERE response_id = p_response_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User response with ID % not found', p_response_id;
@@ -1918,7 +1724,6 @@ DECLARE
   v_answer_question_id INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_response_id IS NULL THEN
     RAISE EXCEPTION 'Response ID cannot be null';
   END IF;
@@ -1927,24 +1732,19 @@ BEGIN
     RAISE EXCEPTION 'Points earned must be between -100 and 100';
   END IF;
 
-  -- Check if user response exists
   SELECT COUNT(*) INTO v_count FROM user_responses WHERE response_id = p_response_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User response with ID % not found', p_response_id;
   END IF;
 
-  -- If updating chosen answer, check if the new answer belongs to the same question
   IF p_chosen_answer IS NOT NULL THEN
-    -- Check if answer exists
     SELECT COUNT(*) INTO v_count FROM answers WHERE answer_id = p_chosen_answer;
     IF v_count = 0 THEN
       RAISE EXCEPTION 'Answer with ID % not found', p_chosen_answer;
     END IF;
     
-    -- Get the question this response is for
     SELECT question_id INTO v_question_id FROM user_responses WHERE response_id = p_response_id;
     
-    -- Check if the new answer belongs to the same question
     SELECT question_id INTO v_answer_question_id FROM answers WHERE answer_id = p_chosen_answer;
     IF v_answer_question_id != v_question_id THEN
       RAISE EXCEPTION 'Answer with ID % does not belong to question with ID %', p_chosen_answer, v_question_id;
@@ -1979,12 +1779,10 @@ DECLARE
   v_count INT;
   v_error_message TEXT;
 BEGIN
-  -- Input validation
   IF p_response_id IS NULL THEN
     RAISE EXCEPTION 'Response ID cannot be null';
   END IF;
 
-  -- Check if user response exists
   SELECT COUNT(*) INTO v_count FROM user_responses WHERE response_id = p_response_id;
   IF v_count = 0 THEN
     RAISE EXCEPTION 'User response with ID % not found', p_response_id;

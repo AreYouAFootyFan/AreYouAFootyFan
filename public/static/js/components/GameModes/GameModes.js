@@ -68,19 +68,10 @@ class GameModes extends HTMLElement {
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
 
-    // const sectionHeader = document.createElement("header");
-    // sectionHeader.className = "section-header";
-
-
-
-    // sectionHeader.appendChild(sectionTitle);
-    // contentSection.appendChild(sectionHeader);
-
     const gameModeGrid = document.createElement("section");
     gameModeGrid.id = "game-mode-grid";
     gameModeGrid.className = "game-mode-grid";
 
-    // Add pagination component
     const pagination = document.createElement("pagination-controls");
     pagination.setAttribute("current-page", this.page);
     pagination.setAttribute("total-pages", this.totalPages);
@@ -105,16 +96,13 @@ class GameModes extends HTMLElement {
     this.gameModes = response.data;
     this.totalPages = response.pagination.totalPages;
 
-    // Clear existing cards
     this.clearDOM(container);
 
-    // Render game mode cards
     this.gameModes.forEach((gameMode) => {
       const card = this.createGameModeCard(gameMode);
       container.appendChild(card);
     });
 
-    // Update pagination
     const pagination = this.shadowRoot.querySelector("pagination-controls");
     if (pagination) {
       pagination.setAttribute("current-page", this.page);

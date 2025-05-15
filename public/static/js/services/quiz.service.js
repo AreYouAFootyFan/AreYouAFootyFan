@@ -13,7 +13,7 @@ class QuizService {
     }
 
     async getAllQuizzes() {
-        return this.getQuizzes({ limit: 100 }); // Get a large number of quizzes for admin
+        return this.getQuizzes({ limit: 100 }); 
     }
 
     async getQuizzesWithValidation(options = {}) {
@@ -21,7 +21,7 @@ class QuizService {
         const params = new URLSearchParams({
             page: page.toString(),
             limit: limit.toString(),
-            valid: 'validation',  // Use the valid_quizzes view without filtering
+            valid: 'validation',  
             ...(categoryId && { categoryId: categoryId.toString() })
         });
         return apiService.get(`/api/quizzes/list?${params.toString()}`);

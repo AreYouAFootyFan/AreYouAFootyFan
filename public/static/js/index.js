@@ -20,7 +20,6 @@ import LeaderBoardView from "./views/LeaderboardView.js";
 
 import "./services/FootballService.js";
 
-// Initialize services
 window.authService = authService;
 window.categoryService = categoryService;
 window.quizService = quizService;
@@ -33,7 +32,6 @@ window.difficultyService = difficultyService;
 window.questionService = questionService;
 window.footballService = footballService;
 
-// Initialize football service with API key
 footballService.setApiKey("53aaedf27c25807e38c5e99b22a319ab");
 
 let currentView = null;

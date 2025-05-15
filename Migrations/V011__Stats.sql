@@ -1,4 +1,3 @@
--- Returns the user's top 3 categories based on accuracy score
 CREATE
 OR REPLACE FUNCTION get_user_top_categories (p_user_id INT) RETURNS TABLE (
     category_id INT,
@@ -9,13 +8,10 @@ OR REPLACE FUNCTION get_user_top_categories (p_user_id INT) RETURNS TABLE (
 BEGIN
     RETURN QUERY
     WITH category_stats AS (
-        -- Get user's responses for each question
         SELECT 
             c.category_id,
             c.category_name,
-            -- Count correct answers
             COUNT(CASE WHEN a.is_correct = TRUE THEN 1 END) AS correct_answers,
-            -- Count total answers
             COUNT(ur.response_id) AS total_questions
         FROM 
             user_responses ur
@@ -26,16 +22,15 @@ BEGIN
             LEFT JOIN answers a ON ur.chosen_answer = a.answer_id
         WHERE 
             qa.user_id = p_user_id
-            AND ur.chosen_answer IS NOT NULL -- Only count questions that were answered
+            AND ur.chosen_answer IS NOT NULL
         GROUP BY 
             c.category_id, c.category_name
         HAVING 
-            COUNT(ur.response_id) > 0 -- Only include categories with at least one answered question
+            COUNT(ur.response_id) > 0
     )
     SELECT 
         cs.category_id,
         cs.category_name,
-        -- Calculate accuracy rate (correct answers / total questions)
         CASE 
             WHEN cs.total_questions > 0 
             THEN (cs.correct_answers::NUMERIC / cs.total_questions::NUMERIC)
@@ -45,14 +40,13 @@ BEGIN
     FROM 
         category_stats cs
     ORDER BY 
-        accuracy_rate DESC, -- Primary sort by accuracy
-        total_questions DESC, -- Secondary sort by number of questions answered (more questions = more meaningful)
-        category_name ASC -- Tertiary sort alphabetically for consistency
-    LIMIT 3; -- Return only top 3 categories
+        accuracy_rate DESC,
+        total_questions DESC,
+        category_name ASC
+    LIMIT 3;
 END;
 $$ LANGUAGE plpgsql;
 
--- Returns all quizzes created by a user with Manager role (role_id = 2)
 CREATE
 OR REPLACE FUNCTION get_quizzes_created_by_manager (p_user_id INT) RETURNS TABLE (
     quiz_id INT,
@@ -66,20 +60,17 @@ OR REPLACE FUNCTION get_quizzes_created_by_manager (p_user_id INT) RETURNS TABLE
 DECLARE
     v_is_manager BOOLEAN;
 BEGIN
-    -- Check if the user has the Manager role (role_id = 2)
     SELECT EXISTS (
         SELECT 1 
         FROM users 
         WHERE user_id = p_user_id AND role_id = 2
     ) INTO v_is_manager;
     
-    -- If user is not a manager, return empty result
     IF NOT v_is_manager THEN
         RAISE EXCEPTION 'User with ID % does not have Manager role', p_user_id;
         RETURN;
     END IF;
     
-    -- Return quizzes created by the user
     RETURN QUERY
     SELECT 
         q.quiz_id,
@@ -108,7 +99,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Returns the average accuracy score of all users on quizzes created by a specific manager
 CREATE
 OR REPLACE FUNCTION get_manager_quizzes_accuracy (p_manager_id INT) RETURNS TABLE (
     quiz_id INT,
@@ -121,20 +111,17 @@ OR REPLACE FUNCTION get_manager_quizzes_accuracy (p_manager_id INT) RETURNS TABL
 DECLARE
     v_is_manager BOOLEAN;
 BEGIN
-    -- Check if the user has the Manager role (role_id = 2)
     SELECT EXISTS (
         SELECT 1 
         FROM users 
         WHERE user_id = p_manager_id AND role_id = 2
     ) INTO v_is_manager;
     
-    -- If user is not a manager, raise an exception
     IF NOT v_is_manager THEN
         RAISE EXCEPTION 'User with ID % does not have Manager role', p_manager_id;
         RETURN;
     END IF;
     
-    -- Return accuracy statistics for each quiz created by the manager
     RETURN QUERY
     WITH quiz_stats AS (
         SELECT
@@ -143,9 +130,7 @@ BEGIN
             c.category_name,
             qa.attempt_id,
             qa.user_id,
-            -- Count correct answers in this attempt
             COUNT(CASE WHEN a.is_correct = TRUE THEN 1 END) AS correct_answers,
-            -- Count total answers in this attempt
             COUNT(ur.response_id) AS total_answers
         FROM
             quizzes q
@@ -156,7 +141,7 @@ BEGIN
         WHERE
             q.created_by = p_manager_id
             AND q.deactivated_at IS NULL
-            AND ur.chosen_answer IS NOT NULL -- Only count questions that were answered
+            AND ur.chosen_answer IS NOT NULL
         GROUP BY
             q.quiz_id,
             q.quiz_title,
@@ -187,7 +172,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Returns the number of quiz attempts on quizzes created by a specific manager
 CREATE
 OR REPLACE FUNCTION get_manager_quiz_attempts (p_manager_id INT) RETURNS TABLE (
     quiz_id INT,
@@ -202,20 +186,17 @@ OR REPLACE FUNCTION get_manager_quiz_attempts (p_manager_id INT) RETURNS TABLE (
 DECLARE
     v_is_manager BOOLEAN;
 BEGIN
-    -- Check if the user has the Manager role (role_id = 2)
     SELECT EXISTS (
         SELECT 1 
         FROM users 
         WHERE user_id = p_manager_id AND role_id = 2
     ) INTO v_is_manager;
     
-    -- If user is not a manager, raise an exception
     IF NOT v_is_manager THEN
         RAISE EXCEPTION 'User with ID % does not have Manager role', p_manager_id;
         RETURN;
     END IF;
     
-    -- Return attempt statistics for each quiz created by the manager
     RETURN QUERY
     SELECT
         q.quiz_id,
@@ -247,7 +228,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Returns the top categories where a manager has created quizzes
 CREATE
 OR REPLACE FUNCTION get_manager_top_categories (p_manager_id INT) RETURNS TABLE (
     category_id INT,
@@ -261,28 +241,23 @@ DECLARE
     v_is_manager BOOLEAN;
     v_category_count INT;
 BEGIN
-    -- Check if the user has the Manager role (role_id = 2)
     SELECT EXISTS (
         SELECT 1 
         FROM users 
         WHERE user_id = p_manager_id AND role_id = 2
     ) INTO v_is_manager;
     
-    -- If user is not a manager, raise an exception
     IF NOT v_is_manager THEN
         RAISE EXCEPTION 'User with ID % does not have Manager role', p_manager_id;
         RETURN;
     END IF;
     
-    -- Count how many categories the manager has created quizzes in
     SELECT COUNT(DISTINCT q.category_id)
     INTO v_category_count
     FROM quizzes q
     WHERE q.created_by = p_manager_id 
     AND q.deactivated_at IS NULL;
     
-    -- Return all categories if the manager has created quizzes in 3 or fewer categories
-    -- Otherwise return the top 3 categories with the most quizzes
     IF v_category_count <= 3 THEN
         RETURN QUERY
         SELECT
@@ -336,7 +311,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Creates a view that ranks managers based on number of quizzes created
 CREATE OR REPLACE VIEW
     manager_leaderboard AS
 WITH
@@ -362,7 +336,7 @@ WITH
             AND qn.deactivated_at IS NULL
             LEFT JOIN quiz_attempts qa ON q.quiz_id = qa.quiz_id
         WHERE
-            u.role_id = 2 -- Manager role
+            u.role_id = 2
             AND u.deactivated_at IS NULL
         GROUP BY
             u.user_id,

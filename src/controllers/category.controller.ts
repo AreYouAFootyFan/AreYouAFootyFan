@@ -13,7 +13,6 @@ export class CategoryController {
     try {
       const { page = 1, limit = 10 } = request.query;
 
-      // Validate pagination parameters
       const pageNum = Number(page);
       const limitNum = Number(limit);
 

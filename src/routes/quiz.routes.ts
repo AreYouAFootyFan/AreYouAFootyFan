@@ -11,7 +11,6 @@ const router = express.Router();
 
 router.use(authenticate);
 
-// router.get("/", QuizController.getQuizzes);
 router.get("/list", QuizController.getQuizzes);
 router.get("/:id/status", QuizController.checkQuizStatus);
 router.get("/:id", QuizController.getQuizById);

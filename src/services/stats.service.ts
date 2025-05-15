@@ -38,7 +38,6 @@ export interface ManagerProfileStats {
   avgScore: number;
   rank: number;
   topCategories: ManagerTopCategories[];
-  // badges: string[]
 }
 
 export interface PlayedQuizzes {

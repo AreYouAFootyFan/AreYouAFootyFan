@@ -507,13 +507,11 @@ class AdminDashboard extends HTMLElement {
         throw new Error("Quiz service not available");
       }
 
-      // Get quizzes with validation in a single call
       const response = await window.quizService.getQuizzesWithValidation({
         page: this.currentPage || 1,
         limit: 10,
       });
 
-      // Check if response has the expected structure
       if (
         !response ||
         !response.data ||
@@ -538,7 +536,6 @@ class AdminDashboard extends HTMLElement {
         return;
       }
 
-      // Create a section for the table content
       const tableSection = document.createElement("section");
       tableSection.className = "quiz-table-section";
 
@@ -654,13 +651,11 @@ class AdminDashboard extends HTMLElement {
         throw new Error("Quiz service not available");
       }
 
-      // Get recent quizzes with validation
       const response = await window.quizService.getQuizzesWithValidation({
         page: 1,
         limit: 5,
       });
 
-      // Check if response has the expected structure
       if (
         !response ||
         !response.data ||
