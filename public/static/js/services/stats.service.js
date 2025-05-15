@@ -8,6 +8,10 @@ class StatsService {
   async getProfileStats() {
     return apiService.get('/api/stats/profile')
   }
+
+  async getPlayedQuizzes() {
+    return apiService.get('/api/stats/played')
+  }
 }
 
 const statsService = new StatsService();

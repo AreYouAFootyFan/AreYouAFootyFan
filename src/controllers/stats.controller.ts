@@ -45,4 +45,24 @@ export class StatsController {
             next(error);
         }
     }
+
+    static async getPlayedQuizzes(
+        _request: Request,
+        response: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+            const userId = _request.user?.id;
+            if (!userId) {
+                throw ErrorUtils.unauthorized(
+                Message.Error.Base.USER_NOT_AUTHENTICATED
+                );
+            }
+
+            const stats = await StatsService.getPlayedQuizzes(userId);
+            response.json(stats);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
