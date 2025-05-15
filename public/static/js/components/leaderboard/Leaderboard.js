@@ -89,10 +89,10 @@ class Leaderboard extends HTMLElement {
         loadingCell.colSpan = 4;
         loadingCell.className = 'loading';
 
-        const spinner = document.createElement('span');
+        const spinner = document.createElement('section');
         spinner.className = 'loading-spinner';
 
-        const message = document.createElement('span');
+        const message = document.createElement('section');
         message.textContent = loadingText;
 
         loadingCell.appendChild(spinner);
