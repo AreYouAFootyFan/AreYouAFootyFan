@@ -1,5 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
-import { Role } from "../../enums/users.js";
+import { Role } from "../../enums/index.js";
 import { clearDOM } from "../../utils/domHelpers.js";
 import "../../components/widgets/LiveScores.js";
 import { navigator } from "../../index.js";
@@ -142,10 +142,6 @@ class QuizHome extends HTMLElement {
 
     main.appendChild(contentSection);
 
-    const leaderboard = document.createElement("quiz-leaderboard");
-    leaderboard.id = "leaderboard";
-    main.appendChild(leaderboard);
-
     const modal = document.createElement("section");
     modal.id = "quiz-master-modal";
     modal.className = "modal";
@@ -221,13 +217,6 @@ class QuizHome extends HTMLElement {
       });
     }
 
-    const leaderboard = this.shadowRoot.querySelector("#leaderboard");
-    if (leaderboard) {
-      leaderboard.addEventListener("view-full-leaderboard", () => {
-        leaderboard.showFullLeaderboard();
-      });
-    }
-
     const closeModalBtn = this.shadowRoot.querySelector("#close-modal-btn");
     if (closeModalBtn) {
       closeModalBtn.addEventListener("click", () => {
@@ -296,13 +285,6 @@ class QuizHome extends HTMLElement {
               }
             })
         );
-      }
-
-      if (window.leaderboardService) {
-        const leaderboard = this.shadowRoot.querySelector("#leaderboard");
-        if (leaderboard) {
-          leaderboard.loadLeaderboardData();
-        }
       }
 
       await Promise.all(dataPromises);

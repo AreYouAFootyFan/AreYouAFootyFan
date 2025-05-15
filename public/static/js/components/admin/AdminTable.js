@@ -136,7 +136,7 @@ class AdminTable extends HTMLElement {
             button.dataset.title = item.data.title || "";
             button.dataset.name = item.data.name || "";
 
-            const icon = document.createElement("i");
+            const icon = document.createElement("button");
             icon.className = "action-icon";
             icon.textContent = item.icon;
 

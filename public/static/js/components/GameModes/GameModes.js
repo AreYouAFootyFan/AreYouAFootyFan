@@ -53,25 +53,28 @@ class GameModes extends HTMLElement {
 
     const heroTitle = document.createElement("h2");
     heroTitle.className = "hero-title";
-    heroTitle.textContent =
-      "Choose from a variety of categories and challenge yourself";
+    heroTitle.textContent = "Available Quiz Categories";
+
+    const sectionTitle = document.createElement("h2");
+    sectionTitle.className = "section-subtitle";
+    sectionTitle.textContent = "Choose from a variety of categories and challenge yourself";
 
     heroContent.appendChild(heroTitle);
+    heroContent.appendChild(sectionTitle);
+
     hero.appendChild(heroContent);
     main.appendChild(hero);
 
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
 
-    const sectionHeader = document.createElement("header");
-    sectionHeader.className = "section-header";
+    // const sectionHeader = document.createElement("header");
+    // sectionHeader.className = "section-header";
 
-    const sectionTitle = document.createElement("h2");
-    sectionTitle.className = "section-title";
-    sectionTitle.textContent = "Available Game Modes";
 
-    sectionHeader.appendChild(sectionTitle);
-    contentSection.appendChild(sectionHeader);
+
+    // sectionHeader.appendChild(sectionTitle);
+    // contentSection.appendChild(sectionHeader);
 
     const gameModeGrid = document.createElement("section");
     gameModeGrid.id = "game-mode-grid";
@@ -91,11 +94,6 @@ class GameModes extends HTMLElement {
     contentSection.appendChild(pagination);
 
     main.appendChild(contentSection);
-
-    const leaderboard = document.createElement("quiz-leaderboard");
-    leaderboard.id = "leaderboard";
-    main.appendChild(leaderboard);
-
     return main;
   }
 

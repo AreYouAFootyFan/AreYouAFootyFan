@@ -5,7 +5,7 @@ import "./AdminModal.js";
 import "./AdminCard.js";
 import "./AdminNotification.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
-import { Role } from "../../enums/users.js";
+import { Role } from "../../enums/index.js";
 import { clearDOM } from "../../utils/domHelpers.js";
 import { navigator } from "../../index.js";
 
