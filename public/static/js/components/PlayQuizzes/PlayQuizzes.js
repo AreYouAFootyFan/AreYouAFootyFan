@@ -54,7 +54,8 @@ class Quizzes extends HTMLElement {
     const main = document.createElement("main");
 
     const contentSection = document.createElement("section");
-    contentSection.className = "content-section";    const sectionHeader = document.createElement("header");
+    contentSection.className = "content-section";    
+    const sectionHeader = document.createElement("header");
     sectionHeader.className = "section-header";
 
 
