@@ -26,7 +26,6 @@ class QuizHome extends HTMLElement {
   }
 
   disconnectedCallback() {
-    // Remove the live scores widget when navigating away
     const liveScores = document.querySelector("live-scores");
     if (liveScores) {
       liveScores.remove();
@@ -34,13 +33,11 @@ class QuizHome extends HTMLElement {
   }
 
   initializeLiveScores() {
-    // Remove any existing live scores widget
     const existingWidget = document.querySelector("live-scores");
     if (existingWidget) {
       existingWidget.remove();
     }
 
-    // Create and append the new widget
     const liveScores = document.createElement("live-scores");
     document.body.appendChild(liveScores);
 
@@ -73,52 +70,9 @@ class QuizHome extends HTMLElement {
     const backgroundSection = document.createElement("section");
     backgroundSection.className = "football-bg";
   
-    for (let i = 0; i < 20; i++) {
-      const ball = document.createElement("article");
-      ball.className = "football";
-      ball.textContent = "⚽";
-      ball.style.left = Math.random() * 100 + "vw";
-      ball.style.animationDelay = Math.random() * 5 + "s";
-      ball.style.fontSize = `${Math.random() * 1.5 + 1.5}rem`;
-      backgroundSection.appendChild(ball);
-    }
-  
+    this.createFootballs(backgroundSection,20);
     main.appendChild(backgroundSection);
-  
-    const heroSection = document.createElement("section");
-    heroSection.className = "hero";
-    
-    const heroContainer = document.createElement("section");
-    heroContainer.className = "hero-content";
-  
-    const heroHeading = document.createElement("h1");
-    heroHeading.className = "hero-title hero-title--gradient";
-    heroHeading.textContent = "Elevate Your Football IQ";
-  
-    const heroDescription = document.createElement("p");
-    heroDescription.className = "hero-subtitle";
-    heroDescription.textContent = 
-  "⚽ Test your football skills!\n" +
-  "Pick from legends, matches, transfers & more.\n\n" +
-  "🔥 ELO ranks you against players at your level.\n\n" +
-  "🏆 See where you stand on live leaderboards.\n\n" +
-  "📊 Follow live scores and 🎮 apply to be a manager.\n\n" +
-  "Ready to prove you’re the best? Let’s go! 🚀";
-
-
-      
-    const ctaButton = document.createElement("a");
-    ctaButton.className = "hero-cta";
-    ctaButton.textContent = "Explore Quizzes";
-    ctaButton.href = "/game-modes";
-    ctaButton.setAttribute("data-link", "");
-    ctaButton.setAttribute("aria-label", "Browse all football quizzes");
-  
-    heroContainer.appendChild(heroHeading);
-    heroContainer.appendChild(heroDescription);
-    heroContainer.appendChild(ctaButton);
-    heroSection.appendChild(heroContainer);
-    main.appendChild(heroSection);
+    this.createHeroSection(backgroundSection);
   
     const notificationSection = document.createElement("aside");
     notificationSection.className = "notification";
@@ -136,54 +90,12 @@ class QuizHome extends HTMLElement {
     notificationSection.appendChild(noteMessage);
     main.appendChild(notificationSection);
   
-    // Content wrapper with white background
     const contentWrapper = document.createElement("section");
     contentWrapper.className = "content-wrapper";
     
   
-    // Main content section with quizzes
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
-  
-    const sectionHeader = document.createElement("header");
-    sectionHeader.className = "section-header";
-  
-    const sectionTitle = document.createElement("h2");
-    sectionTitle.className = "section-title";
-    sectionTitle.textContent = "Quizzes for you";
-  
-    const filter = document.createElement("quiz-category-filter");
-    filter.id = "category-filter";
-    filter.setAttribute("aria-label", "Filter quizzes by category");
-  
-    sectionHeader.appendChild(sectionTitle);
-    sectionHeader.appendChild(filter);
-    contentSection.appendChild(sectionHeader);
-  
-    const quizGrid = document.createElement("section");
-    quizGrid.id = "quiz-grid";
-    quizGrid.className = "quiz-grid";
-    quizGrid.setAttribute("role", "list");
-    quizGrid.setAttribute("aria-label", "Available quizzes");
-  
-    const loadingContainer = document.createElement("section");
-    loadingContainer.className = "loading";
-    loadingContainer.setAttribute("aria-live", "polite");
-  
-    const spinner = document.createElement("section");
-    spinner.className = "loading-spinner";
-    spinner.setAttribute("aria-hidden", "true");
-  
-    const loadingText = document.createElement("a");
-    loadingText.textContent = "Loading quizzes...";
-  
-    loadingContainer.appendChild(spinner);
-    loadingContainer.appendChild(loadingText);
-    quizGrid.appendChild(loadingContainer);
-    contentSection.appendChild(quizGrid);
-  
-    // contentWrapper.appendChild(contentSection);
-    // main.appendChild(contentWrapper);
   
     const modal = document.createElement("dialog");
     modal.id = "quiz-master-modal";
@@ -227,8 +139,56 @@ class QuizHome extends HTMLElement {
     modal.appendChild(modalContent);
   
     main.appendChild(modal);
-  
     return main;
+  }
+
+  createHeroSection(parent) {
+    const heroSection = document.createElement("section");
+    heroSection.className = "hero";
+    
+    const heroContainer = document.createElement("section");
+    heroContainer.className = "hero-content";
+  
+    const heroHeading = document.createElement("h1");
+    heroHeading.className = "hero-title hero-title--gradient";
+    heroHeading.textContent = "Elevate Your Football IQ";
+  
+    const heroDescription = document.createElement("p");
+    heroDescription.className = "hero-subtitle";
+    heroDescription.textContent = 
+      "⚽ Test your football skills!\n" +
+      "Pick from legends, matches, transfers & more.\n\n" +
+      "🔥 ELO ranks you against players at your level.\n\n" +
+      "🏆 See where you stand on live leaderboards.\n\n" +
+      "📊 Follow live scores and 🎮 apply to be a manager.\n\n" +
+      "Ready to prove you're the best? Let's go! 🚀";
+  
+    const ctaButton = document.createElement("a");
+    ctaButton.className = "hero-cta";
+    ctaButton.textContent = "Explore Quizzes";
+    ctaButton.href = "/game-modes";
+    ctaButton.setAttribute("data-link", "");
+    ctaButton.setAttribute("aria-label", "Browse all football quizzes");
+  
+    heroContainer.appendChild(heroHeading);
+    heroContainer.appendChild(heroDescription);
+    heroContainer.appendChild(ctaButton);
+    heroSection.appendChild(heroContainer);
+    
+    parent.appendChild(heroSection);
+  }
+  
+
+  createFootballs(parent, amount){
+    for (let i = 0; i < amount; i++) {
+      const ball = document.createElement("article");
+      ball.className = "football";
+      ball.textContent = "⚽";
+      ball.style.left = Math.random() * 100 + "vw";
+      ball.style.animationDelay = Math.random() * 5 + "s";
+      ball.style.fontSize = `${Math.random() * 2 + 1}rem`;
+      parent.appendChild(ball);
+    }
   }
 
   createEmptyQuizMessage() {
