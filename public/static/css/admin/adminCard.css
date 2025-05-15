@@ -29,5 +29,6 @@
 }
 
 .card-content {
-    padding: 1.5rem;
+    padding: 0.5rem;
+    overflow-x: scroll;
 }

@@ -67,19 +67,6 @@ class UserProfile extends HTMLElement {
     const stats = this.createUserStatsView(this.userStats);
     main.appendChild(stats);
 
-
-    const historyHeader = document.createElement("header");
-    historyHeader.className = "page-header";
-
-    const historyTitle = document.createElement("h1");
-    historyTitle.textContent = "Quiz History";
-
-    historyHeader.appendChild(historyTitle);
-    main.appendChild(historyHeader);
-
-    const quizHistory = document.createElement("quiz-history");
-    main.appendChild(quizHistory);
-
     this.shadowRoot.appendChild(main);
   }
 
@@ -183,6 +170,21 @@ class UserProfile extends HTMLElement {
 
       badgesCard.setAttribute("badges-earned", JSON.stringify(badges));
       statsCards.appendChild(badgesCard);
+    }
+
+    if(isPlayer){
+        const historyHeader = document.createElement("header");
+        historyHeader.className = "page-header";
+
+        const historyTitle = document.createElement("h1");
+        historyTitle.textContent = "Quiz History";
+
+        historyHeader.appendChild(historyTitle);
+        statsCards.appendChild(historyHeader);
+
+        const quizHistory = document.createElement("quiz-history");
+        statsCards.appendChild(quizHistory);
+
     }
     statsView.appendChild(statsCards);
 

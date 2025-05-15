@@ -101,7 +101,6 @@ admin-table {
 .error-message,
 .empty-message {
     text-align: center;
-    margin-block: 2rem;
     font-size: clamp(1rem, 3vw, 1.125rem);
 }
 
