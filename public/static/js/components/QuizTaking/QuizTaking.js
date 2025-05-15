@@ -333,15 +333,6 @@ class QuizTaking extends HTMLElement {
 
       questionElement.setAttribute("time-up", "true");
 
-      this.currentQuestion.answers.forEach((answer) => {
-        if (answer.is_correct) {
-          questionElement.setAttribute(
-            `correct-answer-${answer.answer_id}`,
-            "true"
-          );
-        }
-      });
-
       if (this.currentQuestionIndex >= this.quizData.totalQuestions - 1) {
         questionElement.setAttribute("show-results-button", "true");
         questionElement.addEventListener("show-results", () =>
@@ -372,6 +363,7 @@ class QuizTaking extends HTMLElement {
         question_id: this.currentQuestion.question_id,
       });
 
+      this.showAnswerFeedback(response);
       this.score += response.points_earned;
 
       questionElement.setAttribute("show-feedback", "true");
