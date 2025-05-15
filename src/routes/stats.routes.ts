@@ -14,5 +14,6 @@ router.use(requireUsername);
 
 router.get("/dashboard", requireRole(User.Role.MANAGER), StatsController.getDashboardStats);
 router.get("/profile", StatsController.getProfileStats);
+router.get("/played", StatsController.getPlayedQuizzes);
 
 export default router;

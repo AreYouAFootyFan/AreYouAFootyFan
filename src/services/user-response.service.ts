@@ -95,8 +95,12 @@ export class UserResponseService {
       data.attempt_id
     );
 
+    const correct_answer = await AnswerModel.findCorrectAnswer(data.question_id);
+
+
     return {
       ...responseDetails,
+      correct_answer: correct_answer,
       quiz_completed: shouldAutoComplete,
     };
   }
@@ -138,9 +142,11 @@ export class UserResponseService {
       }
       
       const shouldAutoComplete = await QuizAttemptService.checkAutoComplete(attemptId);
+      const correct_answer = await AnswerModel.findCorrectAnswer(questionId);
       
       return {
         ...details,
+        correct_answer: correct_answer,
         quiz_completed: shouldAutoComplete
       };
     }
@@ -166,9 +172,11 @@ export class UserResponseService {
     }
 
     const shouldAutoComplete = await QuizAttemptService.checkAutoComplete(attemptId);
+    const correct_answer = await AnswerModel.findCorrectAnswer(questionId);
 
     return {
       ...responseDetails,
+      correct_answer: correct_answer,
       quiz_completed: shouldAutoComplete,
     };
   }

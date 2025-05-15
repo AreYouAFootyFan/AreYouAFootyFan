@@ -1,10 +1,11 @@
 import AbstractView from "./AbstractView.js";
 import "../components/auth/LoginForm.js";
+import { Message } from "../enums/index.js";
 
 export default class LoginView extends AbstractView {
     constructor() {
         super();
-        this.setTitle("Login - Football Quiz");
+        this.setTitle(Message.View.Title.LOGIN);
     }
 
     async getHtml() {

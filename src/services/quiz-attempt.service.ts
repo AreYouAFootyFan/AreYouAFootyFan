@@ -95,7 +95,7 @@ export class QuizAttemptService {
 
     const questionsWithResponses =
       await QuizAttemptModel.getQuizQuestionsWithResponses(attempt.attempt_id);
-
+    
     const unansweredQuestions = questionsWithResponses.filter(
       (question) => !question.response_id
     );
