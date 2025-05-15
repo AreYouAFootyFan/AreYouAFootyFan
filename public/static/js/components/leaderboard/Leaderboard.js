@@ -204,12 +204,17 @@ class Leaderboard extends HTMLElement {
 
     async loadLeaderboardData() {
         try {
-            if (window.statsService) {
+            if (window.statsService && window.authService) {
+                const authService = window.authService;
+                const user = authService.getUser();
+
+                const isPlayer = user.role_id === 1;
                 const stats = await window.statsService.getProfileStats();
+
                 this.individualRanking = stats.rank;
 
                 const rankingLabelContainer = this.shadowRoot.querySelector('#ranking-label-container');
-                if (rankingLabelContainer) {
+                if (rankingLabelContainer && isPlayer) {
                     clearDOM(rankingLabelContainer);
                     rankingLabelContainer.appendChild(this.createRankingLabel(this.individualRanking));
                 }

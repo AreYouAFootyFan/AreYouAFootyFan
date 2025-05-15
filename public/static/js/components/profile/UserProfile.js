@@ -80,15 +80,21 @@ class UserProfile extends HTMLElement {
     const statsHeader = document.createElement("header");
     statsHeader.className = "page-header";
 
-    const statsTitle = document.createElement("h1");
-    statsTitle.textContent = "Quiz Stats";
-
-    statsHeader.appendChild(statsTitle);
-    statsView.appendChild(statsHeader);
-
     // Stats Summary
     const user = authService.getUser();
     const isPlayer = user.role_id === 1;
+    const statsTitle = document.createElement("h1");
+
+    if(isPlayer){
+        statsTitle.textContent = "Quiz Stats";
+    }else{
+        statsTitle.textContent = "Created Quiz Stats";
+    }
+    
+    statsHeader.appendChild(statsTitle);
+    statsView.appendChild(statsHeader);
+
+
 
     const statsSummary = document.createElement("profile-stats");
     statsSummary.id = "user-stats-summary";

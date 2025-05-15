@@ -104,7 +104,7 @@ class FootballQuizHeader extends HTMLElement {
     profileButton.textContent = "Profile";
     profileButton.addEventListener("click", (event) => {
       event.preventDefault();
-      // history.pushState({}, "", "/profile");
+      dropdownMenu.classList.toggle("visible");
       navigator("/profile");
     });
     profileItem.appendChild(profileButton);
