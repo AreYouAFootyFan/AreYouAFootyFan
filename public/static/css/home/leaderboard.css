@@ -1,11 +1,14 @@
 :host {
     display: block;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .leaderboard {
-    background-color: white;
+    background-color: #ffffff;
     padding: 3rem 1rem;
     margin-top: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
 }
 
 .leaderboard-inner {
@@ -17,19 +20,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
 }
 
 .section-title {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1e293b; 
 }
 
 .view-all {
-    color: var(--primary);
+    color: var(--primary, #2563eb);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.875rem;
@@ -44,7 +47,8 @@
 
 .table-container {
     overflow-x: auto;
-    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200, #e5e7eb);
 }
 
 table {
@@ -53,43 +57,56 @@ table {
 }
 
 th, td {
-    padding: 1rem;
+    padding: 1.25rem 1rem;
     text-align: left;
-    border-bottom: 0.0625rem solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200, #e5e7eb);
 }
 
 th {
     font-weight: 600;
-    color: var(--gray-600);
-    background-color: var(--gray-50);
+    color: #64748b; /* slate-500 */
+    background-color: #f8fafc; /* gray-50 */
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+tbody tr:hover {
+    background-color: #f1f5f9;
 }
 
 .rank {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.75rem;
+    height: 1.75rem;
     border-radius: 50%;
-    background-color: var(--gray-200);
     font-weight: 600;
     font-size: 0.75rem;
     margin-right: 0.5rem;
 }
 
 .rank-1 {
-    background-color: #fcd34d;
-    color: #92400e;
+    background-color: #facc15; /* yellow-400 */
+    color: #92400e;             /* amber-900 */
 }
 
 .rank-2 {
-    background-color: #cbd5e1;
-    color: #334155;
+    background-color: #cbd5e1; /* slate-200 */
+    color: #334155;            /* slate-800 */
 }
 
 .rank-3 {
-    background-color: #d8b4fe;
-    color: #6b21a8;
+    background-color: #d8b4fe; /* purple-300 */
+    color: #6b21a8;            /* purple-900 */
+}
+
+/* Optional highlight for the current user */
+.current-user {
+    background-color: #e0f2fe !important;
+    font-weight: 600;
 }
 
 .close-btn {
@@ -100,7 +117,7 @@ th {
     font-size: 1.5rem;
     background: none;
     cursor: pointer;
-    color: var(--gray-500);
+    color: var(--gray-500, #6b7280);
     width: 2rem;
     height: 2rem;
     display: flex;
@@ -110,6 +127,6 @@ th {
 }
 
 .close-btn:hover {
-    background-color: var(--gray-100);
-    color: var(--gray-900);
+    background-color: #f3f4f6;
+    color: #1f2937;
 }

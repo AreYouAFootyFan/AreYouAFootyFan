@@ -145,15 +145,15 @@ class FootballQuizHeader extends HTMLElement {
 
     homeItem.appendChild(homeLink);
 
-    // const profileItem = document.createElement("li");
-    // profileItem.className = "nav-item";
+    const leaderboardItem = document.createElement("li");
+    leaderboardItem.className = "nav-item";
 
-    // const profile = document.createElement("a");
-    // profile.href = "/profile";
-    // profile.className = "nav-link";
-    // profile.dataset.link = "";
-    // profile.textContent = "Profile";
-    // profileItem.appendChild(profile);
+    const leaderboard = document.createElement("a");
+    leaderboard.href = "/leaderboard";
+    leaderboard.className = "nav-link";
+    leaderboard.dataset.link = "";
+    leaderboard.textContent = "Leaderboard";
+    leaderboardItem.appendChild(leaderboard);
 
     const gameModeItem = document.createElement("li");
     gameModeItem.className = "nav-item";
@@ -178,9 +178,10 @@ class FootballQuizHeader extends HTMLElement {
     adminItem.appendChild(adminLink);
 
     navList.appendChild(homeItem);
-    // navList.appendChild(profileItem);
     navList.appendChild(gameModeItem);
     navList.appendChild(adminItem);
+    navList.appendChild(leaderboardItem);
+
     navInner.appendChild(navList);
     headerNav.appendChild(navInner);
 
