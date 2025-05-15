@@ -12,14 +12,14 @@
 }
 
 .stat-value {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 2vw + 1rem, 3rem);
     margin-bottom: 0.5rem;
     font-weight: 700;
     color: var(--primary);
 }
 
 .stat-label {
-    font-size: 0.875rem;
+    font-size: 0.875em;
     color: var(--gray-600);
     margin: 0;
 }

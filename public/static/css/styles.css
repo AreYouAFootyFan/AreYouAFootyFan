@@ -57,7 +57,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: clamp(0.5rem, 2vw + 0.5rem, 1rem);
   scroll-behavior: smooth;
   height: 100%;
 }
@@ -102,22 +102,22 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 700;
+  font-weight: 700; 
   line-height: 1.2;
   margin-bottom: 0.5em;
   color: var(--gray-900);
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 1.5vw + 0.5rem, 2rem);;
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 2vw + 0.5rem, 1.5rem);
 }
 
 h3 {
-  font-size: 1.25rem;
+  font-size: clamp(0.75rem, 2vw + 0.5rem, 1.25rem);
 }
 
 p {
@@ -264,7 +264,7 @@ i {
     padding: 0.75rem;
     border: 0.0625rem solid var(--gray-300);
     border-radius: 0.25rem;
-    font-size: 1rem;
+    font-size: clamp(0.5rem, 2vw + 0.5rem, 1rem);;
     background-color: white;
     transition: border-color 0.2s;
     font-family: inherit;
@@ -327,7 +327,7 @@ i {
     justify-content: center;
     align-items: center;
     min-height: 5rem;
-    font-size: 1rem;
+    font-size: clamp(0.5rem, 2vw + 0.5rem, 1rem);;
     color: var(--gray-600);
     padding: 1.5rem;
 }
@@ -346,7 +346,7 @@ i {
 }
 
 .empty-title {
-    font-size: 1.25rem;
+    font-size: clamp(0.75rem, 2vw + 0.5rem, 1.25rem);
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: var(--gray-700);
@@ -431,7 +431,7 @@ i {
 
 .modal-header h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: clamp(0.75rem, 2vw + 0.5rem, 1.25rem);
     font-weight: 600;
 }
 
