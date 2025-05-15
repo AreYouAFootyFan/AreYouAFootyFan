@@ -79,6 +79,8 @@ class QuizCreator extends HTMLElement {
     creatorContent.appendChild(this.createQuestionFormView());
     creatorContent.appendChild(this.createAnswersView());
 
+    const confirmModal = this.createConfirmModal();
+
     creatorContainer.appendChild(creatorContent);
     main.appendChild(creatorContainer);
 
@@ -87,6 +89,8 @@ class QuizCreator extends HTMLElement {
     notification.className = "notification";
 
     this.shadowRoot.appendChild(main);
+    this.shadowRoot.appendChild(confirmModal);
+
     this.shadowRoot.appendChild(notification);
 
     this.setupEventListeners();
@@ -241,7 +245,7 @@ class QuizCreator extends HTMLElement {
       this.handleEditQuestion(e.detail.questionId)
     );
     questionsList.addEventListener("delete-question", (e) =>
-      this.handleDeleteQuestion(e.detail.questionId)
+      this.confirmDeleteQuestion(e.detail.questionId)
     );
     questionsList.addEventListener("manage-answers", (e) =>
       this.handleManageAnswers(e.detail.questionId, e.detail.questionText)
@@ -784,12 +788,11 @@ class QuizCreator extends HTMLElement {
   async handleDeleteQuestion(questionId) {
     try {
       const questionService = window.questionService;
+      const confirmModal = this.shadowRoot.querySelector("#confirm-modal");
+      if (confirmModal) confirmModal.hide();
+
       if (!questionService) {
         throw new Error("Question service not available");
-      }
-
-      if (!confirm("Are you sure you want to delete this question?")) {
-        return;
       }
 
       await questionService.deleteQuestion(questionId);
@@ -831,6 +834,50 @@ class QuizCreator extends HTMLElement {
     setTimeout(() => {
       notification.classList.remove("visible");
     }, 3000);
+  }
+  
+  confirmDeleteQuestion(questionId) {
+    const confirmModal = this.shadowRoot.querySelector("#confirm-modal");
+    const confirmMessage = this.shadowRoot.querySelector("#confirm-message");
+    const confirmAction = this.shadowRoot.querySelector("#confirm-action");
+
+    if (!confirmModal || !confirmMessage || !confirmAction) return;
+
+    confirmMessage.textContent = "Are you sure you want to delete the quiz ?";
+
+    confirmAction.onclick = () => this.handleDeleteQuestion(questionId);
+
+    confirmModal.show();
+  }
+
+  createConfirmModal() {
+    const confirmModal = document.createElement("admin-modal");
+    confirmModal.id = "confirm-modal";
+    confirmModal.setAttribute("title", "Confirm Action");
+
+    const content = document.createElement("section");
+    content.setAttribute("slot", "content");
+
+    const message = document.createElement("p");
+    message.id = "confirm-message";
+    message.textContent = "Are you sure you want to proceed?";
+
+    const actions = document.createElement("section");
+    actions.className = "form-actions";
+
+    const confirmBtn = document.createElement("button");
+    confirmBtn.id = "confirm-action";
+    confirmBtn.className = "admin-btn primary-btn danger-btn";
+    confirmBtn.textContent = "Confirm";
+
+    actions.appendChild(confirmBtn);
+
+    content.appendChild(message);
+    content.appendChild(actions);
+
+    confirmModal.appendChild(content);
+
+    return confirmModal;
   }
 }
 

@@ -92,7 +92,7 @@ class QuizTaking extends HTMLElement {
 
       const quizContainer = this.shadowRoot.querySelector(".quiz-container");
       if (quizContainer) {
-        quizContainer.innerHTML = "";
+        clearDOM(quizContainer);
 
         const loadingContainer = document.createElement("section");
         loadingContainer.classList.add("loading-container");
@@ -169,7 +169,7 @@ class QuizTaking extends HTMLElement {
       this.submitAnswer()
     );
 
-    quizContainer.innerHTML = "";
+    clearDOM(quizContainer);
     quizContainer.appendChild(questionElement);
 
     this.startTimerUpdates(questionElement);

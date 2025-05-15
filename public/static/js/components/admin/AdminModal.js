@@ -67,7 +67,7 @@ class AdminModal extends HTMLElement {
     const closeButton = document.createElement("button");
     closeButton.className = "close-modal";
     closeButton.id = "close-btn";
-    closeButton.innerHTML = "&times;";
+    closeButton.textContent = "X";
 
     modalHeader.appendChild(modalTitle);
     modalHeader.appendChild(closeButton);

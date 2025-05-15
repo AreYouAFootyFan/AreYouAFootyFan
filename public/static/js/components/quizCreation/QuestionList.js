@@ -160,6 +160,7 @@ class QuestionsList extends HTMLElement {
 
     const deleteIcon = document.createElement("button");
     deleteIcon.setAttribute("aria-hidden", "true");
+    deleteIcon.className = "icon-button"
     deleteIcon.textContent = "🗑️";
 
     deleteButton.appendChild(deleteIcon);

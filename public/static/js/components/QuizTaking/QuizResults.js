@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class QuizResults extends HTMLElement {
     constructor() {
         super();
@@ -44,7 +45,7 @@ class QuizResults extends HTMLElement {
             loadingSection.appendChild(loadingSpinner);
             loadingSection.appendChild(loadingText);
             
-            this.shadowRoot.innerHTML = '';
+            clearDOM(this.shadowRoot);
             this.shadowRoot.appendChild(loadingSection);
             return;
         }
@@ -62,7 +63,14 @@ class QuizResults extends HTMLElement {
         
         const finalScore = document.createElement('p');
         finalScore.classList.add('final-score');
-        finalScore.innerHTML = `Your score: <strong>${this._summary.total_points}</strong> points`;
+
+        const scoreText = document.createTextNode('Your score: ');
+        const scoreStrong = document.createElement('strong');
+        scoreStrong.textContent = this._summary.total_points;
+
+        finalScore.appendChild(scoreText);
+        finalScore.appendChild(scoreStrong);
+        finalScore.appendChild(document.createTextNode(' points'));
         
         const percentage = document.createElement('p');
         percentage.classList.add('percentage');
@@ -72,13 +80,23 @@ class QuizResults extends HTMLElement {
         statsSummary.classList.add('stats-summary');
         
         const questions = document.createElement('p');
-        questions.innerHTML = `<strong>Questions:</strong> ${this._summary.answered_questions}/${this._summary.total_questions} (${answeredPercent}% completed)`;
-        
+        const questionsStrong = document.createElement('strong');
+        questionsStrong.textContent = 'Questions:';
+        questions.appendChild(questionsStrong);
+        questions.appendChild(document.createTextNode(` ${this._summary.answered_questions}/${this._summary.total_questions} (${answeredPercent}% completed)`));
+
         const correctAnswers = document.createElement('p');
-        correctAnswers.innerHTML = `<strong>Correct answers:</strong> ${this._summary.correct_answers}/${this._summary.answered_questions}`;
-        
+        const correctStrong = document.createElement('strong');
+        correctStrong.textContent = 'Correct answers:';
+        correctAnswers.appendChild(correctStrong);
+        correctAnswers.appendChild(document.createTextNode(` ${this._summary.correct_answers}/${this._summary.answered_questions}`));
+
         const incorrectAnswers = document.createElement('p');
-        incorrectAnswers.innerHTML = `<strong>Incorrect answers:</strong> ${this._summary.incorrect_answers}`;
+        const incorrectStrong = document.createElement('strong');
+        incorrectStrong.textContent = 'Incorrect answers:';
+        
+        incorrectAnswers.appendChild(incorrectStrong);
+        incorrectAnswers.appendChild(document.createTextNode(` ${this._summary.incorrect_answers}`));
         
         statsSummary.appendChild(questions);
         statsSummary.appendChild(correctAnswers);
@@ -101,7 +119,7 @@ class QuizResults extends HTMLElement {
         article.appendChild(statsSummary);
         article.appendChild(actions);
         
-        this.shadowRoot.innerHTML = '';
+        clearDOM(this.shadowRoot);
         this.shadowRoot.appendChild(style);
         this.shadowRoot.appendChild(article);
     }

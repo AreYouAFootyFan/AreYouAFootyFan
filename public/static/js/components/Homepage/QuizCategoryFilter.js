@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class QuizCategoryFilter extends HTMLElement {
   constructor() {
     super();
@@ -23,7 +24,7 @@ class QuizCategoryFilter extends HTMLElement {
 
   async render() {
     const shadow = this.shadowRoot;
-    shadow.innerHTML = "";
+    clearDOM(shadow);
     const select = document.createElement("select");
     select.id = "category-select";
 

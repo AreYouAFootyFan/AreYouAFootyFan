@@ -216,7 +216,7 @@ class QuizHistory extends HTMLElement {
       if (window.statsService) {
         const historyBody = this.shadowRoot.querySelector("#history-body");
         if (historyBody) {
-          historyBody.innerHTML = "";
+          clearDOM(historyBody);
 
           const loadingRow = document.createElement("tr");
           const loadingCell = document.createElement("td");
@@ -253,7 +253,7 @@ class QuizHistory extends HTMLElement {
       console.error("Error loading history data:", error);
       const historyBody = this.shadowRoot.querySelector("#history-body");
       if (historyBody) {
-        historyBody.innerHTML = "";
+        clearDOM(historyBody);
         historyBody.appendChild(this.createErrorRow());
       }
     }
@@ -262,7 +262,7 @@ class QuizHistory extends HTMLElement {
   renderHistory() {
     const historyBody = this.shadowRoot.querySelector("#history-body");
     if (!historyBody) return;
-    historyBody.innerHTML = "";
+    clearDOM(historyBody);
     try {
       if (!this.historyData || this.historyData.length === 0) {
         const emptyRow = this.createEmptyRow();
