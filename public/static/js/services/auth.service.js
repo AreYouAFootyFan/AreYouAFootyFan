@@ -1,11 +1,11 @@
 import { navigator } from "../index.js";
+import { Message, Http, Storage } from "../enums/index.js";
 
 class AuthService {
   constructor() {
-    this.token = localStorage.getItem("authToken");
-    this.user = JSON.parse(localStorage.getItem("user") || "null");
-    this.googleClientId =
-      "139220435832-r9666l09203vjkd9bf74rlbnogc75vh7.apps.googleusercontent.com";
+    this.token = localStorage.getItem(Storage.Key.Auth.TOKEN);
+    this.user = JSON.parse(localStorage.getItem(Storage.Key.Auth.USER) || "null");
+    this.googleClientId = "139220435832-r9666l09203vjkd9bf74rlbnogc75vh7.apps.googleusercontent.com";
   }
 
   isAuthenticated() {
@@ -33,7 +33,7 @@ class AuthService {
 
   async loginWithGoogle(googleCode) {
     try {
-      const response = await fetch("/api/auth/google-login", {
+      const response = await fetch(Http.Api.Auth.GOOGLE_LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,15 +42,15 @@ class AuthService {
       });
 
       if (!response.ok) {
-        throw new Error("Login failed");
+        throw new Error(Message.Error.Auth.LOGIN_FAILED);
       }
 
       const data = await response.json();
       this.token = data.token;
       this.user = data.user;
 
-      localStorage.setItem("authToken", this.token);
-      localStorage.setItem("user", JSON.stringify(this.user));
+      localStorage.setItem(Storage.Key.Auth.TOKEN, this.token);
+      localStorage.setItem(Storage.Key.Auth.USER, JSON.stringify(this.user));
 
       return {
         requiresUsername: data.requiresUsername,
@@ -63,19 +63,19 @@ class AuthService {
 
   async setUsername(username) {
     try {
-      const response = await fetch("/api/users/username", {
+      const response = await fetch(Http.Api.Auth.SET_USERNAME, {
         method: "PUT",
         headers: this.getAuthHeaders(),
         body: JSON.stringify({ username }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to set username");
+        throw new Error(Message.Error.Auth.FAILED_USERNAME);
       }
 
       const user = await response.json();
       this.user = user;
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem(Storage.Key.Auth.USER, JSON.stringify(user));
 
       return user;
     } catch (error) {
@@ -86,30 +86,30 @@ class AuthService {
   logout() {
     this.token = null;
     this.user = null;
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
+    localStorage.removeItem(Storage.Key.Auth.TOKEN);
+    localStorage.removeItem(Storage.Key.Auth.USER);
     navigator("/");
   }
 
   async refreshUserData() {
-    if (!this.token) return Promise.reject("Not authenticated");
+    if (!this.token) return Promise.reject(Message.Error.Auth.NOT_AUTHENTICATED);
 
     try {
-      const response = await fetch("/api/users/me", {
+      const response = await fetch(Http.Api.Auth.GET_USER, {
         headers: this.getAuthHeaders(),
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
+        if (response.status === Http.Status.UNAUTHORIZED) {
           this.logout();
-          return Promise.reject("Session expired");
+          return Promise.reject(Message.Error.Auth.SESSION_EXPIRED);
         }
-        throw new Error("Failed to get user data");
+        throw new Error(Message.Error.Auth.FAILED_USER_DATA);
       }
 
       const user = await response.json();
       this.user = user;
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem(Storage.Key.Auth.USER, JSON.stringify(user));
 
       return user;
     } catch (error) {
@@ -137,7 +137,7 @@ class AuthService {
   }
 
   getAuthURL() {
-    const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+    const rootUrl = Http.Api.Google.AUTH_URL;
 
     const options = {
       redirect_uri: "http://localhost:3000/",
@@ -146,10 +146,7 @@ class AuthService {
       access_type: "offline",
       response_type: "code",
       prompt: "consent",
-      scope: [
-        "https://www.googleapis.com/auth/userinfo.profile",
-        "https://www.googleapis.com/auth/userinfo.email",
-      ].join(" "),
+      scope: Http.Api.Google.SCOPES.join(" "),
     };
 
     const queryString = new URLSearchParams(options);
