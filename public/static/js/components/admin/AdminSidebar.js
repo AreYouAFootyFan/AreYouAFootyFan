@@ -73,18 +73,9 @@ class AdminSidebar extends HTMLElement {
     categoriesButton.textContent = "Categories";
     categoriesItem.appendChild(categoriesButton);
 
-    const createQuizItem = document.createElement("li");
-    const createQuizLink = document.createElement("a");
-    createQuizLink.href = "/create-quiz";
-    createQuizLink.className = "admin-nav-link";
-    createQuizLink.dataset.link = "";
-    createQuizLink.textContent = "Create Quiz";
-    createQuizItem.appendChild(createQuizLink);
-
     navList.appendChild(dashboardItem);
     navList.appendChild(quizzesItem);
     navList.appendChild(categoriesItem);
-    navList.appendChild(createQuizItem);
 
     nav.appendChild(navList);
     sidebar.appendChild(nav);
