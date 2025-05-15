@@ -24,7 +24,7 @@
 }
 
 .stat-value {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 1.5vw + 0.5rem, 2rem);;
     margin-bottom: 0.5rem;
     font-weight: 700;
     color: var(--primary);

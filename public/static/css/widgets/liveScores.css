@@ -68,7 +68,7 @@
     border-radius: 0.25rem;
     transform-origin: center;
     padding: 0;
-    font-size: 1.25rem;
+    font-size: clamp(0.75rem, 2vw + 0.5rem, 1.25rem);
     transition: transform var(--transition-timing);
 }
 
@@ -84,7 +84,7 @@
     justify-content: center;
     border-radius: 0.25rem;
     transition: all 0.2s ease;
-    font-size: 1.25rem;
+    font-size: clamp(0.75rem, 2vw + 0.5rem, 1.25rem);
     padding: 0;
 }
 
@@ -139,7 +139,7 @@
 }
 
 .league-header {
-    font-size: 1rem;
+    font-size: clamp(0.5rem, 2vw + 0.5rem, 1rem);;
     color: var(--gray-600);
     margin: 1rem 0 0.5rem;
     padding: 0 0.5rem;
