@@ -35,20 +35,6 @@ class FootballQuizFooter extends HTMLElement {
     const nav = document.createElement('nav');
     const navList = document.createElement('ul');
     
-    const privacyItem = document.createElement('li');
-    const privacyLink = document.createElement('a');
-    privacyLink.href = '#/privacy';
-    privacyLink.textContent = 'Privacy';
-    privacyItem.appendChild(privacyLink);
-    
-    const termsItem = document.createElement('li');
-    const termsLink = document.createElement('a');
-    termsLink.href = '#/terms';
-    termsLink.textContent = 'Terms';
-    termsItem.appendChild(termsLink);
-    
-    navList.appendChild(privacyItem);
-    navList.appendChild(termsItem);
     nav.appendChild(navList);
     
     footerContainer.appendChild(copyright);
