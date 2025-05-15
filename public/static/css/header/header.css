@@ -96,7 +96,7 @@ header {
     margin-top: 0.5rem;
     width: 70%;
     height: 0.125rem;
-    background-color: var(--primary);
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
 }
 
 .user-menu {
