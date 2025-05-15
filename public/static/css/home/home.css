@@ -6,8 +6,7 @@
 .hero {
     color: white;
     text-align: center;
-    padding: 4rem 1rem;
-    margin-bottom: 2rem;
+    padding: 3rem 1rem;
 }
 
 .football-bg {
@@ -92,7 +91,7 @@
     opacity: 0.9;
     max-width: 36rem;
     margin: 0 auto;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     line-height: 1.6;
     font-weight: 400;
     color: var(--gray-600);
@@ -158,7 +157,7 @@
     max-width: var(--container-max-width);
     margin: 0 auto 2rem auto;
     background-color: #fff7ed;
-    border-left: 0.25rem solid #f97316;
+    border-top: 0.25rem solid #f97316;
     padding: 1rem;
     border-radius: 0 0.25rem 0.25rem 0;
     display: none;
@@ -168,11 +167,13 @@
     color: #9a3412;
     font-weight: 600;
     margin-bottom: 0.25rem;
+    text-align: center;
 }
 
 .notification-message {
     color: #7c2d12;
     font-size: 0.875rem;
+    text-align: center;
 }
 
 .quiz-grid {

@@ -105,7 +105,7 @@ class FootballQuizHeader extends HTMLElement {
     profileButton.textContent = "Profile";
     profileButton.addEventListener("click", (event) => {
       event.preventDefault();
-      // history.pushState({}, "", "/profile");
+      dropdownMenu.classList.toggle("visible");
       navigator("/profile");
     });
     profileItem.appendChild(profileButton);
@@ -116,7 +116,7 @@ class FootballQuizHeader extends HTMLElement {
     quizmakerButton.id = "quizmaker-button";
     quizmakerButton.type = "button";
     quizmakerButton.className = "logout-btn";
-    quizmakerButton.textContent = "Become a quizmaker";
+    quizmakerButton.textContent = "Become a manager";
 
   
     quizmakerItem.appendChild(quizmakerButton);

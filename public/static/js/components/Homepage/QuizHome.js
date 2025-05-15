@@ -102,7 +102,7 @@ class QuizHome extends HTMLElement {
   "Pick from legends, matches, transfers & more.\n\n" +
   "🔥 ELO ranks you against players at your level.\n\n" +
   "🏆 See where you stand on live leaderboards.\n\n" +
-  "📊 Follow live scores and 🎮 apply to be a quizmaker.\n\n" +
+  "📊 Follow live scores and 🎮 apply to be a manager.\n\n" +
   "Ready to prove you’re the best? Let’s go! 🚀";
 
 
@@ -182,8 +182,8 @@ class QuizHome extends HTMLElement {
     quizGrid.appendChild(loadingContainer);
     contentSection.appendChild(quizGrid);
   
-    contentWrapper.appendChild(contentSection);
-    main.appendChild(contentWrapper);
+    // contentWrapper.appendChild(contentSection);
+    // main.appendChild(contentWrapper);
   
     const modal = document.createElement("dialog");
     modal.id = "quiz-master-modal";
