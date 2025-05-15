@@ -1,9 +1,3 @@
-/*
-View: user_quiz_scores
-Shows the total accumulated score for each user on each quiz they have attempted.
-Columns: user_id, username, quiz_id, quiz_title, total_points
-Ordered by total_points descending (highest first).
- */
 CREATE OR REPLACE VIEW
     user_quiz_scores AS
 SELECT
@@ -25,11 +19,6 @@ GROUP BY
 ORDER BY
     total_points DESC;
 
-/*
-View: user_total_points
-Shows the total accumulated points for each user with the 'Quiz Taker' role.
-Columns: user_id, username, total_points
- */
 CREATE OR REPLACE VIEW
     user_total_points AS
 SELECT
@@ -46,11 +35,6 @@ GROUP BY
     u.user_id,
     u.username;
 
-/*
-View: user_category_scores
-Shows each user's accumulated score for quizzes in each category.
-Columns: user_id, username, category_id, category_name, total_points
- */
 CREATE OR REPLACE VIEW
     user_category_scores AS
 SELECT
@@ -71,10 +55,6 @@ GROUP BY
     c.category_id,
     c.category_name;
 
-/*
-View: leaderboard
-Shows the top users by total points (only Quiz Takers)
- */
 CREATE OR REPLACE VIEW
     leaderboard AS
 SELECT
@@ -93,10 +73,6 @@ GROUP BY
 ORDER BY
     total_points DESC;
 
-/*
-View: quiz_statistics
-Shows number of attempts and average score for each quiz
- */
 CREATE OR REPLACE VIEW
     quiz_statistics AS
 SELECT
@@ -112,10 +88,6 @@ GROUP BY
     q.quiz_id,
     q.quiz_title;
 
-/*
-View: active_categories
-Shows all active categories (not deactivated) ordered alphabetically by name
- */
 CREATE OR REPLACE VIEW
     active_categories AS
 SELECT
@@ -129,9 +101,6 @@ WHERE
 ORDER BY
     category_name ASC;
 
-/*
-View: active_questions
- */
 CREATE OR REPLACE VIEW
     active_questions AS
 SELECT
@@ -144,12 +113,6 @@ FROM
 WHERE
     deactivated_at IS NULL;
 
-
-/*
-View: active_quizzes
-Shows all active quizzes (not deactivated) that belong to active categories, 
-ordered by creation date descending
- */
 CREATE OR REPLACE VIEW
     active_quizzes AS
 SELECT

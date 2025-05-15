@@ -40,7 +40,7 @@ class Pagination extends HTMLElement {
         const list = document.createElement('ul');
         list.className = 'pagination-list';
  
-        // Previous button
+        
         const prevItem = document.createElement('li');
         const prevButton = document.createElement('button');
         prevButton.className = 'pagination-button';
@@ -53,7 +53,6 @@ class Pagination extends HTMLElement {
         prevItem.appendChild(prevButton);
         list.appendChild(prevItem);
  
-        // Single page indicator button
         const pageItem = document.createElement('li');
         const pageButton = document.createElement('button');
         pageButton.className = 'pagination-button current-page';
@@ -65,7 +64,6 @@ class Pagination extends HTMLElement {
         pageItem.appendChild(pageButton);
         list.appendChild(pageItem);
  
-        // Next button
         const nextItem = document.createElement('li');
         const nextButton = document.createElement('button');
         nextButton.className = 'pagination-button';

@@ -41,7 +41,6 @@ class QuizHome extends HTMLElement {
     const liveScores = document.createElement("live-scores");
     document.body.appendChild(liveScores);
 
-    // Ensure the widget is visible in the DOM
     liveScores.style.display = "block";
     liveScores.style.visibility = "visible";
     liveScores.style.opacity = "1";
@@ -96,7 +95,7 @@ class QuizHome extends HTMLElement {
   
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
-  
+
     const modal = document.createElement("dialog");
     modal.id = "quiz-master-modal";
     modal.className = "modal";
@@ -245,7 +244,6 @@ class QuizHome extends HTMLElement {
     try {
       const dataPromises = [];
 
-      // Verify football service is available
       if (!window.footballService) {
         console.warn(
           "Football service not available. Live scores widget may not work."
@@ -271,7 +269,6 @@ class QuizHome extends HTMLElement {
           window.quizService
             .getValidQuizzes()
             .then((response) => {
-              // Handle paginated response
               if (response && response.data && Array.isArray(response.data)) {
                 this.quizzes = response.data;
                 this.renderQuizzes();
