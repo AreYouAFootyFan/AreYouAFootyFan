@@ -13,14 +13,14 @@ class QuizHistory extends HTMLElement {
         await this.loadStyles();
         this.render();
         // this.setupEventListeners();
-        // this.loadLeaderboardData();
+        this.loadHisotryData();
     }
 
     async loadStyles() {
         await StyleLoader(
             this.shadowRoot,
             './static/css/styles.css',
-            './static/css/home/history.css'
+            './static/css/profile/history.css'
         );
     }
     
@@ -33,30 +33,27 @@ class QuizHistory extends HTMLElement {
     }
     
     createHisorySection() {
-      const section = document.createElement("section");
-      section.className = "history";
-
-      const inner = document.createElement("section");
-      inner.className = "history-inner";
+      const card = document.createElement("article");
+      card.className = "history-card";
 
       const header = document.createElement("header");
-      header.className = "section-header";
-
+      header.className = "card-header";
       const title = document.createElement("h2");
-      title.className = "section-title";
       title.textContent = "Quizzes Played";
-
       header.appendChild(title);
+      card.appendChild(header);
+
+        const content = document.createElement('section');
+        content.className = 'card-content';
 
       const table = this.createHistoryTable(
         "history-body",
         "Loading quiz history data..."
       );
-      inner.appendChild(header);
-      inner.appendChild(table);
+      content.appendChild(table);
 
-      section.appendChild(inner);
-      return section;
+      card.appendChild(content);
+      return card;
     }
     
     createHistoryTable(tbodyId, loadingText) {
@@ -67,7 +64,7 @@ class QuizHistory extends HTMLElement {
     
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
-        const rowHeaders = ['Quiz Name', 'Quiz Categpry', 'Score', 'Date Played'];
+        const rowHeaders = ['Quiz Name', 'Quiz Categpry', 'Score', 'Day Played'];
         rowHeaders.forEach(text => {
             const th = document.createElement('th');
             th.textContent = text;
@@ -164,7 +161,7 @@ class QuizHistory extends HTMLElement {
         return row;
     }
     
-    createHistoryRow(data) {
+    createHistoryRows(data) {
         return data.map(quiz => this.createHistoryRow(quiz));
     }
 
@@ -172,8 +169,8 @@ class QuizHistory extends HTMLElement {
         const row = document.createElement('tr');
         const cell = this.createColSpanCell(
            this.createEmptyState(
-                'No leaderboard data',
-                'There is no leaderboard data to display yet. Start playing quizzes to appear on the leaderboard!'
+                'No quizzes played',
+                'There is quiz history. Start playing quizzes to see history'
             )
         );
         row.appendChild(cell);
@@ -210,8 +207,7 @@ class QuizHistory extends HTMLElement {
     async loadHisotryData() {
         try {
             if (window.statsService) {
-                const historyData = await window.statsService.getPlayedQuizes(5);
-                this.historyData = historyData;
+                this.historyData = await window.statsService.getPlayedQuizzes();
                 this.renderHistory();
             }
         } catch (error) {
@@ -222,7 +218,7 @@ class QuizHistory extends HTMLElement {
                     if (this.historyData.length === 0) {
                         historyBody.appendChild(this.createEmptyRow());
                     } else {
-                        const rows = this.createHistoryRow(this.historyData);
+                        const rows = this.createHistoryRows(this.historyData);
                         rows.forEach(row => historyBody.appendChild(row));
                     }
                 } catch (e) {
@@ -235,14 +231,13 @@ class QuizHistory extends HTMLElement {
     renderHistory() {
         const historyBody = this.shadowRoot.querySelector('#history-body');
         if (!historyBody) return;
-
         historyBody.innerHTML = '';
         try {
             if (!this.historyData || this.historyData.length === 0) {
                 const emptyRow = this.createEmptyRow();
                 historyBody.appendChild(emptyRow);
             } else {
-                const rows = this.createHistoryRow(this.historyData);
+                const rows = this.createHistoryRows(this.historyData);
                 rows.forEach(row => historyBody.appendChild(row));
             }
         } catch (e) {

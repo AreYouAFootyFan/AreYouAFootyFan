@@ -2,16 +2,32 @@
     display: block;
 }
 
-.history {
+.history-card {
     background-color: white;
-    padding: 3rem 1rem;
-    margin-top: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
 }
 
-.history-inner {
-    max-width: var(--container-max-width);
-    margin: 0 auto;
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 0.0625rem solid var(--gray-200);
 }
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
 
 .section-header {
     display: flex;
@@ -62,26 +78,4 @@ th {
     font-weight: 600;
     color: var(--gray-600);
     background-color: var(--gray-50);
-}
-
-.close-btn {
-    position: sticky;
-    top: 0;
-    float: right;
-    border: none;
-    font-size: 1.5rem;
-    background: none;
-    cursor: pointer;
-    color: var(--gray-500);
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.close-btn:hover {
-    background-color: var(--gray-100);
-    color: var(--gray-900);
 }

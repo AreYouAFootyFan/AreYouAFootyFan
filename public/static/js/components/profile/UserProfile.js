@@ -38,7 +38,7 @@ class UserProfile extends HTMLElement {
     const header = document.createElement("header");
     header.className = "page-header";
     const h1 = document.createElement("h1");
-    h1.textContent = "Your Info";
+    h1.textContent = "Info";
     header.appendChild(h1);
 
     const section = document.createElement("section");
@@ -67,6 +67,16 @@ class UserProfile extends HTMLElement {
     const stats = this.createUserStatsView(this.userStats);
     main.appendChild(stats);
 
+
+    const historyHeader = document.createElement("header");
+    historyHeader.className = "page-header";
+
+    const historyTitle = document.createElement("h1");
+    historyTitle.textContent = "Quiz History";
+
+    historyHeader.appendChild(historyTitle);
+    main.appendChild(historyHeader);
+
     const quizHistory = document.createElement("quiz-history");
     main.appendChild(quizHistory);
 
@@ -84,7 +94,7 @@ class UserProfile extends HTMLElement {
     statsHeader.className = "page-header";
 
     const statsTitle = document.createElement("h1");
-    statsTitle.textContent = "Your Quiz Stats";
+    statsTitle.textContent = "Quiz Stats";
 
     statsHeader.appendChild(statsTitle);
     statsView.appendChild(statsHeader);

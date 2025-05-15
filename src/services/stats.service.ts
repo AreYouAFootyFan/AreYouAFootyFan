@@ -37,6 +37,13 @@ export interface ManagerProfileStats {
     // badges: string[]
 }
 
+export interface PlayedQuizzes {
+    title: string,
+    category: string,
+    score: number,
+    date: string
+}
+
 export class StatsService {
   static async getDashboardStats(): Promise<DashboardStats> {
     try {
@@ -171,6 +178,32 @@ export class StatsService {
             avgScore: accuracy,
             topCategories: topCategories,
         }
+
+    } catch (error) {
+      throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+    static async getPlayedQuizzes(userId: number): Promise<PlayedQuizzes[]> {
+    try {
+        const quizHistory = await db.query("SELECT * FROM get_user_play_history($1)", [
+            userId,
+        ]);
+
+        const playedQuizzes: PlayedQuizzes[] = [];
+
+        quizHistory.rows.forEach(quiz => {
+            const quizPlayed = {
+                title: quiz.quiz_title,
+                category: quiz.category_name,
+                score: quiz.total_score,
+                date: new Date(quiz.attempt_date).toISOString().split("T")[0]
+            };
+
+            playedQuizzes.push(quizPlayed);
+        });
+
+        return playedQuizzes;
 
     } catch (error) {
       throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
