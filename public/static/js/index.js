@@ -18,8 +18,6 @@ import GameModeView from "./views/GameModeView.js";
 import PlayQuizView from "./views/PlayQuizVuew.js";
 import LeaderBoardView from "./views/LeaderboardView.js";
 
-import "./services/FootballService.js";
-
 window.authService = authService;
 window.categoryService = categoryService;
 window.quizService = quizService;
@@ -30,9 +28,7 @@ window.statsService = statsService;
 window.answerService = answerService;
 window.difficultyService = difficultyService;
 window.questionService = questionService;
-window.footballService = footballService;
 
-footballService.setApiKey("53aaedf27c25807e38c5e99b22a319ab");
 
 let currentView = null;
 
