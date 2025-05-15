@@ -235,7 +235,7 @@ class QuizHome extends HTMLElement {
     const article = document.createElement("article");
     article.className = "empty-state";
 
-    const icon = document.createElement("p");
+    const icon = document.createElement("fig");
     icon.className = "empty-icon";
     icon.textContent = "🔍";
 

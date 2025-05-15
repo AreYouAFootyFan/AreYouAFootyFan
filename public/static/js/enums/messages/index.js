@@ -5,7 +5,8 @@ export const Message = {
             SESSION_EXPIRED: "Session expired",
             NOT_AUTHENTICATED: "Not authenticated",
             FAILED_USER_DATA: "Failed to get user data",
-            FAILED_USERNAME: "Failed to set username"
+            FAILED_USERNAME: "Failed to set username",
+            USERNAME_EXISTS: "This username already exists."
         },
         Validation: {
             INVALID_INPUT: "Invalid input provided",
