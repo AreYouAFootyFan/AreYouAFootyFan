@@ -94,7 +94,6 @@ class GameModes extends HTMLElement {
     contentSection.appendChild(pagination);
 
     main.appendChild(contentSection);
-
     return main;
   }
 
