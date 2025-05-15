@@ -79,10 +79,22 @@ class QuizTaking extends HTMLElement {
     }
   }
 
-  cleanup() {
+  async cleanup() {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
+    }
+
+    if (
+      !this.isQuizCompleted &&
+      this.currentQuestion &&
+      this.selectedAnswer == null &&
+      window.quizAttemptService
+    ) {
+        await window.quizAttemptService.submitNoAnswer({
+          attempt_id: this.attempt?.attempt_id,
+          question_id: this.currentQuestion.question_id,
+        });
     }
   }
 
