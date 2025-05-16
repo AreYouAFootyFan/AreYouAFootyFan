@@ -27,5 +27,7 @@
 
 .action-icon {
     font-style: normal;
-    font-size: 1rem;
+    font-size: clamp(0.5rem, 2vw + 0.5rem, 1rem);;
+    border: none;
+    background-color: transparent;
 }

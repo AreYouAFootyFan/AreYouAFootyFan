@@ -1,6 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import "../components/admin/AdminDashboard.js";
-import { Role } from "../enums/users.js";
+import { Role } from "../enums/index.js";
 
 export default class AdminDashboardView extends AbstractView {
   constructor() {

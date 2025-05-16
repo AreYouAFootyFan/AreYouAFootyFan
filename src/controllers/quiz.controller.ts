@@ -15,7 +15,6 @@ export class QuizController {
       const useValidationView = valid === 'validation';
       const validOnly = valid === 'true';
 
-      // Validate pagination parameters
       const pageNum = Number(page);
       const limitNum = Number(limit);
 
@@ -26,7 +25,6 @@ export class QuizController {
         throw ErrorUtils.badRequest("Limit must be between 1 and 100");
       }
 
-      // Parse categoryId if provided
       let parsedCategoryId: number | undefined;
       if (categoryId !== undefined) {
         parsedCategoryId = parseInt(categoryId.toString());

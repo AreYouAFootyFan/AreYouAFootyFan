@@ -156,7 +156,12 @@ class QuestionForm extends HTMLElement {
     form.appendChild(difficultyGroup);
     form.appendChild(formActions);
 
+    const notification = document.createElement("section");
+    notification.id = "notification";
+    notification.className = "notification";
+
     this.shadowRoot.appendChild(form);
+    this.shadowRoot.appendChild(notification);
   }
 
   handleSubmit(event) {
@@ -172,12 +177,12 @@ class QuestionForm extends HTMLElement {
     const difficultyId = difficultySelect.value;
 
     if (!text) {
-      alert("Question text is required");
+      this.showNotification("Question text is required", "error");
       return;
     }
 
     if (!difficultyId) {
-      alert("Difficulty level is required");
+      this.showNotification("Difficulty level is required", "error");
       return;
     }
 
@@ -237,6 +242,23 @@ class QuestionForm extends HTMLElement {
     this.removeAttribute("question-id");
 
     this.render();
+  }
+
+  showNotification(message, type = "success") {
+    const notification = this.shadowRoot.querySelector("#notification");
+    if (!notification) return;
+
+    while (notification.firstChild) {
+      notification.removeChild(notification.firstChild);
+    }
+
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.classList.add("visible");
+
+    setTimeout(() => {
+      notification.classList.remove("visible");
+    }, 3000);
   }
 }
 

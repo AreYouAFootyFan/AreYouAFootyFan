@@ -74,7 +74,7 @@ class QuestionsList extends HTMLElement {
     const loadingSection = document.createElement("section");
     loadingSection.className = "loading";
 
-    const spinner = document.createElement("span");
+    const spinner = document.createElement("section");
     spinner.className = "loading-spinner";
 
     const loadingText = document.createElement("p");
@@ -134,8 +134,9 @@ class QuestionsList extends HTMLElement {
     editButton.title = "Edit Question";
     editButton.dataset.id = question.question_id;
 
-    const editIcon = document.createElement("span");
+    const editIcon = document.createElement("button");
     editIcon.setAttribute("aria-hidden", "true");
+    editIcon.className = 'icon-button';
     editIcon.textContent = "✏️";
 
     editButton.appendChild(editIcon);
@@ -157,8 +158,9 @@ class QuestionsList extends HTMLElement {
     deleteButton.title = "Delete Question";
     deleteButton.dataset.id = question.question_id;
 
-    const deleteIcon = document.createElement("span");
+    const deleteIcon = document.createElement("button");
     deleteIcon.setAttribute("aria-hidden", "true");
+    deleteIcon.className = "icon-button"
     deleteIcon.textContent = "🗑️";
 
     deleteButton.appendChild(deleteIcon);
@@ -188,11 +190,11 @@ class QuestionsList extends HTMLElement {
     const questionMeta = document.createElement("section");
     questionMeta.className = "question-meta";
 
-    const difficultyBadge = document.createElement("span");
+    const difficultyBadge = document.createElement("fig");
     difficultyBadge.className = "difficulty-badge";
     difficultyBadge.textContent = question.difficulty_level;
 
-    const statusBadge = document.createElement("span");
+    const statusBadge = document.createElement("fig");
     statusBadge.className = `question-status ${statusClass}`;
     statusBadge.textContent = statusText;
 

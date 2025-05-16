@@ -1,6 +1,10 @@
 import db from "../config/db";
 import { ErrorUtils } from "../utils/error.utils";
 import { Message } from "../utils/enums";
+import {
+  PaginationOptions,
+  PaginatedResponse,
+} from "../types/pagination.types";
 
 export interface DashboardStats {
   active_quizzes: number;
@@ -9,32 +13,38 @@ export interface DashboardStats {
   questions_answered: number;
 }
 
-export interface PlayerTopCategories{
-    name: string,
-    accuracy: number
+export interface PlayerTopCategories {
+  name: string;
+  accuracy: number;
 }
 
-export interface ManagerTopCategories{
-    name: string,
-    count: number
+export interface ManagerTopCategories {
+  name: string;
+  count: number;
 }
 
 export interface PlayerProfileStats {
-    elo: number,
-    quizzesCompleted: number,
-    avgScore: number,
-    rank: number
-    topCategories: PlayerTopCategories[],
-    badges: string[]
+  elo: number;
+  quizzesCompleted: number;
+  avgScore: number;
+  rank: number;
+  topCategories: PlayerTopCategories[];
+  badges: string[];
 }
 
 export interface ManagerProfileStats {
-    quizzesCreated: number,
-    quizAttempts: number,
-    avgScore: number,
-    rank: number
-    topCategories: ManagerTopCategories[]
-    // badges: string[]
+  quizzesCreated: number;
+  quizAttempts: number;
+  avgScore: number;
+  rank: number;
+  topCategories: ManagerTopCategories[];
+}
+
+export interface PlayedQuizzes {
+  title: string;
+  category: string;
+  score: number;
+  date: string;
 }
 
 export class StatsService {
@@ -67,111 +77,165 @@ export class StatsService {
     }
   }
 
-  static async getPlayerProfileStats(userId: number): Promise<PlayerProfileStats> {
+  static async getPlayerProfileStats(
+    userId: number
+  ): Promise<PlayerProfileStats> {
     try {
-        const elo = await db.query("SELECT * FROM get_total_points($1)", [
-            userId,
-        ]);
+      const elo = await db.query("SELECT * FROM get_total_points($1)", [
+        userId,
+      ]);
 
-        const rank = await db.query("SELECT * FROM get_user_rank($1)", [
-            userId,
-        ]);
+      const rank = await db.query("SELECT * FROM get_user_rank($1)", [userId]);
 
+      const quizzes_completed = await db.query(
+        "SELECT * FROM get_num_quizzes_done($1)",
+        [userId]
+      );
 
-        const quizzes_completed = await db.query("SELECT * FROM get_num_quizzes_done($1)", [
-            userId,
-        ]);
+      const avgScore = await db.query("SELECT * FROM get_accuracy_rate($1)", [
+        userId,
+      ]);
 
-        const avgScore = await db.query("SELECT * FROM get_accuracy_rate($1)", [
-            userId,
-        ]);
+      const topCategoriesResult = await db.query(
+        "SELECT * FROM get_user_top_categories($1)",
+        [userId]
+      );
 
-        const topCategoriesResult = await db.query("SELECT * FROM get_user_top_categories($1)", [
-            userId,
-        ]);
+      const topCategories: PlayerTopCategories[] = [];
 
-        const topCategories: PlayerTopCategories[] = [];
+      topCategoriesResult.rows.forEach((category) => {
+        const topCategory = {
+          name: category.category_name,
+          accuracy: category.accuracy_rate * 100,
+        };
 
-        topCategoriesResult.rows.forEach(category => {
-            const topCategory = {
-                name: category.category_name,
-                accuracy: category.accuracy_rate * 100
-            };
+        topCategories.push(topCategory);
+      });
 
-            topCategories.push(topCategory);
-        });
+      const badges = await db.query("SELECT * FROM get_badges($1)", [userId]);
 
-        const badges = await db.query("SELECT * FROM get_badges($1)", [
-            userId,
-        ]);
-        
-        const badgesEarned: string[] = [];
+      const badgesEarned: string[] = [];
 
-        badges.rows.forEach(badge => {
-            badgesEarned.push(badge.badge_name);
-        });
+      badges.rows.forEach((badge) => {
+        badgesEarned.push(badge.badge_name);
+      });
 
-        const accuracy = Math.round(parseFloat(avgScore.rows[0].get_accuracy_rate) * 100 * 100) / 100;
+      const accuracy =
+        Math.round(parseFloat(avgScore.rows[0].get_accuracy_rate) * 100 * 100) /
+        100;
 
-        return {
-            elo: parseInt(elo.rows[0].get_total_points),
-            rank: parseInt(rank.rows[0].get_user_rank),
-            quizzesCompleted: parseInt(quizzes_completed.rows[0].get_num_quizzes_done),
-            avgScore: accuracy,
-            topCategories: topCategories,
-            badges: badgesEarned
-        }
-
+      return {
+        elo: parseInt(elo.rows[0].get_total_points),
+        rank: parseInt(rank.rows[0].get_user_rank),
+        quizzesCompleted: parseInt(
+          quizzes_completed.rows[0].get_num_quizzes_done
+        ),
+        avgScore: accuracy,
+        topCategories: topCategories,
+        badges: badgesEarned,
+      };
     } catch (error) {
       throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
     }
   }
 
-    static async getManagerProfileStats(userId: number): Promise<ManagerProfileStats> {
+  static async getManagerProfileStats(
+    userId: number
+  ): Promise<ManagerProfileStats> {
     try {
-        const quizzes_created = await db.query("SELECT COUNT(*) as created FROM get_quizzes_created_by_manager($1);", [
-            userId,
-        ]);
+      const quizzes_created = await db.query(
+        "SELECT COUNT(*) as created FROM get_quizzes_created_by_manager($1);",
+        [userId]
+      );
 
-        const rank = 0;
+      const rank = 0;
 
-        const quiz_attempts = await db.query("SELECT SUM(attempt_count) AS quiz_attempts FROM get_manager_quiz_attempts($1)", [
-            userId,
-        ]);
+      const quiz_attempts = await db.query(
+        "SELECT SUM(attempt_count) AS quiz_attempts FROM get_manager_quiz_attempts($1)",
+        [userId]
+      );
 
-        const avgScore = await db.query("SELECT AVG(avg_accuracy) AS accuracy FROM get_manager_quizzes_accuracy($1);", [
-            userId,
-        ]);
+      const avgScore = await db.query(
+        "SELECT AVG(avg_accuracy) AS accuracy FROM get_manager_quizzes_accuracy($1);",
+        [userId]
+      );
 
-        const topCategoriesResult = await db.query("SELECT * FROM get_manager_top_categories($1)", [
-            userId,
-        ]);
+      const topCategoriesResult = await db.query(
+        "SELECT * FROM get_manager_top_categories($1)",
+        [userId]
+      );
 
-        const topCategories: ManagerTopCategories[] = [];
+      const topCategories: ManagerTopCategories[] = [];
 
-        topCategoriesResult.rows.forEach(category => {
-            const topCategory = {
-                name: category.category_name,
-                count: category.quiz_count
-            };
+      topCategoriesResult.rows.forEach((category) => {
+        const topCategory = {
+          name: category.category_name,
+          count: category.quiz_count,
+        };
 
-            topCategories.push(topCategory);
-        });
+        topCategories.push(topCategory);
+      });
 
-        const accuracyResult = avgScore.rows[0].accuracy;
-        let accuracy = 0;
-        if(accuracyResult != null){
-            accuracy = Math.round(parseFloat(accuracyResult) * 100 * 100) / 100;
-        }
-        
-        return {
-            quizzesCreated: parseInt(quizzes_created.rows[0].created),
-            rank: rank,
-            quizAttempts: quiz_attempts.rows[0].quiz_attempts != null ? parseInt(quiz_attempts.rows[0].quiz_attempts) : 0,
-            avgScore: accuracy,
-            topCategories: topCategories,
-        }
+      const accuracyResult = avgScore.rows[0].accuracy;
+      let accuracy = 0;
+      if (accuracyResult != null) {
+        accuracy = Math.round(parseFloat(accuracyResult) * 100 * 100) / 100;
+      }
 
+      return {
+        quizzesCreated: parseInt(quizzes_created.rows[0].created),
+        rank: rank,
+        quizAttempts:
+          quiz_attempts.rows[0].quiz_attempts != null
+            ? parseInt(quiz_attempts.rows[0].quiz_attempts)
+            : 0,
+        avgScore: accuracy,
+        topCategories: topCategories,
+      };
+    } catch (error) {
+      throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  static async getPlayedQuizzes(
+    userId: number,
+    pagination?: PaginationOptions
+  ): Promise<PaginatedResponse<PlayedQuizzes>> {
+    try {
+      const quizHistory = await db.query(
+        "SELECT * FROM get_user_play_history($1)",
+        [userId]
+      );
+
+      const allPlayedQuizzes: PlayedQuizzes[] = [];
+
+      quizHistory.rows.forEach((quiz) => {
+        const quizPlayed = {
+          title: quiz.quiz_title,
+          category: quiz.category_name,
+          score: quiz.total_score,
+          date: new Date(quiz.attempt_date).toISOString().split("T")[0],
+        };
+
+        allPlayedQuizzes.push(quizPlayed);
+      });
+
+      const page = pagination?.page || 1;
+      const limit = pagination?.limit || 6;
+      const total = allPlayedQuizzes.length;
+      const startIndex = (page - 1) * limit;
+      const endIndex = Math.min(startIndex + limit, total);
+      const paginatedQuizzes = allPlayedQuizzes.slice(startIndex, endIndex);
+
+      return {
+        data: paginatedQuizzes,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
     } catch (error) {
       throw ErrorUtils.internal(Message.Error.Base.INTERNAL_SERVER_ERROR);
     }

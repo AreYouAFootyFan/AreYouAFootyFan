@@ -1,7 +1,8 @@
 import { StyleLoader } from "../utils/cssLoader.js";
-import { Role } from "../enums/users.js";
+import { Role } from "../enums/index.js";
 import { clearDOM } from "../utils/domHelpers.js";
 import { navigator } from "../index.js";
+import authService from "../services/auth.service.js";
 
 class FootballQuizHeader extends HTMLElement {
   constructor() {
@@ -50,7 +51,7 @@ class FootballQuizHeader extends HTMLElement {
     logo.className = "logo";
     logo.dataset.link = "";
 
-    const logoIcon = document.createElement("i");
+    const logoIcon = document.createElement("fig");
     logoIcon.className = "logo-icon";
     logoIcon.setAttribute("aria-hidden", "true");
     logoIcon.textContent = "⚽";
@@ -104,10 +105,23 @@ class FootballQuizHeader extends HTMLElement {
     profileButton.textContent = "Profile";
     profileButton.addEventListener("click", (event) => {
       event.preventDefault();
-      // history.pushState({}, "", "/profile");
+      dropdownMenu.classList.toggle("visible");
       navigator("/profile");
     });
     profileItem.appendChild(profileButton);
+
+    const quizmakerItem = document.createElement("li");
+
+    const quizmakerButton = document.createElement("button");
+    quizmakerButton.id = "quizmaker-button";
+    quizmakerButton.type = "button";
+    quizmakerButton.className = "logout-btn";
+    quizmakerButton.textContent = "Become a manager";
+
+  
+    quizmakerItem.appendChild(quizmakerButton);
+    
+    dropdownList.appendChild(quizmakerItem);
 
     dropdownList.appendChild(logoutItem);
     dropdownList.appendChild(profileItem);
@@ -145,15 +159,15 @@ class FootballQuizHeader extends HTMLElement {
 
     homeItem.appendChild(homeLink);
 
-    // const profileItem = document.createElement("li");
-    // profileItem.className = "nav-item";
+    const leaderboardItem = document.createElement("li");
+    leaderboardItem.className = "nav-item";
 
-    // const profile = document.createElement("a");
-    // profile.href = "/profile";
-    // profile.className = "nav-link";
-    // profile.dataset.link = "";
-    // profile.textContent = "Profile";
-    // profileItem.appendChild(profile);
+    const leaderboard = document.createElement("a");
+    leaderboard.href = "/leaderboard";
+    leaderboard.className = "nav-link";
+    leaderboard.dataset.link = "";
+    leaderboard.textContent = "Leaderboard";
+    leaderboardItem.appendChild(leaderboard);
 
     const gameModeItem = document.createElement("li");
     gameModeItem.className = "nav-item";
@@ -178,9 +192,10 @@ class FootballQuizHeader extends HTMLElement {
     adminItem.appendChild(adminLink);
 
     navList.appendChild(homeItem);
-    // navList.appendChild(profileItem);
     navList.appendChild(gameModeItem);
     navList.appendChild(adminItem);
+    navList.appendChild(leaderboardItem);
+
     navInner.appendChild(navList);
     headerNav.appendChild(navInner);
 
@@ -194,10 +209,12 @@ class FootballQuizHeader extends HTMLElement {
     const usernameButton = this.shadowRoot.querySelector(".username-btn");
     const dropdownMenu = this.shadowRoot.querySelector(".dropdown-menu");
     const userDropdown = this.shadowRoot.querySelector("#user-dropdown");
+    const quizmakerButton = this.shadowRoot.querySelector("#quizmaker-button");
+
 
     if (usernameButton && dropdownMenu) {
-      usernameButton.addEventListener("click", (e) => {
-        e.preventDefault();
+      usernameButton.addEventListener("click", (clickEvent) => {
+        clickEvent.preventDefault();
         dropdownMenu.classList.toggle("visible");
       });
     }
@@ -215,6 +232,17 @@ class FootballQuizHeader extends HTMLElement {
           dropdownMenu.classList.remove("visible");
         }
       }
+    });
+
+    quizmakerButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      const username =  authService.getUser().username;
+      const subject = encodeURIComponent("Quizmaker Request");
+      const body = encodeURIComponent(
+        `Hey , I would like to become a Manager \n Thak you \n kind regards \n ${username} `
+      );
+      const mailtoLink = `mailto:tevlen.naidoo@bbd.co.za?subject=${subject}&body=${body}`;
+      window.location.href = mailtoLink;
     });
 
     this.shadowRoot.querySelectorAll("[data-link]").forEach((link) => {

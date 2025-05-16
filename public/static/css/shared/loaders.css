@@ -23,7 +23,7 @@
     justify-content: center;
     align-items: center;
     min-height: 5rem;
-    font-size: 1rem;
+    font-size: clamp(0.5rem, 2vw + 0.5rem, 1rem);;
     color: var(--gray-600);
     padding: 1.5rem;
 }

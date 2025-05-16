@@ -5,7 +5,7 @@ import "./AdminModal.js";
 import "./AdminCard.js";
 import "./AdminNotification.js";
 import { StyleLoader } from "../../utils/cssLoader.js";
-import { Role } from "../../enums/users.js";
+import { Role } from "../../enums/index.js";
 import { clearDOM } from "../../utils/domHelpers.js";
 import { navigator } from "../../index.js";
 
@@ -497,7 +497,7 @@ class AdminDashboard extends HTMLElement {
       const quizzesContainer = this.shadowRoot.querySelector("#quizzes-list");
       if (!quizzesContainer) return;
 
-      quizzesContainer.innerHTML = "";
+      clearDOM(quizzesContainer);
       const loadingText = document.createElement("p");
       loadingText.className = "loading-text";
       loadingText.textContent = "Loading quizzes...";
@@ -507,20 +507,17 @@ class AdminDashboard extends HTMLElement {
         throw new Error("Quiz service not available");
       }
 
-      // Get quizzes with validation in a single call
       const response = await window.quizService.getQuizzesWithValidation({
         page: this.currentPage || 1,
         limit: 10,
       });
 
-      // Check if response has the expected structure
       if (
         !response ||
         !response.data ||
         !Array.isArray(response.data) ||
         !response.pagination
       ) {
-        console.error("Unexpected response structure:", response);
         throw new Error("Invalid response format");
       }
 
@@ -528,7 +525,7 @@ class AdminDashboard extends HTMLElement {
       this.totalQuizzes = response.pagination.total;
       this.totalPages = response.pagination.totalPages;
 
-      quizzesContainer.innerHTML = "";
+      clearDOM(quizzesContainer);
 
       if (this.quizzes.length === 0) {
         const emptyMessage = document.createElement("p");
@@ -538,7 +535,6 @@ class AdminDashboard extends HTMLElement {
         return;
       }
 
-      // Create a section for the table content
       const tableSection = document.createElement("section");
       tableSection.className = "quiz-table-section";
 
@@ -621,10 +617,9 @@ class AdminDashboard extends HTMLElement {
         quizzesContainer.appendChild(nav);
       }
     } catch (error) {
-      console.error("Error in loadQuizzes:", error);
       const quizzesContainer = this.shadowRoot.querySelector("#quizzes-list");
       if (quizzesContainer) {
-        quizzesContainer.innerHTML = "";
+        clearDOM(quizzesContainer);
         const errorMessage = document.createElement("p");
         errorMessage.className = "error-message";
         errorMessage.textContent =
@@ -644,7 +639,7 @@ class AdminDashboard extends HTMLElement {
       );
       const contentSlot = quizzesCard.querySelector('[slot="content"]');
 
-      contentSlot.innerHTML = "";
+      clearDOM(contentSlot);
       const loadingText = document.createElement("p");
       loadingText.className = "loading-text";
       loadingText.textContent = "Loading quizzes...";
@@ -654,26 +649,23 @@ class AdminDashboard extends HTMLElement {
         throw new Error("Quiz service not available");
       }
 
-      // Get recent quizzes with validation
       const response = await window.quizService.getQuizzesWithValidation({
         page: 1,
         limit: 5,
       });
 
-      // Check if response has the expected structure
       if (
         !response ||
         !response.data ||
         !Array.isArray(response.data) ||
         !response.pagination
       ) {
-        console.error("Unexpected response structure:", response);
         throw new Error("Invalid response format");
       }
 
       this.quizzes = response.data;
 
-      contentSlot.innerHTML = "";
+      clearDOM(contentSlot);
 
       if (this.quizzes.length === 0) {
         const emptyMessage = document.createElement("p");
@@ -730,14 +722,13 @@ class AdminDashboard extends HTMLElement {
 
       contentSlot.appendChild(table);
     } catch (error) {
-      console.error("Error in loadRecentQuizzes:", error);
       const dashboardView = this.shadowRoot.querySelector("#dashboard-view");
       if (dashboardView) {
         const quizzesCard = dashboardView.querySelector(
           "admin-card:first-of-type"
         );
         const contentSlot = quizzesCard.querySelector('[slot="content"]');
-        contentSlot.innerHTML = "";
+        clearDOM(contentSlot);
         const errorMessage = document.createElement("p");
         errorMessage.className = "error-message";
         errorMessage.textContent =
@@ -753,7 +744,7 @@ class AdminDashboard extends HTMLElement {
         this.shadowRoot.querySelector("#categories-list");
       if (!categoriesContainer) return;
 
-      categoriesContainer.innerHTML = "";
+      clearDOM(categoriesContainer);
       const loadingText = document.createElement("p");
       loadingText.className = "loading-text";
       loadingText.textContent = "Loading categories...";
@@ -766,7 +757,7 @@ class AdminDashboard extends HTMLElement {
       const response = await window.categoryService.getAllCategories(1, 100);
       this.categories = response.data;
 
-      categoriesContainer.innerHTML = "";
+      clearDOM(categoriesContainer);
 
       if (this.categories.length === 0) {
         const emptyMessage = document.createElement("p");
@@ -831,7 +822,7 @@ class AdminDashboard extends HTMLElement {
       const categoriesContainer =
         this.shadowRoot.querySelector("#categories-list");
       if (categoriesContainer) {
-        categoriesContainer.innerHTML = "";
+        clearDOM(categoriesContainer);
         const errorMessage = document.createElement("p");
         errorMessage.className = "error-message";
         errorMessage.textContent =
@@ -851,7 +842,7 @@ class AdminDashboard extends HTMLElement {
       );
       const contentSlot = categoriesCard.querySelector('[slot="content"]');
 
-      contentSlot.innerHTML = "";
+      clearDOM(contentSlot);
       const loadingText = document.createElement("p");
       loadingText.className = "loading-text";
       loadingText.textContent = "Loading categories...";
@@ -862,7 +853,7 @@ class AdminDashboard extends HTMLElement {
         this.categories = response.data;
       }
 
-      contentSlot.innerHTML = "";
+      clearDOM(contentSlot);
 
       if (this.categories.length === 0) {
         const emptyMessage = document.createElement("p");
@@ -897,7 +888,7 @@ class AdminDashboard extends HTMLElement {
           "admin-card:nth-of-type(2)"
         );
         const contentSlot = categoriesCard.querySelector('[slot="content"]');
-        contentSlot.innerHTML = "";
+        clearDOM(contentSlot);
         const errorMessage = document.createElement("p");
         errorMessage.className = "error-message";
         errorMessage.textContent =

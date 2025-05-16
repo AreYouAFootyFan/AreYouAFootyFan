@@ -3,7 +3,7 @@ name: "Footy Deployment Pipeline"
 on:
     push: 
         branches: 
-            - main
+            - tevlen/migrations
 
 jobs:
     terraform:

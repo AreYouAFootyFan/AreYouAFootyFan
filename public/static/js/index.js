@@ -16,10 +16,8 @@ import difficultyService from "./services/difficulty.service.js";
 import questionService from "./services/question.service.js";
 import GameModeView from "./views/GameModeView.js";
 import PlayQuizView from "./views/PlayQuizVuew.js";
+import LeaderBoardView from "./views/LeaderboardView.js";
 
-import "./services/FootballService.js";
-
-// Initialize services
 window.authService = authService;
 window.categoryService = categoryService;
 window.quizService = quizService;
@@ -30,10 +28,7 @@ window.statsService = statsService;
 window.answerService = answerService;
 window.difficultyService = difficultyService;
 window.questionService = questionService;
-window.footballService = footballService;
 
-// Initialize football service with API key
-footballService.setApiKey("53aaedf27c25807e38c5e99b22a319ab");
 
 let currentView = null;
 
@@ -53,6 +48,7 @@ export const router = async () => {
     { path: "/game-modes", view: GameModeView },
     { path: "/play-quiz", view: PlayQuizView },
     { path: "/profile", view: ProfileView },
+    { path: "/leaderboard", view: LeaderBoardView },
     { path: "/quiz", view: QuizView },
     { path: "/admin", view: AdminDashboardView },
     { path: "/create-quiz", view: CreateQuizView },

@@ -35,7 +35,6 @@ export class CategoryModel {
       };
     }
 
-    // Fallback to non-paginated query
     const result = await db.query("SELECT * FROM active_categories ORDER BY category_id");
     return {
       data: result.rows,

@@ -53,31 +53,25 @@ class GameModes extends HTMLElement {
 
     const heroTitle = document.createElement("h2");
     heroTitle.className = "hero-title";
-    heroTitle.textContent =
-      "Choose from a variety of categories and challenge yourself";
+    heroTitle.textContent = "Available Quiz Categories";
+
+    const sectionTitle = document.createElement("h2");
+    sectionTitle.className = "section-subtitle";
+    sectionTitle.textContent = "Choose from a variety of categories and challenge yourself";
 
     heroContent.appendChild(heroTitle);
+    heroContent.appendChild(sectionTitle);
+
     hero.appendChild(heroContent);
     main.appendChild(hero);
 
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
 
-    const sectionHeader = document.createElement("header");
-    sectionHeader.className = "section-header";
-
-    const sectionTitle = document.createElement("h2");
-    sectionTitle.className = "section-title";
-    sectionTitle.textContent = "Available Game Modes";
-
-    sectionHeader.appendChild(sectionTitle);
-    contentSection.appendChild(sectionHeader);
-
     const gameModeGrid = document.createElement("section");
     gameModeGrid.id = "game-mode-grid";
     gameModeGrid.className = "game-mode-grid";
 
-    // Add pagination component
     const pagination = document.createElement("pagination-controls");
     pagination.setAttribute("current-page", this.page);
     pagination.setAttribute("total-pages", this.totalPages);
@@ -91,11 +85,6 @@ class GameModes extends HTMLElement {
     contentSection.appendChild(pagination);
 
     main.appendChild(contentSection);
-
-    const leaderboard = document.createElement("quiz-leaderboard");
-    leaderboard.id = "leaderboard";
-    main.appendChild(leaderboard);
-
     return main;
   }
 
@@ -107,16 +96,13 @@ class GameModes extends HTMLElement {
     this.gameModes = response.data;
     this.totalPages = response.pagination.totalPages;
 
-    // Clear existing cards
     this.clearDOM(container);
 
-    // Render game mode cards
     this.gameModes.forEach((gameMode) => {
       const card = this.createGameModeCard(gameMode);
       container.appendChild(card);
     });
 
-    // Update pagination
     const pagination = this.shadowRoot.querySelector("pagination-controls");
     if (pagination) {
       pagination.setAttribute("current-page", this.page);

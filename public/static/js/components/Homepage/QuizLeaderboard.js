@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 class QuizLeaderboard extends HTMLElement {
     constructor() {
         super();
@@ -25,8 +26,7 @@ class QuizLeaderboard extends HTMLElement {
     
     async render() {
         const shadow = this.shadowRoot;
-        shadow.innerHTML = '';
-        
+        clearDOM(shadow);        
 
         const leaderboard = this.createLeaderboardSection();
         const modal = this.createModalSection();
@@ -118,10 +118,10 @@ class QuizLeaderboard extends HTMLElement {
         loadingCell.colSpan = 4;
         loadingCell.className = 'loading';
     
-        const spinner = document.createElement('span');
+        const spinner = document.createElement('section');
         spinner.className = 'loading-spinner';
     
-        const message = document.createElement('span');
+        const message = document.createElement('section');
         message.textContent = loadingText;
     
         loadingCell.appendChild(spinner);
@@ -253,7 +253,7 @@ class QuizLeaderboard extends HTMLElement {
         } catch (error) {
             const leaderboardBody = this.shadowRoot.querySelector('#leaderboard-body');
             if (leaderboardBody) {
-                leaderboardBody.innerHTML = '';
+                clearDOM(leaderboardBody);
                 try {
                     if (this.leaderboardData.length === 0) {
                         leaderboardBody.appendChild(this.createEmptyRow());
@@ -272,7 +272,7 @@ class QuizLeaderboard extends HTMLElement {
         const leaderboardBody = this.shadowRoot.querySelector('#leaderboard-body');
         if (!leaderboardBody) return;
 
-        leaderboardBody.innerHTML = '';
+        clearDOM(leaderboardBody);
         try {
             if (!this.leaderboardData || this.leaderboardData.length === 0) {
                 const emptyRow = this.createEmptyRow();
@@ -298,7 +298,7 @@ class QuizLeaderboard extends HTMLElement {
         try {
             if (window.leaderboardService) {
                 this.fullLeaderboardData = await window.leaderboardService.getLeaderboard();
-                fullLeaderboardBody.innerHTML = '';
+                clearDOM(fullLeaderboardBody);
                 if (!this.fullLeaderboardData || this.fullLeaderboardData.length === 0) {
                     const emptyRow = this.createEmptyRow();
                     fullLeaderboardBody.appendChild(emptyRow);

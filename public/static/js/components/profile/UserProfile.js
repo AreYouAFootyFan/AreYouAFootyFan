@@ -1,8 +1,9 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
-import { Role } from "../../enums/users.js";
+import { Role } from "../../enums/index.js";
 import "./ProfileStats.js";
 import "./ProfileCategories.js";
 import "./ProfileBadges.js";
+import "./QuizHistory.js";
 import { navigator } from "../../index.js";
 
 class UserProfile extends HTMLElement {
@@ -37,7 +38,7 @@ class UserProfile extends HTMLElement {
     const header = document.createElement("header");
     header.className = "page-header";
     const h1 = document.createElement("h1");
-    h1.textContent = "Your Info";
+    h1.textContent = "Info";
     header.appendChild(h1);
 
     const section = document.createElement("section");
@@ -79,15 +80,19 @@ class UserProfile extends HTMLElement {
     const statsHeader = document.createElement("header");
     statsHeader.className = "page-header";
 
-    const statsTitle = document.createElement("h1");
-    statsTitle.textContent = "Your Quiz Stats";
-
-    statsHeader.appendChild(statsTitle);
-    statsView.appendChild(statsHeader);
-
     // Stats Summary
     const user = authService.getUser();
     const isPlayer = user.role_id === 1;
+    const statsTitle = document.createElement("h1");
+
+    if(isPlayer){
+        statsTitle.textContent = "Quiz Stats";
+    }else{
+        statsTitle.textContent = "Created Quiz Stats";
+    }
+    
+    statsHeader.appendChild(statsTitle);
+    statsView.appendChild(statsHeader);
 
     const statsSummary = document.createElement("profile-stats");
     statsSummary.id = "user-stats-summary";
@@ -169,6 +174,21 @@ class UserProfile extends HTMLElement {
 
       badgesCard.setAttribute("badges-earned", JSON.stringify(badges));
       statsCards.appendChild(badgesCard);
+    }
+
+    if(isPlayer){
+        const historyHeader = document.createElement("header");
+        historyHeader.className = "page-header";
+
+        const historyTitle = document.createElement("h1");
+        historyTitle.textContent = "Quiz History";
+
+        historyHeader.appendChild(historyTitle);
+        statsCards.appendChild(historyHeader);
+
+        const quizHistory = document.createElement("quiz-history");
+        statsCards.appendChild(quizHistory);
+
     }
     statsView.appendChild(statsCards);
 

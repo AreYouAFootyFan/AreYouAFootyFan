@@ -27,7 +27,7 @@ export class QuizService {
         userId: options.userId,
         userRole: options.userRole,
       });
-
+      
       const total = quizzesWithValidation.length;
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
@@ -62,8 +62,7 @@ export class QuizService {
         : quizzesWithValidation
             .filter((quiz) => quiz.is_valid)
             .map((quiz) => ({
-              ...quiz,
-              is_valid: true,
+              ...quiz
             }));
 
       const total = filteredQuizzes.length;

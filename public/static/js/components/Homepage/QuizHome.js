@@ -1,7 +1,6 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
-import { Role } from "../../enums/users.js";
+import { Role } from "../../enums/index.js";
 import { clearDOM } from "../../utils/domHelpers.js";
-import "../../components/widgets/LiveScores.js";
 import { navigator } from "../../index.js";
 
 class QuizHome extends HTMLElement {
@@ -16,47 +15,19 @@ class QuizHome extends HTMLElement {
 
   async connectedCallback() {
     await this.loadStyles();
-    this.shadowRoot.innerHTML = "";
+    clearDOM(this.shadowRoot);
     await this.render();
     this.setupEventListeners();
     await this.loadData();
     this.checkUserRole();
 
-    // Create and append the live scores widget
-    this.initializeLiveScores();
-  }
-
-  disconnectedCallback() {
-    // Remove the live scores widget when navigating away
-    const liveScores = document.querySelector("live-scores");
-    if (liveScores) {
-      liveScores.remove();
-    }
-  }
-
-  initializeLiveScores() {
-    // Remove any existing live scores widget
-    const existingWidget = document.querySelector("live-scores");
-    if (existingWidget) {
-      existingWidget.remove();
-    }
-
-    // Create and append the new widget
-    const liveScores = document.createElement("live-scores");
-    document.body.appendChild(liveScores);
-
-    // Ensure the widget is visible in the DOM
-    liveScores.style.display = "block";
-    liveScores.style.visibility = "visible";
-    liveScores.style.opacity = "1";
   }
 
   async loadStyles() {
     await StyleLoader(
       this.shadowRoot,
       "./static/css/styles.css",
-      "./static/css/home/home.css",
-      "./static/css/widgets/liveScores.css"
+      "./static/css/home/home.css"
     );
   }
 
@@ -68,131 +39,138 @@ class QuizHome extends HTMLElement {
 
   buildMainContent() {
     const main = document.createElement("main");
-
-    const hero = document.createElement("section");
-    hero.className = "hero";
-
-    const heroContent = document.createElement("section");
-    heroContent.className = "hero-content";
-
-    const heroTitle = document.createElement("h2");
-    heroTitle.className = "hero-title";
-    heroTitle.textContent = "Test Your Football Knowledge";
-
-    const heroSubtitle = document.createElement("p");
-    heroSubtitle.className = "hero-subtitle";
-    heroSubtitle.textContent =
-      "Choose from a variety of quizzes and compete with players worldwide";
-
-    heroContent.appendChild(heroTitle);
-    heroContent.appendChild(heroSubtitle);
-    hero.appendChild(heroContent);
-    main.appendChild(hero);
-
-    const notification = document.createElement("section");
-    notification.className = "notification";
-    notification.id = "quiz-maker-note";
-
-    const noteTitle = document.createElement("h3");
+    main.setAttribute("role", "main");
+    main.className = "quiz-main-content";
+  
+    const backgroundSection = document.createElement("section");
+    backgroundSection.className = "football-bg";
+  
+    this.createFootballs(backgroundSection,20);
+    main.appendChild(backgroundSection);
+    this.createHeroSection(backgroundSection);
+  
+    const notificationSection = document.createElement("aside");
+    notificationSection.className = "notification";
+    notificationSection.id = "quiz-maker-note";
+  
+    const noteTitle = document.createElement("h2");
     noteTitle.className = "notification-title";
     noteTitle.textContent = `${Role.Manager} Account`;
-
+  
     const noteMessage = document.createElement("p");
     noteMessage.className = "notification-message";
     noteMessage.textContent = `As a ${Role.Manager}, you can take quizzes, but won't be ranked. Use a ${Role.Player} account to compete.`;
-
-    notification.appendChild(noteTitle);
-    notification.appendChild(noteMessage);
-    main.appendChild(notification);
-
+  
+    notificationSection.appendChild(noteTitle);
+    notificationSection.appendChild(noteMessage);
+    main.appendChild(notificationSection);
+  
+    const contentWrapper = document.createElement("section");
+    contentWrapper.className = "content-wrapper";
+    
+  
     const contentSection = document.createElement("section");
     contentSection.className = "content-section";
 
-    const sectionHeader = document.createElement("header");
-    sectionHeader.className = "section-header";
-
-    const sectionTitle = document.createElement("h2");
-    sectionTitle.className = "section-title";
-    sectionTitle.textContent = "Quizzes for you";
-
-    const filter = document.createElement("quiz-category-filter");
-    filter.id = "category-filter";
-
-    sectionHeader.appendChild(sectionTitle);
-    sectionHeader.appendChild(filter);
-    contentSection.appendChild(sectionHeader);
-
-    const quizGrid = document.createElement("section");
-    quizGrid.id = "quiz-grid";
-    quizGrid.className = "quiz-grid";
-
-    const loadingParagraph = document.createElement("p");
-    loadingParagraph.className = "loading";
-
-    const spinner = document.createElement("section");
-    spinner.className = "loading-spinner";
-
-    const loadingText = document.createElement("section");
-    loadingText.textContent = "Loading quizzes...";
-
-    loadingParagraph.appendChild(spinner);
-    loadingParagraph.appendChild(loadingText);
-    quizGrid.appendChild(loadingParagraph);
-    contentSection.appendChild(quizGrid);
-
-    main.appendChild(contentSection);
-
-    const leaderboard = document.createElement("quiz-leaderboard");
-    leaderboard.id = "leaderboard";
-    main.appendChild(leaderboard);
-
-    const modal = document.createElement("section");
+    const modal = document.createElement("dialog");
     modal.id = "quiz-master-modal";
     modal.className = "modal";
-
-    const modalContent = document.createElement("article");
+    modal.setAttribute("aria-labelledby", "modal-title");
+    modal.setAttribute("aria-describedby", "modal-message");
+  
+    const modalContent = document.createElement("section");
     modalContent.className = "modal-content";
-
+  
     const modalTitle = document.createElement("h3");
+    modalTitle.id = "modal-title";
     modalTitle.className = "modal-title";
     modalTitle.textContent = `${Role.Manager} Account`;
-
+  
     const modalMessage = document.createElement("p");
+    modalMessage.id = "modal-message";
     modalMessage.className = "modal-message";
     modalMessage.textContent = `As a ${Role.Manager}, you can partake in quizzes but will not be ranked.\n\nWould you like to proceed?`;
-
+  
     const modalFooter = document.createElement("footer");
     modalFooter.className = "modal-actions";
-
+  
     const cancelButton = document.createElement("button");
     cancelButton.id = "close-modal-btn";
     cancelButton.className = "secondary-btn";
     cancelButton.textContent = "Cancel";
-
+  
     const adminLink = document.createElement("a");
     adminLink.href = "/quiz";
     adminLink.className = "primary-btn";
     adminLink.dataset.link = "";
     adminLink.textContent = "Continue";
-
+  
     modalFooter.appendChild(cancelButton);
     modalFooter.appendChild(adminLink);
-
+  
     modalContent.appendChild(modalTitle);
     modalContent.appendChild(modalMessage);
     modalContent.appendChild(modalFooter);
     modal.appendChild(modalContent);
-
+  
     main.appendChild(modal);
-
     return main;
+  }
+
+  createHeroSection(parent) {
+    const heroSection = document.createElement("section");
+    heroSection.className = "hero";
+    
+    const heroContainer = document.createElement("section");
+    heroContainer.className = "hero-content";
+  
+    const heroHeading = document.createElement("h1");
+    heroHeading.className = "hero-title hero-title--gradient";
+    heroHeading.textContent = "Elevate Your Football IQ";
+  
+    const heroDescription = document.createElement("p");
+    heroDescription.className = "hero-subtitle";
+    heroDescription.textContent = 
+      "⚽ Test your football skills!\n" +
+      "Pick from legends, matches, transfers & more.\n\n" +
+      "🔥 ELO ranks you against players at your level.\n\n" +
+      "🏆 See where you stand on live leaderboards.\n\n" +
+      "📊 Follow live scores and 🎮 apply to be a manager.\n\n" +
+      "Ready to prove you're the best? Let's go! 🚀";
+  
+    const ctaButton = document.createElement("a");
+    ctaButton.className = "hero-cta";
+    ctaButton.textContent = "Explore Quizzes";
+    ctaButton.href = "/game-modes";
+    ctaButton.setAttribute("data-link", "");
+    ctaButton.setAttribute("aria-label", "Browse all football quizzes");
+  
+    heroContainer.appendChild(heroHeading);
+    heroContainer.appendChild(heroDescription);
+    heroContainer.appendChild(ctaButton);
+    heroSection.appendChild(heroContainer);
+    
+    parent.appendChild(heroSection);
+  }
+  
+
+  createFootballs(parent, amount){
+    for (let i = 0; i < amount; i++) {
+      const ball = document.createElement("article");
+      ball.className = "football";
+      ball.textContent = "⚽";
+      ball.style.left = Math.random() * 100 + "vw";
+      ball.style.animationDelay = Math.random() * 5 + "s";
+      ball.style.fontSize = `${Math.random() * 2 + 1}rem`;
+      parent.appendChild(ball);
+    }
   }
 
   createEmptyQuizMessage() {
     const article = document.createElement("article");
     article.className = "empty-state";
 
-    const icon = document.createElement("p");
+    const icon = document.createElement("fig");
     icon.className = "empty-icon";
     icon.textContent = "🔍";
 
@@ -221,13 +199,6 @@ class QuizHome extends HTMLElement {
       });
     }
 
-    const leaderboard = this.shadowRoot.querySelector("#leaderboard");
-    if (leaderboard) {
-      leaderboard.addEventListener("view-full-leaderboard", () => {
-        leaderboard.showFullLeaderboard();
-      });
-    }
-
     const closeModalBtn = this.shadowRoot.querySelector("#close-modal-btn");
     if (closeModalBtn) {
       closeModalBtn.addEventListener("click", () => {
@@ -249,13 +220,6 @@ class QuizHome extends HTMLElement {
     try {
       const dataPromises = [];
 
-      // Verify football service is available
-      if (!window.footballService) {
-        console.warn(
-          "Football service not available. Live scores widget may not work."
-        );
-      }
-
       if (window.categoryService) {
         dataPromises.push(
           window.categoryService
@@ -275,7 +239,6 @@ class QuizHome extends HTMLElement {
           window.quizService
             .getValidQuizzes()
             .then((response) => {
-              // Handle paginated response
               if (response && response.data && Array.isArray(response.data)) {
                 this.quizzes = response.data;
                 this.renderQuizzes();
@@ -287,7 +250,7 @@ class QuizHome extends HTMLElement {
               this.showNotification("Error loading quizzes:", "error");
               const quizGrid = this.shadowRoot.querySelector("#quiz-grid");
               if (quizGrid) {
-                quizGrid.innerHTML = "";
+                clearDOM(quizGrid)
                 const errorMessage = document.createElement("p");
                 errorMessage.className = "error-message";
                 errorMessage.textContent =
@@ -296,13 +259,6 @@ class QuizHome extends HTMLElement {
               }
             })
         );
-      }
-
-      if (window.leaderboardService) {
-        const leaderboard = this.shadowRoot.querySelector("#leaderboard");
-        if (leaderboard) {
-          leaderboard.loadLeaderboardData();
-        }
       }
 
       await Promise.all(dataPromises);
@@ -329,13 +285,13 @@ class QuizHome extends HTMLElement {
       : this.quizzes;
 
     if (filteredQuizzes.length === 0) {
-      quizGrid.innerHTML = "";
+      clearDOM(quizGrid);
       const emptyQuiz = this.createEmptyQuizMessage();
       quizGrid.appendChild(emptyQuiz);
       return;
     }
 
-    quizGrid.innerHTML = "";
+    clearDOM(quizGrid);
 
     filteredQuizzes.forEach((quiz) => {
       const quizCard = document.createElement("quiz-card");

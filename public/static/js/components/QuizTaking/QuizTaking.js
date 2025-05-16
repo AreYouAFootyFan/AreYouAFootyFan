@@ -1,4 +1,5 @@
 import { StyleLoader } from "../../utils/cssLoader.js";
+import { clearDOM } from "../../utils/domHelpers.js";
 
 class QuizTaking extends HTMLElement {
   constructor() {
@@ -78,10 +79,22 @@ class QuizTaking extends HTMLElement {
     }
   }
 
-  cleanup() {
+  async cleanup() {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
+    }
+
+    if (
+      !this.isQuizCompleted &&
+      this.currentQuestion &&
+      this.selectedAnswer == null &&
+      window.quizAttemptService
+    ) {
+        await window.quizAttemptService.submitNoAnswer({
+          attempt_id: this.attempt?.attempt_id,
+          question_id: this.currentQuestion.question_id,
+        });
     }
   }
 
@@ -91,7 +104,7 @@ class QuizTaking extends HTMLElement {
 
       const quizContainer = this.shadowRoot.querySelector(".quiz-container");
       if (quizContainer) {
-        quizContainer.innerHTML = "";
+        clearDOM(quizContainer);
 
         const loadingContainer = document.createElement("section");
         loadingContainer.classList.add("loading-container");
@@ -168,7 +181,7 @@ class QuizTaking extends HTMLElement {
       this.submitAnswer()
     );
 
-    quizContainer.innerHTML = "";
+    clearDOM(quizContainer);
     quizContainer.appendChild(questionElement);
 
     this.startTimerUpdates(questionElement);
@@ -212,28 +225,17 @@ class QuizTaking extends HTMLElement {
         questionElement.setAttribute("submitting", "true");
       }
 
-      const userResponseService = window.userResponseService;
-
-      if (!userResponseService && !window.quizAttemptService) {
+      if (!window.quizAttemptService) {
         this.showError("Response services not available.");
         return;
       }
-
       let response;
       try {
-        if (userResponseService) {
-          response = await userResponseService.submitResponse({
-            attempt_id: this.attempt.attempt_id,
-            question_id: this.currentQuestion.question_id,
-            answer_id: this.selectedAnswer,
-          });
-        } else {
           response = await window.quizAttemptService.submitResponse({
             attempt_id: this.attempt.attempt_id,
             question_id: this.currentQuestion.question_id,
             answer_id: this.selectedAnswer,
           });
-        }
       } catch (e) {
         this.showError("API call failed.");
         return;
@@ -265,7 +267,7 @@ class QuizTaking extends HTMLElement {
       questionElement.setAttribute("score", this.score);
 
       this.currentQuestion.answers.forEach((answer) => {
-        if (answer.is_correct) {
+        if (answer.answer_id == response.correct_answer.answer_id) {
           questionElement.setAttribute(
             `correct-answer-${answer.answer_id}`,
             "true"
@@ -343,15 +345,6 @@ class QuizTaking extends HTMLElement {
 
       questionElement.setAttribute("time-up", "true");
 
-      this.currentQuestion.answers.forEach((answer) => {
-        if (answer.is_correct) {
-          questionElement.setAttribute(
-            `correct-answer-${answer.answer_id}`,
-            "true"
-          );
-        }
-      });
-
       if (this.currentQuestionIndex >= this.quizData.totalQuestions - 1) {
         questionElement.setAttribute("show-results-button", "true");
         questionElement.addEventListener("show-results", () =>
@@ -382,6 +375,7 @@ class QuizTaking extends HTMLElement {
         question_id: this.currentQuestion.question_id,
       });
 
+      this.showAnswerFeedback(response);
       this.score += response.points_earned;
 
       questionElement.setAttribute("show-feedback", "true");
@@ -438,14 +432,14 @@ class QuizTaking extends HTMLElement {
     const resultsElement = document.createElement("quiz-results");
     resultsElement.summary = summary;
 
-    quizContainer.innerHTML = "";
+    clearDOM(quizContainer);
     quizContainer.appendChild(resultsElement);
   }
 
   showError(message) {
     const quizContainer = this.shadowRoot.querySelector(".quiz-container");
     if (quizContainer) {
-      quizContainer.innerHTML = "";
+      clearDOM(quizContainer);
 
       const errorContainer = document.createElement("article");
       errorContainer.classList.add("error-container");
